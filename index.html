@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BankSim Pro — Simulador Profesional con IA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f7f3ed;
+    --card: #ffffff;
+    --gold: #c9a84c;
+    --gold-light: #f0e0b0;
+    --gold-dark: #9a7530;
+    --slate: #4a5568;
+    --muted: #8896a5;
+    --border: #e2d9ce;
+    --green: #1a6b4a;
+    --green-light: #d4f0e4;
+    --red: #b91c1c;
+    --red-light: #fee2e2;
+    --blue: #1e40af;
+    --blue-light: #dbeafe;
+    --shadow: 0 2px 12px rgba(13,17,23,0.08);
+    --shadow-lg: 0 8px 32px rgba(13,17,23,0.12);
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+  }
+
+  .logo-text span {
+    color: var(--gold);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--paper);
+  }
+
+  .user-avatar {
+    width: 24px; height: 24px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; animation: fadeIn 0.3s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Dashboard ── */
+  .dashboard-header {
+    margin-bottom: 40px;
+  }
+
+  .section-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .section-sub {
+    color: var(--slate);
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-panel {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .progress-stats {
+    display: flex;
+    gap: 40px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .progress-bar-wrap {
+    margin-top: 16px;
+  }
+
+  .progress-bar-bg {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    height: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .cert-badge {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .cert-badge-icon { font-size: 28px; }
+  .cert-badge-text {
+    font-size: 11px;
+    color: var(--ink);
+    font-weight: 600;
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── Mission Cards ── */
+  .missions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .mission-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+
+  .mission-card:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .mission-card:hover::before {
+    background: var(--gold);
+  }
+
+  .mission-card.completed::before {
+    background: var(--green);
+  }
+
+  .mission-card.completed {
+    border-color: #a7d7c0;
+  }
+
+  .mission-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mission-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .mission-desc-preview {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .mission-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .level-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .level-Básico { background: var(--blue-light); color: var(--blue); }
+  .level-Intermedio { background: var(--gold-light); color: var(--gold-dark); }
+  .level-Avanzado { background: var(--red-light); color: var(--red); }
+
+  .score-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .score-chip.pass { color: var(--green); }
+  .score-chip.fail { color: var(--red); }
+
+  .btn-start {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-start:hover { background: var(--gold-dark); }
+
+  /* ── Mission Screen ── */
+  .mission-screen-header {
+    margin-bottom: 32px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--slate);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    margin-bottom: 20px;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.15s;
+  }
+
+  .back-btn:hover { color: var(--ink); }
+
+  .mission-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .mission-layout { grid-template-columns: 1fr; }
+    .progress-stats { gap: 20px; }
+  }
+
+  .case-panel {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    color: var(--paper);
+    position: sticky;
+    top: 84px;
+  }
+
+  .case-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .case-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+
+  .case-body {
+    font-size: 14px;
+    line-height: 1.75;
+    color: rgba(247,243,237,0.85);
+    white-space: pre-line;
+  }
+
+  .case-criteria {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .criteria-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .criteria-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .criteria-tag {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .response-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }
+
+  .response-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 12px;
+  }
+
+  .response-textarea {
+    width: 100%;
+    min-height: 280px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+    background: var(--paper);
+  }
+
+  .response-textarea:focus {
+    border-color: var(--gold);
+    background: #fff;
+  }
+
+  .response-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .submit-area {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--gold-dark); color: var(--paper); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--slate);
+    border: 1px solid var(--border);
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── Evaluating State ── */
+  .evaluating-overlay {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .evaluating-overlay.active { display: flex; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .evaluating-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .evaluating-sub {
+    color: var(--slate);
+    font-size: 13px;
+  }
+
+  /* ── Results Screen ── */
+  .results-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .results-layout { grid-template-columns: 1fr; }
+  }
+
+  .score-card {
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    text-align: center;
+    color: var(--paper);
+  }
+
+  .score-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 80px;
+    line-height: 1;
+    margin: 16px 0;
+  }
+
+  .score-number.pass { color: var(--gold); }
+  .score-number.fail { color: #ef4444; }
+
+  .score-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .score-verdict {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-top: 12px;
+  }
+
+  .score-verdict.pass { color: var(--gold); }
+  .score-verdict.fail { color: #ef4444; }
+
+  .attempt-info {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .feedback-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .feedback-section h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .feedback-text {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.7;
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 14px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bullet-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .bullet-list li .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .strengths-list .dot { background: var(--green); }
+  .improvements-list .dot { background: var(--gold); }
+
+  .results-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  /* ── History Panel ── */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-top: 24px;
+  }
+
+  .history-table th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .history-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table tr:hover td { background: var(--paper); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border-left: 3px solid var(--gold);
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+    max-width: 340px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Cert banner ── */
+  .cert-banner {
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 32px;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+  }
+
+  .cert-banner h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .cert-banner p {
+    color: rgba(13,17,23,0.75);
+    font-size: 14px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🏦</div>
+    <span class="logo-text">Bank<span>Sim</span> Pro</span>
+  </div>
+  <div class="header-right">
+    <div class="user-chip">
+      <div class="user-avatar" id="userInitial">A</div>
+      <span id="userName">Analista Demo</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── DASHBOARD ──────────────────────────────────────────────── -->
+<div id="screen-dashboard" class="screen active">
+  <div class="container">
+    <div id="cert-banner-area"></div>
+
+    <div class="dashboard-header">
+      <div class="section-eyebrow">Sector Bancario · IA Aplicada</div>
+      <h1 class="section-title">Centro de Misiones</h1>
+      <p class="section-sub">Entrena habilidades profesionales resolviendo casos reales. Cada misión es evaluada por IA.</p>
+    </div>
+
+    <div class="progress-panel">
+      <div>
+        <div class="progress-stats">
+          <div class="stat">
+            <span class="stat-value" id="statCompleted">0</span>
+            <span class="stat-label">MISIONES / 5</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="statAvg">—</span>
+            <span class="stat-label">SCORE PROMEDIO</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="statAttempts">0</span>
+            <span class="stat-label">INTENTOS TOTALES</span>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <div class="progress-label">
+            <span>Progreso hacia certificación</span>
+            <span id="progressPct">0%</span>
+          </div>
+        </div>
+      </div>
+      <div class="cert-badge" id="certBadge">
+        <div class="cert-badge-icon">🏆</div>
+        <div class="cert-badge-text">Certificación<br>Pendiente</div>
+      </div>
+    </div>
+
+    <div class="missions-grid" id="missionsGrid">
+      <div class="empty-state"><div class="icon">⏳</div><p>Cargando misiones…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MISSION ───────────────────────────────────────────────── -->
+<div id="screen-mission" class="screen">
+  <div class="container">
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
+
+    <div class="mission-layout" id="missionLayout">
+      <div class="case-panel">
+        <div class="case-label">📋 Contexto del Caso</div>
+        <h2 class="case-title" id="caseTitle">—</h2>
+        <div class="case-body" id="caseBody">—</div>
+        <div class="case-criteria">
+          <div class="criteria-label">Criterios de evaluación</div>
+          <div class="criteria-tags" id="caseCriteria"></div>
+        </div>
+      </div>
+
+      <div id="responseArea">
+        <div class="response-panel">
+          <div class="response-label">Tu respuesta</div>
+          <textarea id="responseText" class="response-textarea"
+            placeholder="Redacta aquí tu análisis y propuesta profesional…"
+            oninput="updateWordCount()"></textarea>
+          <div class="response-meta">
+            <span id="wordCount">0 palabras</span>
+            <span>Mínimo recomendado: 80 palabras</span>
+          </div>
+          <div class="submit-area">
+            <button class="btn-primary" id="submitBtn" onclick="submitResponse()">
+              Enviar Respuesta →
+            </button>
+            <button class="btn-secondary" onclick="clearResponse()">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="response-panel" style="margin-top:20px;background:var(--paper);">
+          <div class="response-label">💡 Asistente IA</div>
+          <div id="aiHint" style="font-size:13px;color:var(--slate);line-height:1.7;">
+            El asistente puede orientarte antes de responder. <button onclick="getAIHint()" style="background:none;border:1px solid var(--border);padding:4px 10px;border-radius:3px;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace;">Pedir orientación</button>
+          </div>
+        </div>
+
+        <div class="evaluating-overlay" id="evaluatingOverlay">
+          <div class="spinner"></div>
+          <div class="evaluating-text">Evaluando respuesta…</div>
+          <div class="evaluating-sub">La IA está analizando tu trabajo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RESULTS ───────────────────────────────────────────────── -->
+<div id="screen-results" class="screen">
+  <div class="container">
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
+    <div class="section-eyebrow" style="margin-bottom:8px;">Evaluación completada</div>
+    <h1 class="section-title" style="margin-bottom:32px;" id="resultsMissionTitle">—</h1>
+
+    <div class="results-layout">
+      <div class="score-card">
+        <div class="score-label">Tu puntuación</div>
+        <div class="score-number" id="scoreNumber">—</div>
+        <div class="score-label">de 100 puntos</div>
+        <div class="score-verdict" id="scoreVerdict">—</div>
+        <div class="attempt-info" id="attemptInfo">—</div>
+      </div>
+
+      <div class="feedback-card">
+        <div class="feedback-section">
+          <h4>Feedback general</h4>
+          <div class="feedback-text" id="feedbackText">—</div>
+        </div>
+        <div class="feedback-section">
+          <h4>✅ Fortalezas</h4>
+          <ul class="bullet-list strengths-list" id="strengthsList"></ul>
+        </div>
+        <div class="feedback-section">
+          <h4>📈 Áreas de mejora</h4>
+          <ul class="bullet-list improvements-list" id="improvementsList"></ul>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-primary" onclick="showDashboard()">← Volver al Dashboard</button>
+        <button class="btn-secondary" id="retryBtn" onclick="retryMission()">🔁 Reintentar misión</button>
+        <button class="btn-secondary" onclick="showHistory()">📊 Ver historial</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HISTORY ───────────────────────────────────────────────── -->
+<div id="screen-history" class="screen">
+  <div class="container">
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
+    <div class="section-eyebrow" style="margin-bottom:8px;">Registro completo</div>
+    <h1 class="section-title" style="margin-bottom:32px;">Historial de Resultados</h1>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:8000/api';
+const USER_ID = 1;
+
+let currentMission = null;
+let lastResult = null;
+let missions = [];
+let userProgress = {};
+
+// ── Init ────────────────────────────────────────────────────────
+async function init() {
+  await Promise.all([loadMissions(), loadProgress()]);
+  renderDashboard();
+}
+
+async function loadMissions() {
+  try {
+    const r = await fetch(`${API}/missions/`);
+    const d = await r.json();
+    missions = d.missions;
+  } catch(e) { showToast('⚠️ No se pudo conectar con la API'); }
+}
+
+async function loadProgress() {
+  try {
+    const r = await fetch(`${API}/users/${USER_ID}/progress`);
+    userProgress = await r.json();
+    document.getElementById('userName').textContent = userProgress.user_name || 'Analista';
+    document.getElementById('userInitial').textContent = (userProgress.user_name || 'A')[0].toUpperCase();
+  } catch(e) { userProgress = {}; }
+}
+
+// ── Dashboard ───────────────────────────────────────────────────
+function renderDashboard() {
+  const completed = userProgress.completed_missions || 0;
+  const avg = userProgress.average_score || 0;
+  const results = userProgress.mission_results || [];
+  const totalAttempts = results.reduce((s,r) => s + (r.attempts||0), 0);
+  const isCert = userProgress.is_certified;
+
+  document.getElementById('statCompleted').textContent = completed;
+  document.getElementById('statAvg').textContent = avg ? avg.toFixed(1) : '—';
+  document.getElementById('statAttempts').textContent = totalAttempts;
+
+  const pct = Math.round((completed / 5) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  if (isCert) {
+    document.getElementById('certBadge').innerHTML = `<div class="cert-badge-icon">🏆</div><div class="cert-badge-text">¡Certificado!<br>Felicitaciones</div>`;
+    document.getElementById('cert-banner-area').innerHTML = `
+      <div class="cert-banner">
+        <h2>🏆 ¡Certificación Obtenida!</h2>
+        <p>Has completado todas las misiones con un promedio de ${avg}/100. ¡Excelente desempeño profesional!</p>
+      </div>`;
+  }
+
+  // Build mission cards
+  const grid = document.getElementById('missionsGrid');
+  if (!missions.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>No se pudieron cargar las misiones. Verifica que el backend esté ejecutándose.</p></div>';
+    return;
+  }
+
+  const resultMap = {};
+  (userProgress.mission_results || []).forEach(r => resultMap[r.mission_id] = r);
+
+  grid.innerHTML = missions.map((m, i) => {
+    const res = resultMap[m.id];
+    const isCompleted = res && res.best_score >= 70;
+    const scoreHtml = res
+      ? `<span class="score-chip ${res.best_score >= 70 ? 'pass' : 'fail'}">${res.best_score >= 70 ? '✓' : '✗'} ${res.best_score} pts</span>`
+      : `<span class="score-chip" style="color:var(--muted)">Sin intentos</span>`;
+
+    return `
+    <div class="mission-card ${isCompleted ? 'completed' : ''}" onclick="startMission(${m.id})">
+      <div class="mission-num">
+        <span>MISIÓN ${String(i+1).padStart(2,'0')}</span>
+        ${isCompleted ? '<span style="color:var(--green);font-size:10px">✓ COMPLETADA</span>' : ''}
+      </div>
+      <div class="mission-title">${m.title}</div>
+      <div class="mission-desc-preview">${m.description.substring(0,120)}…</div>
+      <div class="mission-footer">
+        <span class="level-badge level-${m.level}">${m.level}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${scoreHtml}
+          <button class="btn-start">${isCompleted ? 'Reintentar' : 'Iniciar →'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Mission ─────────────────────────────────────────────────────
+async function startMission(id) {
+  currentMission = missions.find(m => m.id === id);
+  if (!currentMission) return;
+
+  document.getElementById('caseTitle').textContent = currentMission.title;
+  document.getElementById('caseBody').textContent = currentMission.description;
+
+  const criteria = currentMission.criteria.split(',').map(c => c.trim());
+  document.getElementById('caseCriteria').innerHTML = criteria.map(c =>
+    `<span class="criteria-tag">${c}</span>`
+  ).join('');
+
+  document.getElementById('responseText').value = '';
+  document.getElementById('wordCount').textContent = '0 palabras';
+  document.getElementById('aiHint').innerHTML = `El asistente puede orientarte antes de responder. <button onclick="getAIHint()" style="background:none;border:1px solid var(--border);padding:4px 10px;border-radius:3px;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace;">Pedir orientación</button>`;
+
+  document.getElementById('evaluatingOverlay').classList.remove('active');
+  document.getElementById('responseArea').style.display = 'block';
+  showScreen('mission');
+}
+
+function updateWordCount() {
+  const text = document.getElementById('responseText').value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  const el = document.getElementById('wordCount');
+  el.textContent = `${count} palabras`;
+  el.style.color = count >= 80 ? 'var(--green)' : count >= 40 ? 'var(--gold-dark)' : 'var(--muted)';
+}
+
+function clearResponse() {
+  document.getElementById('responseText').value = '';
+  updateWordCount();
+}
+
+async function submitResponse() {
+  const text = document.getElementById('responseText').value.trim();
+  if (text.length < 20) { showToast('⚠️ Escribe una respuesta más completa'); return; }
+
+  const overlay = document.getElementById('evaluatingOverlay');
+  document.getElementById('responseArea').style.display = 'none';
+  overlay.classList.add('active');
+
+  try {
+    const r = await fetch(`${API}/submissions/`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({user_id: USER_ID, mission_id: currentMission.id, response: text})
+    });
+
+    if (!r.ok) throw new Error(await r.text());
+    lastResult = await r.json();
+    await loadProgress();
+    showResults(lastResult);
+  } catch(e) {
+    overlay.classList.remove('active');
+    document.getElementById('responseArea').style.display = 'block';
+    showToast('❌ Error al enviar. Verifica la conexión.');
+  }
+}
+
+async function getAIHint() {
+  const hint = document.getElementById('aiHint');
+  hint.innerHTML = '<span style="color:var(--muted);font-size:12px">⏳ Consultando asistente…</span>';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{role:'user', content:`Dame 2 puntos clave que debo considerar para responder esta misión bancaria: "${currentMission.title}". Responde en máximo 2 oraciones cortas.`}]
+      })
+    });
+    // If no API key in browser, show generic hint
+    if (!resp.ok) throw new Error('no key');
+    const d = await resp.json();
+    hint.innerHTML = `<em style="color:var(--slate);font-size:13px">💡 ${d.content[0].text}</em>`;
+  } catch {
+    const hints = {
+      1: 'Enfócate en resumir los números clave e identificar la alerta más crítica. Propón una acción medible.',
+      2: 'Clasifica los riesgos por impacto y probabilidad. Cada mitigación debe ser concreta y factible.',
+      3: 'Adapta cada producto al perfil específico del cliente. Prioriza por necesidad urgente.',
+      4: 'Identifica el cuello de botella principal. Separa qué es automatizable de qué requiere juicio humano.',
+      5: 'Define el alcance de la automatización con criterios claros. Calcula el ROI esperado.',
+    };
+    hint.innerHTML = `<em style="color:var(--slate);font-size:13px">💡 ${hints[currentMission.id] || 'Estructura tu respuesta con numeración y propuestas concretas.'}</em>`;
+  }
+}
+
+// ── Results ─────────────────────────────────────────────────────
+function showResults(result) {
+  document.getElementById('resultsMissionTitle').textContent = result.mission_title || currentMission.title;
+  const score = result.score;
+  const pass = score >= 70;
+
+  const numEl = document.getElementById('scoreNumber');
+  numEl.textContent = score;
+  numEl.className = `score-number ${pass ? 'pass' : 'fail'}`;
+
+  const verdict = document.getElementById('scoreVerdict');
+  verdict.textContent = pass ? '¡Misión superada!' : 'Sigue practicando';
+  verdict.className = `score-verdict ${pass ? 'pass' : 'fail'}`;
+
+  document.getElementById('feedbackText').textContent = result.feedback;
+  document.getElementById('attemptInfo').textContent = `Intento #${result.attempt} · ${new Date().toLocaleDateString('es')}`;
+
+  const sl = document.getElementById('strengthsList');
+  const il = document.getElementById('improvementsList');
+  sl.innerHTML = (result.strengths||[]).map(s => `<li><span class="dot"></span>${s}</li>`).join('') || '<li><span class="dot"></span>Evaluación completada</li>';
+  il.innerHTML = (result.improvements||[]).map(s => `<li><span class="dot"></span>${s}</li>`).join('') || '<li><span class="dot"></span>Continúa practicando</li>';
+
+  document.getElementById('retryBtn').textContent = `🔁 Reintentar (intento ${result.attempt + 1})`;
+  showScreen('results');
+  if (pass) showToast(`🎯 ¡Excelente! Obtuviste ${score}/100 en esta misión.`);
+  else showToast(`📊 Obtuviste ${score}/100. ¡Puedes reintentar!`);
+}
+
+function retryMission() {
+  if (currentMission) startMission(currentMission.id);
+}
+
+// ── History ──────────────────────────────────────────────────────
+async function showHistory() {
+  showScreen('history');
+  const r = await fetch(`${API}/submissions/history/${USER_ID}`);
+  const d = await r.json();
+  const history = d.history || [];
+
+  if (!history.length) {
+    document.getElementById('historyContent').innerHTML =
+      '<div class="empty-state"><div class="icon">📭</div><p>Aún no tienes entregas registradas.</p></div>';
+    return;
+  }
+
+  const rows = history.map(h => `
+    <tr>
+      <td>${h.mission_title}</td>
+      <td><span class="level-badge level-${h.mission_level}">${h.mission_level}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:500;color:${h.score>=70?'var(--green)':'var(--red)'}">
+        ${h.score}/100
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;color:var(--muted)">#${h.attempt}</td>
+      <td style="color:var(--muted);font-size:12px">${new Date(h.submitted_at).toLocaleString('es')}</td>
+    </tr>`).join('');
+
+  document.getElementById('historyContent').innerHTML = `
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Misión</th>
+          <th>Nivel</th>
+          <th>Score</th>
+          <th>Intento</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Navigation ───────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+async function showDashboard() {
+  await loadProgress();
+  renderDashboard();
+  showScreen('dashboard');
+}
+
+function showToast(msg, duration = 3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

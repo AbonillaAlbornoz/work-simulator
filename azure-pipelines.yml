@@ -1,0 +1,37 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - pruebas
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+
+# Instalar Node (si aplica)
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+
+# Instalar dependencias
+- script: npm install
+  displayName: 'Install dependencies'
+
+# Build del proyecto
+- script: npm run build
+  displayName: 'Build project'
+
+# Instalar Vercel CLI
+- script: npm install -g vercel
+  displayName: 'Install Vercel CLI'
+
+# Deploy a Vercel
+- script: |
+    vercel --prod --token=$(VERCEL_TOKEN) --confirm
+  env:
+    VERCEL_ORG_ID: $(VERCEL_ORG_ID)
+    VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
+  displayName: 'Deploy to Vercel'

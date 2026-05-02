@@ -8,30 +8,41 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  - group: vercel-secrets  # Aquí guardaste VERCEL_TOKEN, ORG_ID, PROJECT_ID
+
 steps:
 - checkout: self
 
-# Instalar Node (si aplica)
+# Debug (opcional, puedes quitarlo luego)
+- script: ls -R
+  displayName: 'List repo structure'
+
+# Instalar Node
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
+  displayName: 'Install Node.js'
 
-# Instalar dependencias
+# Instalar dependencias (CORREGIDO)
 - script: npm install
+  workingDirectory: frontend
   displayName: 'Install dependencies'
 
-# Build del proyecto
+# Build del proyecto (CORREGIDO)
 - script: npm run build
+  workingDirectory: frontend
   displayName: 'Build project'
 
 # Instalar Vercel CLI
 - script: npm install -g vercel
   displayName: 'Install Vercel CLI'
 
-# Deploy a Vercel
+# Deploy a Vercel (preview para PRs)
 - script: |
-    vercel --prod --token=$(VERCEL_TOKEN) --confirm
+    vercel --token=$(VERCEL_TOKEN) --confirm
+  workingDirectory: frontend
   env:
     VERCEL_ORG_ID: $(VERCEL_ORG_ID)
     VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
-  displayName: 'Deploy to Vercel'
+  displayName: 'Deploy to Vercel (Preview)'

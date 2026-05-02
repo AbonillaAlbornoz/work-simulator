@@ -3,53 +3,36 @@ trigger: none
 pr:
   branches:
     include:
-      - pruebas   # cuando hagas PR hacia esta rama
+      - pruebas
 
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  - group: var_worksim   # 👈 tu variable group correcto
+steps:
+- checkout: self
 
-stages:
-- stage: Build_And_Deploy
-  displayName: Build and Deploy to Vercel
-  jobs:
-  - job: build
-    displayName: Build & Deploy Job
-    steps:
+# Usar Python
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.11'
+  displayName: 'Use Python'
 
-    - checkout: self
+# Instalar dependencias
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
 
-    # Debug opcional (puedes quitarlo luego)
-    - script: ls -R
-      displayName: 'List repo structure'
+# Trigger deploy en Render (DATOS QUEMADOS)
+- script: |
+    curl -X POST https://api.render.com/v1/services/srv-d7r72ojrjlhs73fjpbg0/deploys \
+      -H "Authorization: Bearer TU_API_KEY_AQUI" \
+      -H "Content-Type: application/json"
+  displayName: 'Trigger Render Deploy'
 
-    # Instalar Node
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '18.x'
-      displayName: 'Install Node.js'
-
-    # Instalar dependencias (CORREGIDO)
-    - script: npm install
-      workingDirectory: frontend
-      displayName: 'Install dependencies'
-
-    # Build del proyecto (CORREGIDO)
-    - script: npm run build
-      workingDirectory: frontend
-      displayName: 'Build project'
-
-    # Instalar Vercel CLI
-    - script: npm install -g vercel
-      displayName: 'Install Vercel CLI'
-
-    # Deploy a Vercel (Preview para PRs)
-    - script: |
-        vercel --token=$(VERCEL_TOKEN) --confirm
-      workingDirectory: frontend
-      env:
-        VERCEL_ORG_ID: $(VERCEL_ORG_ID)
-        VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
-      displayName: 'Deploy to Vercel (Preview)'
+# Esperar un poco y validar
+- script: |
+    echo "Esperando despliegue..."
+    sleep 15
+    curl -f https://work-simulator-t9x7.onrender.com || exit 1
+  displayName: 'Health Check'

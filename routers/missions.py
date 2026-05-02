@@ -7,11 +7,10 @@ PASS_SCORE = 70
 
 
 def _mission_with_status(mission: dict, user_id: int, cursor) -> dict:
-    """Enrich a mission dict with unlocked/completed status for a given user."""
     m = dict(mission)
-    order = m.get("order", m["id"])
+    order = m.get("order") or m["id"]
+    profession = m.get("profession", "banking")
 
-    # Best score for this mission
     cursor.execute(
         "SELECT MAX(score) as best FROM results WHERE user_id=? AND mission_id=?",
         (user_id, m["id"])
@@ -21,7 +20,6 @@ def _mission_with_status(mission: dict, user_id: int, cursor) -> dict:
     m["best_score"] = best_score
     m["completed"] = best_score is not None and best_score >= PASS_SCORE
 
-    # Unlocked if it's the first mission OR the previous one is completed
     if order <= 1:
         m["unlocked"] = True
     else:
@@ -29,8 +27,8 @@ def _mission_with_status(mission: dict, user_id: int, cursor) -> dict:
             SELECT MAX(r.score) as best
             FROM results r
             JOIN missions prev ON prev.id = r.mission_id
-            WHERE r.user_id = ? AND prev."order" = ?
-        """, (user_id, order - 1))
+            WHERE r.user_id=? AND prev."order"=? AND prev.profession=?
+        """, (user_id, order - 1, profession))
         prev = cursor.fetchone()
         m["unlocked"] = prev and prev["best"] is not None and prev["best"] >= PASS_SCORE
 
@@ -38,20 +36,21 @@ def _mission_with_status(mission: dict, user_id: int, cursor) -> dict:
 
 
 @router.get("/")
-def list_missions(user_id: int = 1):
-    """List missions with unlock/completion status for a user."""
+def list_missions(user_id: int = 1, profession: str = "banking"):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM missions ORDER BY "order"')
+    cursor.execute(
+        'SELECT * FROM missions WHERE profession=? ORDER BY "order"',
+        (profession,)
+    )
     missions = [_mission_with_status(dict(row), user_id, cursor)
                 for row in cursor.fetchall()]
     conn.close()
-    return {"missions": missions, "total": len(missions)}
+    return {"missions": missions, "total": len(missions), "profession": profession}
 
 
 @router.get("/{mission_id}")
 def get_mission(mission_id: int, user_id: int = 1):
-    """Get a mission with unlock status. Returns 403 if locked."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM missions WHERE id=?", (mission_id,))
@@ -66,15 +65,12 @@ def get_mission(mission_id: int, user_id: int = 1):
         conn.close()
         raise HTTPException(
             status_code=403,
-            detail="Misión bloqueada. Completa la misión anterior con score ≥ 70 para desbloquearla."
+            detail="Misión bloqueada. Completa la anterior con score >= 70."
         )
 
-    # Attach attempt history for retry loop
     cursor.execute("""
-        SELECT id, score, attempt, submitted_at
-        FROM results
-        WHERE user_id=? AND mission_id=?
-        ORDER BY attempt ASC
+        SELECT id, score, attempt, submitted_at FROM results
+        WHERE user_id=? AND mission_id=? ORDER BY attempt ASC
     """, (user_id, mission_id))
     mission["attempts_history"] = [dict(r) for r in cursor.fetchall()]
     conn.close()

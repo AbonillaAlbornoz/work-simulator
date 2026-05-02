@@ -3,46 +3,53 @@ trigger: none
 pr:
   branches:
     include:
-      - pruebas
+      - pruebas   # cuando hagas PR hacia esta rama
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: vercel-secrets  # Aquí guardaste VERCEL_TOKEN, ORG_ID, PROJECT_ID
+  - group: var_worksim   # 👈 tu variable group correcto
 
-steps:
-- checkout: self
+stages:
+- stage: Build_And_Deploy
+  displayName: Build and Deploy to Vercel
+  jobs:
+  - job: build
+    displayName: Build & Deploy Job
+    steps:
 
-# Debug (opcional, puedes quitarlo luego)
-- script: ls -R
-  displayName: 'List repo structure'
+    - checkout: self
 
-# Instalar Node
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+    # Debug opcional (puedes quitarlo luego)
+    - script: ls -R
+      displayName: 'List repo structure'
 
-# Instalar dependencias (CORREGIDO)
-- script: npm install
-  workingDirectory: frontend
-  displayName: 'Install dependencies'
+    # Instalar Node
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
 
-# Build del proyecto (CORREGIDO)
-- script: npm run build
-  workingDirectory: frontend
-  displayName: 'Build project'
+    # Instalar dependencias (CORREGIDO)
+    - script: npm install
+      workingDirectory: frontend
+      displayName: 'Install dependencies'
 
-# Instalar Vercel CLI
-- script: npm install -g vercel
-  displayName: 'Install Vercel CLI'
+    # Build del proyecto (CORREGIDO)
+    - script: npm run build
+      workingDirectory: frontend
+      displayName: 'Build project'
 
-# Deploy a Vercel (preview para PRs)
-- script: |
-    vercel --token=$(VERCEL_TOKEN) --confirm
-  workingDirectory: frontend
-  env:
-    VERCEL_ORG_ID: $(VERCEL_ORG_ID)
-    VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
-  displayName: 'Deploy to Vercel (Preview)'
+    # Instalar Vercel CLI
+    - script: npm install -g vercel
+      displayName: 'Install Vercel CLI'
+
+    # Deploy a Vercel (Preview para PRs)
+    - script: |
+        vercel --token=$(VERCEL_TOKEN) --confirm
+      workingDirectory: frontend
+      env:
+        VERCEL_ORG_ID: $(VERCEL_ORG_ID)
+        VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
+      displayName: 'Deploy to Vercel (Preview)'

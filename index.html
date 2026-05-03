@@ -2,487 +2,404 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>WorkSim AI — Entrena habilidades reales con IA</title>
-<meta name="description" content="Plataforma de entrenamiento profesional con IA. Simulaciones reales, feedback inmediato, certificación por desempeño."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-/* ── Variables ─────────────────────────────────────────────────────────────── */
-:root {
-  --brand: #5b4cff; --brand-d: #3d2fd6; --brand-l: #ede9ff; --brand-glow: rgba(91,76,255,.2);
-  --bg: #f8f7fc; --surface: #ffffff; --surface2: #f1f0f8;
-  --ink: #16141f; --ink2: #3c3950; --muted: #8880a6; --border: #e5e2f0;
-  --green: #059669; --green-bg: #d1fae5; --green-b: #a7f3d0;
-  --red: #dc2626; --red-bg: #fee2e2; --red-b: #fca5a5;
-  --yellow: #d97706; --yellow-bg: #fef3c7; --yellow-b: #fde68a;
-  --blue: #2563eb; --blue-bg: #dbeafe;
-  --level-basic: #2563eb; --level-basic-bg: #dbeafe;
-  --level-mid: #7c3aed; --level-mid-bg: #ede9fe;
-  --level-adv: #dc2626; --level-adv-bg: #fee2e2;
-  --r-sm: 8px; --r: 12px; --r-lg: 16px; --r-xl: 24px;
-  --sh-sm: 0 1px 3px rgba(22,20,31,.06),0 1px 2px rgba(22,20,31,.04);
-  --sh: 0 4px 16px rgba(22,20,31,.08),0 1px 4px rgba(22,20,31,.04);
-  --sh-lg: 0 12px 40px rgba(22,20,31,.12),0 4px 12px rgba(22,20,31,.06);
-  --sh-brand: 0 8px 32px rgba(91,76,255,.28);
+:root{
+  --brand:#5b4cff;--brand-d:#3d2fd6;--brand-l:#ede9ff;--brand-g:rgba(91,76,255,.18);
+  --bg:#f8f7fc;--surface:#fff;--surface2:#f1f0f8;--ink:#16141f;--ink2:#3c3950;
+  --muted:#8880a6;--border:#e5e2f0;
+  --green:#059669;--green-bg:#d1fae5;--green-b:#a7f3d0;
+  --red:#dc2626;--red-bg:#fee2e2;--red-b:#fca5a5;
+  --yellow:#d97706;--yellow-bg:#fef3c7;--yellow-b:#fde68a;
+  --orange:#ea580c;--orange-bg:#fff7ed;--orange-b:#fed7aa;
+  --blue:#2563eb;--blue-bg:#dbeafe;
+  --r:12px;--r-sm:8px;--r-lg:16px;--r-xl:24px;
+  --sh:0 4px 16px rgba(22,20,31,.08),0 1px 4px rgba(22,20,31,.04);
+  --sh-sm:0 1px 3px rgba(22,20,31,.06);
+  --sh-lg:0 12px 40px rgba(22,20,31,.12);
+  --sh-b:0 8px 32px rgba(91,76,255,.28);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.6}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-img{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
 button{font-family:'Manrope',sans-serif}
-
-/* ── Screens ────────────────────────────────────────────────────────────────── */
 .screen{display:none}
-.screen.active{display:block;animation:fadeUp .35s cubic-bezier(.16,1,.3,1)}
+.screen.active{display:block;animation:fadeUp .3s cubic-bezier(.16,1,.3,1)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── Header ─────────────────────────────────────────────────────────────────── */
-header{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 32px;height:60px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:var(--sh-sm);
-}
-.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
-.logo-mark{
-  width:34px;height:34px;
-  background:linear-gradient(135deg,var(--brand),var(--brand-d));
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:17px;box-shadow:0 2px 8px var(--brand-glow);
-}
-.logo-text{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+/* ── Header ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:400;box-shadow:var(--sh-sm)}
+.logo{display:flex;align-items:center;gap:9px;cursor:pointer}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--brand),var(--brand-d));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px var(--brand-g)}
+.logo-text{font-size:16px;font-weight:800;letter-spacing:-.02em}
 .logo-text span{color:var(--brand)}
-.header-nav{display:flex;align-items:center;gap:4px}
-.nav-btn{
-  background:none;border:none;padding:7px 12px;font-size:13px;font-weight:600;
-  color:var(--muted);cursor:pointer;border-radius:var(--r-sm);transition:all .15s;
-}
+.header-nav{display:flex;gap:2px}
+.nav-btn{background:none;border:none;padding:6px 11px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:var(--r-sm);transition:all .15s}
 .nav-btn:hover,.nav-btn.active{background:var(--surface2);color:var(--ink)}
-.nav-btn.active{color:var(--brand)}
-.header-right{display:flex;align-items:center;gap:10px}
-.profession-chip{
-  display:flex;align-items:center;gap:6px;padding:5px 12px;
-  border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.03em;cursor:pointer;
-  border:1.5px solid;transition:all .15s;
-}
-.profession-chip.banking{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
-.profession-chip.legal{background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
-.user-pill{
-  display:flex;align-items:center;gap:7px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 6px;
-  font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;
-}
-.user-avatar{
-  width:26px;height:26px;background:linear-gradient(135deg,var(--brand),var(--brand-d));
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:white;
-}
+.header-right{display:flex;align-items:center;gap:8px}
+.field-chip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.02em;cursor:pointer;border:1.5px solid;transition:all .15s}
+.chip-banking{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.chip-legal{background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
+.chip-social_security{background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+.chip-payroll{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.user-pill{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 5px;font-size:13px;font-weight:600;cursor:pointer}
+.user-av{width:24px;height:24px;background:linear-gradient(135deg,var(--brand),var(--brand-d));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
 
-/* ── Buttons ─────────────────────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:var(--r-sm);font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);white-space:nowrap}
-.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-d));color:white;padding:12px 22px;box-shadow:0 4px 14px var(--brand-glow)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:var(--sh-brand)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-secondary{background:var(--surface);color:var(--ink2);border:1.5px solid var(--border);padding:11px 20px}
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:var(--r-sm);font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-d));color:#fff;padding:11px 20px;box-shadow:0 4px 14px var(--brand-g)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:var(--sh-b)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--surface);color:var(--ink2);border:1.5px solid var(--border);padding:10px 18px}
 .btn-secondary:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-l)}
-.btn-ghost{background:none;color:var(--muted);padding:8px 14px;font-size:13px}
+.btn-ghost{background:none;color:var(--muted);padding:7px 13px;font-size:13px}
 .btn-ghost:hover{color:var(--ink);background:var(--surface2)}
-.btn-lg{padding:15px 30px;font-size:15px;border-radius:var(--r)}
-.btn-sm{padding:7px 14px;font-size:12px}
-.btn-white{background:white;color:var(--brand);padding:13px 26px;border-radius:var(--r-sm);font-family:'Manrope',sans-serif;font-size:14px;font-weight:800;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.15);transition:all .2s;display:inline-flex;align-items:center;gap:7px}
-.btn-white:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.btn-lg{padding:14px 28px;font-size:15px;border-radius:var(--r)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-white{background:#fff;color:var(--brand);padding:12px 24px;border-radius:var(--r-sm);font-family:'Manrope',sans-serif;font-size:14px;font-weight:800;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.13);transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-white:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
-/* ── Badges ─────────────────────────────────────────────────────────────────── */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em}
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.02em}
 .badge-brand{background:var(--brand-l);color:var(--brand)}
 .badge-green{background:var(--green-bg);color:var(--green)}
 .badge-red{background:var(--red-bg);color:var(--red)}
 .badge-muted{background:var(--surface2);color:var(--muted)}
-.level-Básico{background:var(--level-basic-bg);color:var(--level-basic)}
-.level-Intermedio{background:var(--level-mid-bg);color:var(--level-mid)}
-.level-Avanzado{background:var(--level-adv-bg);color:var(--level-adv)}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow)}
+.level-Básico{background:var(--blue-bg);color:var(--blue)}
+.level-Intermedio{background:var(--brand-l);color:var(--brand)}
+.level-Avanzado{background:var(--red-bg);color:var(--red)}
+.level-Complejo{background:#1c1426;color:#a78bfa}
 
-/* ── Typography ─────────────────────────────────────────────────────────────── */
+/* ── Typography ── */
 .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:block;margin-bottom:8px}
-.display{font-family:'Instrument Serif',serif;font-size:52px;font-weight:400;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
+.display{font-family:'Instrument Serif',serif;font-size:50px;font-weight:400;line-height:1.1;letter-spacing:-.02em}
 .display span{color:var(--brand);font-style:italic}
-.h1{font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;line-height:1.2;color:var(--ink)}
-.h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;line-height:1.2;color:var(--ink)}
-.h3{font-size:18px;font-weight:700;color:var(--ink)}
-.lead{font-size:17px;font-weight:400;color:var(--ink2);line-height:1.7}
-.muted{color:var(--muted);font-size:14px}
+.h1{font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;line-height:1.2}
+.h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;line-height:1.25}
+.h3{font-size:17px;font-weight:700}
+.lead{font-size:16px;color:var(--ink2);line-height:1.7}
+.muted{color:var(--muted);font-size:13px}
 
-/* ── Layout ─────────────────────────────────────────────────────────────────── */
-.container{max-width:1060px;margin:0 auto;padding:0 24px}
-.section{padding:80px 0}
+/* ── Layout ── */
+.container{max-width:1040px;margin:0 auto;padding:0 24px}
+.section{padding:72px 0}
 
-/* ══════════════════════════════════════════════════════════════════
-   LANDING PAGE
-══════════════════════════════════════════════════════════════════ */
-#screen-landing{background:var(--bg)}
+/* ══════════════════════════════════════════
+   LANDING
+══════════════════════════════════════════ */
+.hero{padding:96px 0 72px;text-align:center;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(91,76,255,.1),transparent)}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--brand-l);color:var(--brand);border:1px solid rgba(91,76,255,.2);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;letter-spacing:.04em;margin-bottom:22px}
+.hero .display{margin-bottom:18px}
+.hero .lead{max-width:500px;margin:0 auto 32px}
+.hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hero-stats{margin-top:44px;display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap}
+.hero-stat{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.hero-stat-n{font-family:'Instrument Serif',serif;font-size:22px;color:var(--ink)}
 
-/* Hero */
-.hero{
-  padding:100px 0 80px;text-align:center;
-  background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(91,76,255,.12),transparent);
-}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--brand-l);color:var(--brand);border:1px solid rgba(91,76,255,.25);
-  border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;
-  letter-spacing:.05em;margin-bottom:24px;
-}
-.hero-badge::before{content:'✦';font-size:10px}
-.hero .display{margin-bottom:20px;max-width:760px;margin-left:auto;margin-right:auto}
-.hero .lead{max-width:520px;margin:0 auto 36px}
-.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.hero-social{margin-top:48px;display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
-.hero-social-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:500}
-.hero-social-num{font-family:'Instrument Serif',serif;font-size:22px;color:var(--ink);font-weight:400}
-
-/* How it works */
-.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
-.how-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:28px;box-shadow:var(--sh-sm);position:relative;overflow:hidden;
-}
-.how-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--brand),#a78bfa);
-}
-.how-num{
-  width:36px;height:36px;background:var(--brand-l);color:var(--brand);
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:16px;margin-bottom:16px;
-}
-.how-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;box-shadow:var(--sh-sm);position:relative;overflow:hidden}
+.how-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),#a78bfa)}
+.how-num{width:34px;height:34px;background:var(--brand-l);color:var(--brand);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-bottom:14px}
+.how-card h3{font-size:16px;font-weight:700;margin-bottom:7px}
 .how-card p{font-size:13px;color:var(--ink2);line-height:1.6}
 
-/* Professions */
-.prof-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:48px;max-width:720px;margin-left:auto;margin-right:auto}
-.prof-card{
-  background:var(--surface);border:2px solid var(--border);border-radius:var(--r-xl);
-  padding:32px;text-align:center;cursor:pointer;
-  transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;
-}
-.prof-card:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
-.prof-card.banking:hover{border-color:#93c5fd;box-shadow:0 12px 40px rgba(37,99,235,.15)}
-.prof-card.legal:hover{border-color:#c4b5fd;box-shadow:0 12px 40px rgba(91,76,255,.15)}
-.prof-icon{font-size:44px;margin-bottom:16px}
-.prof-card h3{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:8px}
-.prof-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
-.prof-tag{
-  display:inline-block;padding:3px 10px;border-radius:20px;
-  font-size:11px;font-weight:700;letter-spacing:.05em;margin-bottom:20px;
-}
-.prof-tag.banking{background:#dbeafe;color:#1e40af}
-.prof-tag.legal{background:#ede9fe;color:#5b21b6}
-.prof-missions{font-size:12px;color:var(--muted);margin-top:8px}
+.fields-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:44px;max-width:780px;margin-left:auto;margin-right:auto}
+.field-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r-xl);padding:28px;text-align:center;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1)}
+.field-card:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
+.field-icon{font-size:40px;margin-bottom:13px}
+.field-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:13px}
+.field-card h3{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:7px}
+.field-card p{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:17px}
+.field-meta{font-size:11px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace}
 
-/* Benefits */
-.benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
-.benefit-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:24px 20px;text-align:center;box-shadow:var(--sh-sm);
-}
-.benefit-icon{font-size:32px;margin-bottom:12px}
-.benefit-card h4{font-size:15px;font-weight:700;margin-bottom:6px}
+.benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+.benefit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 18px;text-align:center;box-shadow:var(--sh-sm)}
+.benefit-icon{font-size:28px;margin-bottom:10px}
+.benefit-card h4{font-size:14px;font-weight:700;margin-bottom:5px}
 .benefit-card p{font-size:12px;color:var(--muted);line-height:1.5}
 
-/* Section header */
-.section-header{text-align:center;margin-bottom:8px}
-.section-header .h2{margin-bottom:10px}
-.section-header .lead{max-width:500px;margin:0 auto}
+.section-hdr{text-align:center;margin-bottom:8px}
+.section-hdr .h2{margin-bottom:9px}
+.cta-band{background:linear-gradient(135deg,var(--brand),var(--brand-d));border-radius:var(--r-xl);padding:52px 36px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.cta-band::before,.cta-band::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.05)}
+.cta-band::before{width:220px;height:220px;top:-60px;right:-60px}
+.cta-band::after{width:160px;height:160px;bottom:-60px;left:40px}
+.cta-band h2{font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;margin-bottom:10px;position:relative;z-index:1}
+.cta-band p{font-size:15px;opacity:.85;margin-bottom:26px;position:relative;z-index:1}
+footer{border-top:1px solid var(--border);padding:28px 0;text-align:center;font-size:13px;color:var(--muted)}
 
-/* CTA band */
-.cta-band{
-  background:linear-gradient(135deg,var(--brand),var(--brand-d));
-  border-radius:var(--r-xl);padding:56px 40px;text-align:center;color:white;
-  position:relative;overflow:hidden;
-}
-.cta-band::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:rgba(255,255,255,.05);border-radius:50%}
-.cta-band::after{content:'';position:absolute;bottom:-80px;left:40px;width:180px;height:180px;background:rgba(255,255,255,.04);border-radius:50%}
-.cta-band h2{font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;margin-bottom:12px;position:relative;z-index:1}
-.cta-band p{font-size:16px;opacity:.85;margin-bottom:28px;position:relative;z-index:1}
+/* ══════════════════════════════════════════
+   FIELD PICKER
+══════════════════════════════════════════ */
+.picker-wrap{max-width:700px;margin:60px auto;padding:0 24px}
 
-/* Footer */
-footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-size:13px;color:var(--muted)}
-
-/* ══════════════════════════════════════════════════════════════════
-   ONBOARDING — Módulo 0
-══════════════════════════════════════════════════════════════════ */
-.onboard-wrap{max-width:680px;margin:0 auto;padding:40px 24px}
-.onboard-header{text-align:center;margin-bottom:40px}
-.onboard-dots{display:flex;gap:8px;justify-content:center;margin-bottom:36px}
-.onboard-dot{width:32px;height:6px;border-radius:3px;background:var(--border);transition:background .3s}
+/* ══════════════════════════════════════════
+   ONBOARDING
+══════════════════════════════════════════ */
+.onboard-wrap{max-width:660px;margin:0 auto;padding:36px 24px}
+.onboard-dots{display:flex;gap:7px;justify-content:center;margin-bottom:32px}
+.onboard-dot{width:30px;height:5px;border-radius:3px;background:var(--border);transition:background .3s}
 .onboard-dot.active{background:var(--brand)}
 .onboard-dot.done{background:var(--green)}
-.onboard-card{background:var(--surface);border-radius:var(--r-lg);padding:36px;box-shadow:var(--sh);border:1px solid var(--border);display:none}
+.onboard-card{background:var(--surface);border-radius:var(--r-lg);padding:32px;box-shadow:var(--sh);border:1px solid var(--border);display:none}
 .onboard-card.active{display:block;animation:fadeUp .3s ease}
-.onboard-card-icon{font-size:40px;margin-bottom:16px}
-.onboard-card h2{font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:12px}
-.onboard-card p{color:var(--ink2);line-height:1.75;margin-bottom:14px;font-size:14px}
-.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.concept-item{background:var(--surface2);border-radius:var(--r-sm);padding:14px 16px;border:1px solid var(--border)}
-.concept-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.concept-item{background:var(--surface2);border-radius:var(--r-sm);padding:13px 14px;border:1px solid var(--border)}
+.concept-label{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--brand);margin-bottom:3px}
 .concept-item p{font-size:13px;color:var(--ink2);margin:0}
-.prompt-example{background:var(--ink);color:#e4e1ed;border-radius:var(--r);padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;margin:16px 0}
+
+/* Prompt vs Direct comparison — NEW */
+.comparison-box{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.comp-side{border-radius:var(--r-sm);padding:14px 16px;border:2px solid}
+.comp-bad{background:var(--red-bg);border-color:var(--red-b)}
+.comp-good{background:var(--green-bg);border-color:var(--green-b)}
+.comp-label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.comp-label.bad{color:var(--red)}.comp-label.good{color:var(--green)}
+.comp-text{font-size:12px;line-height:1.65;font-family:'JetBrains Mono',monospace}
+.comp-bad .comp-text{color:#7f1d1d}
+.comp-good .comp-text{color:#064e3b}
+
+.prompt-box{background:var(--ink);color:#e4e1ed;border-radius:var(--r);padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;margin:14px 0}
 .pr-rol{color:#a78bfa}.pr-ctx{color:#34d399}.pr-out{color:#fbbf24}
-.guided-textarea{width:100%;min-height:120px;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;font-family:'Manrope',sans-serif;font-size:14px;line-height:1.7;color:var(--ink);resize:vertical;outline:none;transition:border-color .2s;background:var(--bg)}
-.guided-textarea:focus{border-color:var(--brand);background:white}
-.guided-feedback{margin-top:12px;padding:14px 16px;border-radius:var(--r-sm);font-size:13px;line-height:1.6;display:none}
-.guided-feedback.show{display:block}
-.guided-feedback.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
-.guided-feedback.ok{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-b)}
-.guided-feedback.start{background:var(--brand-l);color:var(--brand);border:1px solid rgba(91,76,255,.3)}
-.onboard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px}
+.guided-ta{width:100%;min-height:100px;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:13px;font-family:'Manrope',sans-serif;font-size:14px;line-height:1.7;resize:vertical;outline:none;transition:border-color .2s;background:var(--bg)}
+.guided-ta:focus{border-color:var(--brand);background:#fff}
+.guided-fb{margin-top:10px;padding:12px 14px;border-radius:var(--r-sm);font-size:13px;line-height:1.6;display:none}
+.guided-fb.show{display:block}
+.guided-fb.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
+.guided-fb.ok{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-b)}
+.guided-fb.start{background:var(--brand-l);color:var(--brand);border:1px solid rgba(91,76,255,.25)}
+.onboard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
 
-/* ══════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════
    DASHBOARD
-══════════════════════════════════════════════════════════════════ */
-.dashboard-wrap{max-width:900px;margin:0 auto;padding:40px 24px}
+══════════════════════════════════════════ */
+.dash-wrap{max-width:880px;margin:0 auto;padding:36px 24px}
+.field-switcher{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:3px;margin-bottom:28px;flex-wrap:wrap}
+.field-sw-btn{padding:7px 16px;border-radius:var(--r-sm);border:none;background:none;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.field-sw-btn.active{background:#fff;color:var(--ink);box-shadow:var(--sh-sm)}
 
-/* Profession switcher */
-.prof-switcher{
-  display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--r);padding:4px;margin-bottom:32px;width:fit-content;
-}
-.prof-switch-btn{
-  padding:8px 20px;border-radius:var(--r-sm);border:none;background:none;
-  font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;
-  color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;
-}
-.prof-switch-btn.active{background:white;color:var(--ink);box-shadow:var(--sh-sm)}
+.hero-cta{border-radius:var(--r-xl);padding:26px 28px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:18px;overflow:hidden;position:relative;color:#fff}
+.hcta-banking{background:linear-gradient(135deg,#2563eb,#1e40af)}
+.hcta-legal{background:linear-gradient(135deg,#5b4cff,#3d2fd6)}
+.hcta-social_security{background:linear-gradient(135deg,#059669,#065f46)}
+.hcta-payroll{background:linear-gradient(135deg,#d97706,#92400e)}
+.hero-cta::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.06);border-radius:50%}
+.hcta-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-bottom:5px}
+.hcta-title{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;margin-bottom:3px}
+.hcta-sub{font-size:13px;opacity:.75}
 
-/* Hero CTA */
-.hero-cta{
-  border-radius:var(--r-xl);padding:30px 32px;margin-bottom:28px;
-  display:flex;align-items:center;justify-content:space-between;gap:20px;
-  overflow:hidden;position:relative;color:white;
-}
-.hero-cta.banking{background:linear-gradient(135deg,#2563eb,#1e40af)}
-.hero-cta.legal{background:linear-gradient(135deg,#5b4cff,#3d2fd6)}
-.hero-cta::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%}
-.hero-cta-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
-.hero-cta-title{font-family:'Instrument Serif',serif;font-size:24px;font-weight:400;margin-bottom:4px}
-.hero-cta-sub{font-size:14px;opacity:.8}
-.hero-cta-action{flex-shrink:0;position:relative;z-index:1}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border-radius:var(--r);padding:16px 20px;border:1px solid var(--border);box-shadow:var(--sh-sm)}
+.stat-val{font-family:'Instrument Serif',serif;font-size:32px;color:var(--brand);line-height:1}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
 
-/* Stats */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
-.stat-card{background:var(--surface);border-radius:var(--r);padding:18px 22px;border:1px solid var(--border);box-shadow:var(--sh-sm)}
-.stat-val{font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;color:var(--brand);line-height:1}
-.stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;letter-spacing:.02em}
-
-/* Progress */
-.prog-wrap{margin-bottom:28px}
-.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.prog-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.prog-wrap{margin-bottom:24px}
+.prog-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
+.prog-hdr strong{font-weight:700}
+.prog-bar{height:9px;background:var(--border);border-radius:5px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--brand),#a78bfa);border-radius:5px;transition:width .8s cubic-bezier(.16,1,.3,1);position:relative}
 .prog-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
-/* Module 0 card */
-.mod0-card{
-  background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-lg);
-  padding:20px 24px;margin-bottom:12px;color:white;display:flex;gap:14px;
-  align-items:center;cursor:pointer;transition:all .2s;
-  border:1.5px solid rgba(91,76,255,.4);
-}
-.mod0-card:hover{transform:translateY(-2px);box-shadow:var(--sh-brand)}
-.mod0-icon{font-size:28px;flex-shrink:0}
-.mod0-text h3{font-size:16px;font-weight:700;margin-bottom:2px}
-.mod0-text p{font-size:13px;opacity:.7}
-.mod0-badge{margin-left:auto;flex-shrink:0;background:rgba(91,76,255,.3);border:1px solid rgba(91,76,255,.5);color:#a78bfa;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.mod0-strip{background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:all .2s;border:1.5px solid rgba(91,76,255,.35)}
+.mod0-strip:hover{transform:translateY(-2px);box-shadow:var(--sh-b)}
+.mod0-icon{font-size:26px;flex-shrink:0}
+.mod0-text h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.mod0-text p{font-size:12px;color:rgba(255,255,255,.55)}
+.mod0-badge{margin-left:auto;flex-shrink:0;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.mod0-badge.todo{background:rgba(91,76,255,.3);border:1px solid rgba(91,76,255,.5);color:#a78bfa}
 .mod0-badge.done{background:rgba(5,150,105,.2);border-color:rgba(5,150,105,.4);color:#34d399}
 
-/* Mission path */
-.path-section-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:16px}
+.path-title{font-size:15px;font-weight:700;margin-bottom:14px}
 .mission-path{display:flex;flex-direction:column}
-.path-item{display:flex;gap:16px;align-items:flex-start;position:relative}
-.path-connector{position:absolute;left:19px;top:48px;width:2px;height:calc(100% - 12px);background:var(--border);z-index:0}
-.path-connector.done{background:var(--green)}
-.path-connector.active{background:linear-gradient(180deg,var(--brand),var(--border))}
-.path-node{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;z-index:1;border:2.5px solid var(--border);background:var(--surface);transition:all .3s}
-.path-node.done{background:var(--green);border-color:var(--green);font-size:14px;box-shadow:0 0 0 4px var(--green-bg)}
+.path-item{display:flex;gap:14px;align-items:flex-start;position:relative}
+.path-line{position:absolute;left:17px;top:46px;width:2px;height:calc(100% - 10px);background:var(--border);z-index:0;transition:background .3s}
+.path-line.done{background:var(--green)}.path-line.active{background:linear-gradient(180deg,var(--brand),var(--border))}
+.path-node{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative;z-index:1;border:2.5px solid var(--border);background:var(--surface);transition:all .3s}
+.path-node.done{background:var(--green);border-color:var(--green);box-shadow:0 0 0 4px var(--green-bg)}
 .path-node.available{border-color:var(--brand);background:var(--brand-l);box-shadow:0 0 0 4px var(--brand-l);animation:pulse 2s infinite}
-.path-node.locked{background:var(--surface2);opacity:.55}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--brand-l)}50%{box-shadow:0 0 0 8px var(--brand-l)}}
-.path-card{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:12px;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
-.path-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);transition:background .2s}
+.path-node.locked{background:var(--surface2);opacity:.5}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--brand-l)}50%{box-shadow:0 0 0 8px rgba(91,76,255,.1)}}
+.path-card{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.path-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border)}
 .path-card.available::before{background:linear-gradient(90deg,var(--brand),#a78bfa)}
 .path-card.done::before{background:var(--green)}
 .path-card.available:hover{border-color:var(--brand);box-shadow:var(--sh),0 0 0 3px var(--brand-l);transform:translateY(-2px)}
 .path-card.done:hover{border-color:var(--green);box-shadow:var(--sh),0 0 0 3px var(--green-bg);transform:translateY(-2px)}
-.path-card.locked{cursor:not-allowed;opacity:.55}
-.path-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.path-card-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.path-card-title{font-size:16px;font-weight:700;margin-bottom:4px}
-.path-card-desc{font-size:13px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.path-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-.path-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
-.path-score.pass{color:var(--green)}.path-score.fail{color:var(--red)}
+.path-card.locked{cursor:not-allowed;opacity:.5}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.pc-meta{display:flex;gap:5px;flex-wrap:wrap}
+.pc-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.pc-desc{font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.pc-score{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.pc-score.pass{color:var(--green)}.pc-score.fail{color:var(--red)}
 
-/* Cert banner */
-.cert-banner{background:linear-gradient(135deg,#059669,#047857);border-radius:var(--r-xl);padding:28px 32px;text-align:center;color:white;margin-bottom:24px;box-shadow:0 8px 32px rgba(5,150,105,.25)}
-.cert-banner h2{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;margin-bottom:6px}
-.cert-banner p{font-size:14px;opacity:.85}
+.cert-banner{background:linear-gradient(135deg,#059669,#047857);border-radius:var(--r-xl);padding:24px 28px;text-align:center;color:#fff;margin-bottom:20px;box-shadow:0 8px 32px rgba(5,150,105,.25)}
+.cert-banner h2{font-family:'Instrument Serif',serif;font-size:24px;font-weight:400;margin-bottom:5px}
 
-/* ══════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════
    MISSION SCREEN
-══════════════════════════════════════════════════════════════════ */
-.mission-wrap{max-width:1060px;margin:0 auto;padding:32px 24px}
-.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;border:none;background:none;padding:0;margin-bottom:24px;font-family:'Manrope',sans-serif;font-weight:600;transition:color .15s}
+══════════════════════════════════════════ */
+.mission-wrap{max-width:1040px;margin:0 auto;padding:28px 24px}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);cursor:pointer;border:none;background:none;padding:0;margin-bottom:20px;font-weight:600;transition:color .15s}
 .back-btn:hover{color:var(--ink)}
-.narrative-card{background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-lg);padding:18px 22px;margin-bottom:20px;display:flex;gap:14px;border:1px solid rgba(91,76,255,.3)}
-.narrative-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:5px}
-.narrative-body{font-size:13px;color:rgba(228,225,237,.85);line-height:1.75;font-style:italic}
-.mission-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+
+/* PROMPT MODE BANNER — critical UX element */
+.prompt-mode-banner{background:linear-gradient(135deg,#1c1426,#2d1b69);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:18px;display:flex;gap:14px;align-items:center;border:1.5px solid rgba(91,76,255,.4)}
+.pmb-icon{font-size:26px;flex-shrink:0}
+.pmb-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.pmb-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.pmb-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5}
+.pmb-badge{margin-left:auto;flex-shrink:0;background:rgba(91,76,255,.3);border:1px solid rgba(91,76,255,.5);color:#a78bfa;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+
+.narrative-card{background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:18px;display:flex;gap:13px;border:1px solid rgba(91,76,255,.25)}
+.narr-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:4px}
+.narr-body{font-size:13px;color:rgba(228,225,237,.82);line-height:1.75;font-style:italic}
+
+.mission-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
 @media(max-width:768px){.mission-layout{grid-template-columns:1fr}}
 
-/* Briefing */
-.briefing{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh);position:sticky;top:76px}
-.briefing-section{padding:16px 20px;border-bottom:1px solid var(--border)}
-.briefing-section:last-child{border-bottom:none}
-.briefing-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.briefing-label.brand{color:var(--brand)}.briefing-label.green{color:var(--green)}.briefing-label.yellow{color:var(--yellow)}.briefing-label.blue{color:var(--blue)}
-.briefing-title{font-family:'Instrument Serif',serif;font-size:19px;font-weight:400;margin-bottom:8px}
-.briefing-body{font-size:13px;color:var(--ink2);line-height:1.75}
-.struct-steps{display:flex;flex-direction:column;gap:7px}
-.struct-step{display:flex;gap:9px;align-items:flex-start;background:var(--surface2);border-radius:var(--r-sm);padding:9px 12px}
-.step-num{width:20px;height:20px;background:var(--brand);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
+.briefing{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh);position:sticky;top:72px}
+.bf-sec{padding:14px 18px;border-bottom:1px solid var(--border)}
+.bf-sec:last-child{border-bottom:none}
+.bf-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.bf-label.brand{color:var(--brand)}.bf-label.green{color:var(--green)}.bf-label.yellow{color:var(--yellow)}.bf-label.blue{color:var(--blue)}
+.bf-title{font-family:'Instrument Serif',serif;font-size:18px;margin-bottom:7px}
+.bf-body{font-size:13px;color:var(--ink2);line-height:1.75}
+.struct-steps{display:flex;flex-direction:column;gap:6px}
+.struct-step{display:flex;gap:8px;align-items:flex-start;background:var(--surface2);border-radius:var(--r-sm);padding:8px 11px}
+.step-num{width:19px;height:19px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
 .step-text{font-size:13px;color:var(--ink2);line-height:1.5}
-.criteria-pills{display:flex;flex-wrap:wrap;gap:6px}
-.criteria-pill{background:var(--brand-l);color:var(--brand);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.example-btn{display:inline-flex;align-items:center;gap:6px;background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-b);border-radius:var(--r-sm);padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .15s;margin-top:8px}
+.criteria-pills{display:flex;flex-wrap:wrap;gap:5px}
+.criteria-pill{background:var(--brand-l);color:var(--brand);padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.example-btn{display:inline-flex;align-items:center;gap:5px;background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-b);border-radius:var(--r-sm);padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .15s;margin-top:7px}
 .example-btn:hover{background:var(--yellow-b)}
 
-/* Response */
-.response-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:22px;box-shadow:var(--sh)}
-.response-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.response-label{font-size:13px;font-weight:700;color:var(--ink2)}
-.word-count{font-family:'JetBrains Mono',monospace;font-size:12px}
-.response-textarea{width:100%;min-height:240px;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;font-family:'Manrope',sans-serif;font-size:14px;line-height:1.75;color:var(--ink);resize:vertical;outline:none;transition:border-color .2s;background:var(--bg)}
-.response-textarea:focus{border-color:var(--brand);background:white;box-shadow:0 0 0 3px var(--brand-l)}
-.response-toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
-.char-hint{font-size:12px;color:var(--muted)}
+.response-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;box-shadow:var(--sh)}
 
-/* Retry bar */
-.retry-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;display:none}
-.retry-bar-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
-.retry-chips{display:flex;gap:7px;flex-wrap:wrap}
-.retry-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
+/* PROMPT OBJECTIVE BOX — always visible above editor */
+.prompt-objective{background:linear-gradient(135deg,#0f0a1e,#1e1040);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;border:1px solid rgba(91,76,255,.3)}
+.po-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.po-main{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+.po-sub{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5}
+
+.rp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.rp-label{font-size:13px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.rp-mode{background:var(--brand-l);color:var(--brand);font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace}
+.wc{font-family:'JetBrains Mono',monospace;font-size:12px}
+.response-ta{width:100%;min-height:220px;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:var(--ink);resize:vertical;outline:none;transition:border-color .2s;background:var(--bg)}
+.response-ta:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--brand-l)}
+.rp-toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:9px}
+.rp-hint{font-size:12px;color:var(--muted)}
+
+.retry-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 15px;margin-bottom:12px;display:none}
+.retry-bar-ttl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
+.retry-chips{display:flex;gap:6px;flex-wrap:wrap}
+.retry-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--border)}
 .retry-chip.pass{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}
 .retry-chip.fail{background:var(--red-bg);color:var(--red);border-color:var(--red-b)}
 
-/* Eval panel */
-.eval-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;box-shadow:var(--sh);display:none}
+.eval-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:36px 20px;text-align:center;box-shadow:var(--sh);display:none}
 .eval-panel.active{display:block;animation:fadeUp .3s ease}
-.eval-spinner{width:44px;height:44px;margin:0 auto 20px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+.eval-spin{width:42px;height:42px;margin:0 auto 18px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.eval-title{font-family:'Instrument Serif',serif;font-size:22px;margin-bottom:6px}
-.eval-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
-.eval-steps-list{display:flex;flex-direction:column;gap:7px;max-width:300px;margin:0 auto}
-.eval-step{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:var(--r-sm);background:var(--surface2);font-size:13px;color:var(--muted);opacity:0;transition:all .3s;text-align:left}
+.eval-title{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:5px}
+.eval-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.eval-steps{display:flex;flex-direction:column;gap:6px;max-width:280px;margin:0 auto}
+.eval-step{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--r-sm);background:var(--surface2);font-size:12px;color:var(--muted);opacity:0;transition:all .3s;text-align:left}
 .eval-step.visible{opacity:1;color:var(--ink2)}
 .eval-step.done{background:var(--green-bg);color:var(--green)}
 
-/* Hint panel */
-.hint-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-top:14px}
-.hint-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
+.hint-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-top:12px}
+.hint-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
 .hint-body{font-size:13px;color:var(--ink2);line-height:1.7}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(22,20,31,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-overlay.show{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:var(--r-xl);padding:30px;max-width:560px;width:100%;box-shadow:var(--sh-lg);transform:scale(.95);transition:transform .25s cubic-bezier(.16,1,.3,1)}
-.modal-overlay.show .modal{transform:scale(1)}
-.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
-.modal-title{font-family:'Instrument Serif',serif;font-size:20px}
-.modal-close{background:var(--surface2);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:var(--border)}
-.modal-note{background:var(--yellow-bg);border:1px solid var(--yellow-b);border-radius:var(--r-sm);padding:9px 13px;font-size:12px;color:var(--yellow);margin-bottom:14px}
-
-/* ══════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════
    RESULTS
-══════════════════════════════════════════════════════════════════ */
-.results-wrap{max-width:900px;margin:0 auto;padding:40px 24px}
-.results-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:18px}
+══════════════════════════════════════════ */
+.results-wrap{max-width:880px;margin:0 auto;padding:36px 24px}
+.results-grid{display:grid;grid-template-columns:1fr 1.7fr;gap:16px}
 @media(max-width:768px){.results-grid{grid-template-columns:1fr}}
 
-.score-hero{background:linear-gradient(145deg,#16141f,#2d1b69);border-radius:var(--r-xl);padding:36px 28px;text-align:center;color:white}
-.score-hero-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:14px}
-.score-ring{position:relative;width:140px;height:140px;margin:0 auto 18px}
-.score-ring svg{width:140px;height:140px;transform:rotate(-90deg)}
-.score-ring-bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:8}
-.score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)}
-.score-ring-fill.pass{stroke:var(--brand);filter:drop-shadow(0 0 6px rgba(91,76,255,.6))}
-.score-ring-fill.fail{stroke:var(--red)}
+/* Direct answer warning */
+.direct-warning{grid-column:1/-1;background:var(--orange-bg);border:2px solid var(--orange-b);border-radius:var(--r-lg);padding:18px 22px;display:flex;gap:14px;align-items:flex-start}
+.dw-icon{font-size:28px;flex-shrink:0}
+.dw-title{font-size:16px;font-weight:700;color:var(--orange);margin-bottom:5px}
+.dw-body{font-size:13px;color:#7c2d12;line-height:1.65}
+
+.score-hero{background:linear-gradient(145deg,#16141f,#2d1b69);border-radius:var(--r-xl);padding:32px 24px;text-align:center;color:#fff}
+.sh-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-bottom:12px}
+.score-ring{position:relative;width:130px;height:130px;margin:0 auto 15px}
+.score-ring svg{width:130px;height:130px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)}
+.ring-fill.pass{stroke:var(--brand);filter:drop-shadow(0 0 6px rgba(91,76,255,.5))}
+.ring-fill.fail{stroke:var(--red)}
 .score-num-wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.score-num{font-family:'Instrument Serif',serif;font-size:44px;font-weight:400;line-height:1}
+.score-num{font-family:'Instrument Serif',serif;font-size:40px;line-height:1}
 .score-num.pass{color:#a78bfa}.score-num.fail{color:#f87171}
-.score-of{font-size:12px;opacity:.5}
-.score-verdict{font-family:'Instrument Serif',serif;font-size:18px;margin-bottom:6px}
-.score-verdict.pass{color:#a78bfa}.score-verdict.fail{color:#f87171}
-.delta-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;margin-top:7px}
+.score-of{font-size:11px;opacity:.45}
+.score-vrd{font-family:'Instrument Serif',serif;font-size:17px;margin-bottom:5px}
+.score-vrd.pass{color:#a78bfa}.score-vrd.fail{color:#f87171}
+.delta-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:6px}
 .delta-pill.pos{background:rgba(5,150,105,.2);color:#34d399}
 .delta-pill.neg{background:rgba(220,38,38,.2);color:#f87171}
-.attempt-note{font-size:12px;opacity:.5;margin-top:14px;font-family:'JetBrains Mono',monospace}
+.attempt-note{font-size:11px;opacity:.4;margin-top:12px;font-family:'JetBrains Mono',monospace}
 
-.feedback-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:22px;display:flex;flex-direction:column;gap:18px;box-shadow:var(--sh)}
-.fb-section h4{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
-.fb-text{background:var(--surface2);border-radius:var(--r-sm);padding:13px 15px;font-size:14px;line-height:1.7;border-left:3px solid var(--brand);color:var(--ink2)}
-.fb-list{display:flex;flex-direction:column;gap:6px}
-.fb-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--ink2)}
-.fb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.fb-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--sh)}
+.fb-sec h4{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.fb-text{background:var(--surface2);border-radius:var(--r-sm);padding:12px 14px;font-size:14px;line-height:1.7;border-left:3px solid var(--brand);color:var(--ink2)}
+.fb-list{display:flex;flex-direction:column;gap:5px}
+.fb-item{display:flex;gap:7px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--ink2)}
+.fb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .fb-dot.green{background:var(--green)}.fb-dot.brand{background:var(--brand)}
 
-.action-band{grid-column:1/-1;background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-xl);padding:26px 28px;color:white}
-.action-band-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.action-band-title{font-family:'Instrument Serif',serif;font-size:20px}
-.action-band-sub{font-size:12px;opacity:.6;margin-top:2px}
-.action-steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-.action-step{background:rgba(255,255,255,.06);border:1px solid rgba(91,76,255,.25);border-radius:var(--r);padding:13px 15px;display:flex;gap:9px}
-.action-step-num{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--brand);color:white;padding:2px 7px;border-radius:4px;flex-shrink:0;height:fit-content;margin-top:2px}
-.action-step-text{font-size:13px;color:rgba(228,225,237,.85);line-height:1.5}
+.action-band{grid-column:1/-1;background:linear-gradient(135deg,#1a1523,#2d1b69);border-radius:var(--r-xl);padding:22px 24px;color:#fff}
+.ab-hdr{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+.ab-title{font-family:'Instrument Serif',serif;font-size:19px}
+.ab-sub{font-size:12px;opacity:.55;margin-top:1px}
+.action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:9px}
+.action-step{background:rgba(255,255,255,.06);border:1px solid rgba(91,76,255,.22);border-radius:var(--r);padding:12px 14px;display:flex;gap:8px}
+.as-num{font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--brand);color:#fff;padding:2px 6px;border-radius:3px;flex-shrink:0;height:fit-content;margin-top:2px}
+.as-text{font-size:13px;color:rgba(228,225,237,.82);line-height:1.5}
 
-.improve-tip{grid-column:1/-1;background:var(--yellow-bg);border:1px solid var(--yellow-b);border-radius:var(--r-lg);padding:16px 20px;display:flex;gap:12px;align-items:flex-start}
-.improve-tip-title{font-weight:700;font-size:14px;color:var(--yellow);margin-bottom:3px}
-.improve-tip-body{font-size:13px;color:#92400e;line-height:1.6}
+.improve-tip{grid-column:1/-1;background:var(--orange-bg);border:1px solid var(--orange-b);border-radius:var(--r-lg);padding:14px 18px;display:flex;gap:11px}
+.it-title{font-weight:700;font-size:14px;color:var(--orange);margin-bottom:2px}
+.it-body{font-size:13px;color:#7c2d12;line-height:1.6}
+.results-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}
 
-.results-actions{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
-
-/* ══════════════════════════════════════════════════════════════════
-   HISTORY
-══════════════════════════════════════════════════════════════════ */
-.history-wrap{max-width:900px;margin:0 auto;padding:40px 24px}
-.history-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh-sm);margin-top:24px}
-.history-table th{background:var(--surface2);color:var(--ink2);padding:11px 15px;text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border)}
-.history-table td{padding:11px 15px;border-bottom:1px solid var(--border);font-size:13px}
+/* History */
+.history-wrap{max-width:880px;margin:0 auto;padding:36px 24px}
+.history-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh-sm);margin-top:22px}
+.history-table th{background:var(--surface2);color:var(--ink2);padding:10px 14px;text-align:left;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.history-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}
 .history-table tr:last-child td{border-bottom:none}
 .history-table tbody tr:hover td{background:var(--surface2)}
 
-/* ── Toast ───────────────────────────────────────────────────────────────── */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:white;border-left:3px solid var(--brand);padding:12px 18px;border-radius:var(--r);font-size:13px;box-shadow:var(--sh-lg);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;max-width:340px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(22,20,31,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--r-xl);padding:26px;max-width:540px;width:100%;box-shadow:var(--sh-lg);transform:scale(.95);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.modal-overlay.show .modal{transform:scale(1)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px}
+.modal-title{font-family:'Instrument Serif',serif;font-size:19px}
+.modal-close{background:var(--surface2);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+.modal-note{background:var(--yellow-bg);border:1px solid var(--yellow-b);border-radius:var(--r-sm);padding:8px 12px;font-size:12px;color:var(--yellow);margin-bottom:12px}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:#fff;border-left:3px solid var(--brand);padding:11px 16px;border-radius:var(--r);font-size:13px;box-shadow:var(--sh-lg);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;max-width:320px}
 .toast.show{transform:translateY(0);opacity:1}
-
-.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty-state .icon{font-size:40px;margin-bottom:12px}
-
-@media(max-width:640px){
-  .how-grid,.benefits-grid{grid-template-columns:1fr 1fr}
-  .prof-grid{grid-template-columns:1fr}
-  .hero .display{font-size:36px}
-  .stats-row{grid-template-columns:1fr}
-}
+.empty-state{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty-state .icon{font-size:38px;margin-bottom:10px}
 </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
 <header>
   <div class="logo" onclick="goHome()">
     <div class="logo-mark">🧠</div>
@@ -490,171 +407,110 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-
   </div>
   <nav class="header-nav">
     <button class="nav-btn" onclick="goHome()">Inicio</button>
-    <button class="nav-btn" onclick="showProfessionPicker()">Profesiones</button>
-    <button class="nav-btn" id="navDashboard" onclick="showDashboard()" style="display:none">Dashboard</button>
+    <button class="nav-btn" onclick="showFieldPicker()">Campos</button>
+    <button class="nav-btn" id="navDash" onclick="showDashboard()" style="display:none">Dashboard</button>
     <button class="nav-btn" onclick="showHistory()">Historial</button>
   </nav>
   <div class="header-right">
-    <div class="profession-chip banking" id="profChip" style="display:none" onclick="showProfessionPicker()">
-      <span id="profChipIcon">🏦</span><span id="profChipLabel">Banca</span>
+    <div class="field-chip" id="fieldChip" style="display:none" onclick="showFieldPicker()">
+      <span id="chipIcon">🏦</span><span id="chipLabel">Banca</span>
     </div>
     <div class="user-pill">
-      <div class="user-avatar" id="userInitial">A</div>
+      <div class="user-av" id="userAv">A</div>
       <span id="userName">Demo</span>
     </div>
   </div>
 </header>
 
-<!-- ══════════════════════════════════════════════════════════
-     LANDING PAGE
-══════════════════════════════════════════════════════════ -->
+<!-- LANDING -->
 <div id="screen-landing" class="screen active">
-  <!-- Hero -->
   <div class="hero">
     <div class="container">
-      <div class="hero-badge">Nueva plataforma de entrenamiento profesional</div>
+      <div class="hero-badge">✦ Plataforma de entrenamiento con IA</div>
       <h1 class="display">Entrena habilidades reales<br><span>con IA</span></h1>
-      <p class="lead">Aprende a usar inteligencia artificial en tu profesión mediante simulaciones prácticas y feedback en tiempo real.</p>
+      <p class="lead">Aprende a diseñar prompts profesionales mediante simulaciones de casos reales y feedback inmediato.</p>
       <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" onclick="showProfessionPicker()">Comenzar entrenamiento →</button>
-        <button class="btn btn-secondary btn-lg" onclick="scrollToSection('professions')">Explorar profesiones</button>
+        <button class="btn btn-primary btn-lg" onclick="showFieldPicker()">Comenzar entrenamiento →</button>
+        <button class="btn btn-secondary btn-lg" onclick="document.getElementById('fields-section').scrollIntoView({behavior:'smooth'})">Explorar campos</button>
       </div>
-      <div class="hero-social">
-        <div class="hero-social-item"><span class="hero-social-num">2</span> profesiones disponibles</div>
-        <div class="hero-social-item"><span class="hero-social-num">10</span> casos prácticos</div>
-        <div class="hero-social-item"><span class="hero-social-num">100%</span> feedback con IA</div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-n">4</span> campos profesionales</div>
+        <div class="hero-stat"><span class="hero-stat-n">80</span> casos prácticos</div>
+        <div class="hero-stat"><span class="hero-stat-n">100%</span> feedback con IA</div>
       </div>
     </div>
   </div>
 
-  <!-- How it works -->
-  <div class="section" style="background:white">
+  <div class="section" style="background:#fff">
     <div class="container">
-      <div class="section-header">
+      <div class="section-hdr">
         <span class="eyebrow">Cómo funciona</span>
         <h2 class="h2">Tres pasos para entrenar como un profesional</h2>
-        <p class="lead">Sin teoría aburrida. Solo práctica real con feedback inmediato.</p>
+        <p class="lead">No memorizas teoría. Diseñas prompts reales y recibes feedback inmediato.</p>
       </div>
       <div class="how-grid">
-        <div class="how-card">
-          <div class="how-num">1</div>
-          <h3>Elige tu profesión</h3>
-          <p>Banca, Legal, y más profesiones próximamente. Cada track tiene casos diseñados para tu área.</p>
-        </div>
-        <div class="how-card">
-          <div class="how-num">2</div>
-          <h3>Resuelve casos reales</h3>
-          <p>Enfrenta situaciones reales de tu día a día profesional. Analiza, redacta y propón soluciones.</p>
-        </div>
-        <div class="how-card">
-          <div class="how-num">3</div>
-          <h3>Recibe feedback y mejora</h3>
-          <p>La IA evalúa tu respuesta con criterios profesionales y te dice exactamente cómo mejorar.</p>
-        </div>
+        <div class="how-card"><div class="how-num">1</div><h3>Elige tu campo</h3><p>Banca, Legal, Seguridad Social o Nómina. Cada campo tiene 20 casos progresivos diseñados para tu área.</p></div>
+        <div class="how-card"><div class="how-num">2</div><h3>Diseña el prompt</h3><p>Tu tarea NO es resolver el caso. Es escribir el PROMPT que le darías a la IA para resolverlo. Esa es la habilidad del futuro.</p></div>
+        <div class="how-card"><div class="how-num">3</div><h3>Recibe feedback y mejora</h3><p>La IA evalúa la calidad de tu prompt: rol, contexto, estructura y output esperado. Te dice exactamente qué mejorar.</p></div>
       </div>
     </div>
   </div>
 
-  <!-- Professions -->
-  <div class="section" id="professions">
+  <div class="section" id="fields-section">
     <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Profesiones disponibles</span>
+      <div class="section-hdr">
+        <span class="eyebrow">Campos disponibles</span>
         <h2 class="h2">Elige tu área de entrenamiento</h2>
-        <p class="lead">Cada profesión tiene su propio track de misiones, criterios de evaluación y plan de certificación.</p>
+        <p class="lead">20 misiones progresivas por campo: desde casos básicos hasta situaciones complejas reales.</p>
       </div>
-      <div class="prof-grid">
-        <div class="prof-card banking" onclick="selectProfession('banking')">
-          <div class="prof-icon">🏦</div>
-          <span class="prof-tag banking">Banca &amp; Finanzas</span>
-          <h3>Analista Bancario</h3>
-          <p>Resúmenes financieros, análisis de riesgo, recomendaciones de producto y diseño de automatización con IA.</p>
-          <button class="btn btn-primary" style="width:100%">Empezar track →</button>
-          <p class="prof-missions">5 misiones · Básico → Avanzado</p>
-        </div>
-        <div class="prof-card legal" onclick="selectProfession('legal')">
-          <div class="prof-icon">⚖️</div>
-          <span class="prof-tag legal">Legal &amp; Derecho</span>
-          <h3>Abogado Profesional</h3>
-          <p>Análisis de contratos, redacción de cláusulas, resúmenes jurídicos y evaluación de riesgos legales.</p>
-          <button class="btn btn-primary" style="width:100%">Empezar track →</button>
-          <p class="prof-missions">5 misiones · Básico → Avanzado</p>
-        </div>
+      <div class="fields-grid">
+        <div class="field-card" onclick="selectField('banking')"><div class="field-icon">🏦</div><span class="field-tag chip-banking">Banca &amp; Finanzas</span><h3>Analista Bancario</h3><p>Resúmenes financieros, análisis de riesgo, automatización con IA y gestión de crisis bancarias.</p><button class="btn btn-primary" style="width:100%">Empezar track →</button><div class="field-meta">20 misiones · Básico → Complejo</div></div>
+        <div class="field-card" onclick="selectField('legal')"><div class="field-icon">⚖️</div><span class="field-tag chip-legal">Legal &amp; Derecho</span><h3>Abogado Profesional</h3><p>Análisis de contratos, redacción de cláusulas, arbitraje internacional y compliance.</p><button class="btn btn-primary" style="width:100%">Empezar track →</button><div class="field-meta">20 misiones · Básico → Complejo</div></div>
+        <div class="field-card" onclick="selectField('social_security')"><div class="field-icon">🛡️</div><span class="field-tag chip-social_security">Seguridad Social</span><h3>Especialista SS</h3><p>Cotizaciones, incapacidades, pensiones, auditorías UGPP y gestión de riesgos laborales.</p><button class="btn btn-primary" style="width:100%">Empezar track →</button><div class="field-meta">20 misiones · Básico → Complejo</div></div>
+        <div class="field-card" onclick="selectField('payroll')"><div class="field-icon">💰</div><span class="field-tag chip-payroll">Nómina</span><h3>Especialista en Nómina</h3><p>Liquidaciones, prestaciones, retención en la fuente, auditorías y automatización de nómina.</p><button class="btn btn-primary" style="width:100%">Empezar track →</button><div class="field-meta">20 misiones · Básico → Complejo</div></div>
       </div>
     </div>
   </div>
 
-  <!-- Benefits -->
-  <div class="section" style="background:white">
+  <div class="section" style="background:#fff">
     <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Por qué WorkSim AI</span>
-        <h2 class="h2">Diseñado para el aprendizaje real</h2>
-      </div>
+      <div class="section-hdr"><span class="eyebrow">Por qué WorkSim AI</span><h2 class="h2">Aprende la habilidad más valiosa de la era IA</h2></div>
       <div class="benefits-grid">
-        <div class="benefit-card"><div class="benefit-icon">⚡</div><h4>Feedback inmediato</h4><p>Recibe evaluación detallada en segundos, no días.</p></div>
-        <div class="benefit-card"><div class="benefit-icon">🎯</div><h4>Casos reales</h4><p>Situaciones que encontrarás en tu trabajo diario.</p></div>
-        <div class="benefit-card"><div class="benefit-icon">🏆</div><h4>Certificación</h4><p>Obtén certificado al completar el track con score ≥ 70.</p></div>
-        <div class="benefit-card"><div class="benefit-icon">🗺️</div><h4>Plan de acción</h4><p>Sabe exactamente qué mejorar en cada intento.</p></div>
+        <div class="benefit-card"><div class="benefit-icon">🎯</div><h4>Diseño de prompts</h4><p>Entrenas la habilidad clave: comunicarle a la IA qué hacer con precisión profesional.</p></div>
+        <div class="benefit-card"><div class="benefit-icon">⚡</div><h4>Feedback inmediato</h4><p>La IA evalúa tu prompt en segundos con criterios técnicos de tu campo.</p></div>
+        <div class="benefit-card"><div class="benefit-icon">📈</div><h4>Progresión real</h4><p>20 niveles por campo. De básico a complejo. Cada misión te hace mejor.</p></div>
+        <div class="benefit-card"><div class="benefit-icon">🏆</div><h4>Certificación</h4><p>Obtén certificado al completar el track con promedio ≥ 70.</p></div>
       </div>
     </div>
   </div>
 
-  <!-- CTA -->
-  <div class="section">
-    <div class="container">
-      <div class="cta-band">
-        <h2>¿Listo para entrenar?</h2>
-        <p>Elige tu profesión y empieza tu primera misión en menos de 2 minutos.</p>
-        <button class="btn-white btn-lg" onclick="showProfessionPicker()">Comenzar ahora →</button>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <div class="container">
-      <p>© 2026 WorkSim AI · Plataforma de entrenamiento profesional con IA</p>
-    </div>
-  </footer>
+  <div class="section"><div class="container"><div class="cta-band"><h2>¿Listo para entrenar?</h2><p>Elige tu campo y escribe tu primer prompt profesional en menos de 3 minutos.</p><button class="btn-white btn-lg" onclick="showFieldPicker()">Comenzar ahora →</button></div></div></div>
+  <footer><div class="container"><p>© 2026 WorkSim AI · Entrenamiento profesional con IA</p></div></footer>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     PROFESSION PICKER (modal-like screen)
-══════════════════════════════════════════════════════════ -->
+<!-- FIELD PICKER -->
 <div id="screen-profpicker" class="screen">
-  <div style="max-width:680px;margin:60px auto;padding:0 24px">
+  <div class="picker-wrap">
     <button class="back-btn" onclick="goHome()">← Volver al inicio</button>
     <span class="eyebrow">Paso 1 de 2</span>
-    <h1 class="h1" style="margin-bottom:10px">¿En qué área quieres entrenar?</h1>
-    <p class="lead" style="margin-bottom:36px">Cada track tiene misiones diseñadas específicamente para tu profesión.</p>
-    <div class="prof-grid" style="max-width:100%">
-      <div class="prof-card banking" onclick="selectProfession('banking')">
-        <div class="prof-icon">🏦</div>
-        <span class="prof-tag banking">Banca &amp; Finanzas</span>
-        <h3>Analista Bancario</h3>
-        <p>Resúmenes financieros, análisis de riesgo en cartera, recomendaciones de producto y automatización con IA.</p>
-        <button class="btn btn-primary" style="width:100%">Seleccionar →</button>
-      </div>
-      <div class="prof-card legal" onclick="selectProfession('legal')">
-        <div class="prof-icon">⚖️</div>
-        <span class="prof-tag legal">Legal &amp; Derecho</span>
-        <h3>Abogado Profesional</h3>
-        <p>Análisis de contratos, redacción de cláusulas, resúmenes jurídicos y evaluación de riesgos contractuales.</p>
-        <button class="btn btn-primary" style="width:100%">Seleccionar →</button>
-      </div>
+    <h1 class="h1" style="margin-bottom:9px">¿En qué campo quieres entrenar?</h1>
+    <p class="lead" style="margin-bottom:32px">Cada campo tiene 20 misiones diseñadas específicamente para tu área profesional.</p>
+    <div class="fields-grid" style="max-width:100%">
+      <div class="field-card" onclick="selectField('banking')"><div class="field-icon">🏦</div><span class="field-tag chip-banking">Banca &amp; Finanzas</span><h3>Analista Bancario</h3><p>Resúmenes financieros, riesgo crediticio, automatización con IA y gestión de crisis.</p><button class="btn btn-primary" style="width:100%">Seleccionar →</button></div>
+      <div class="field-card" onclick="selectField('legal')"><div class="field-icon">⚖️</div><span class="field-tag chip-legal">Legal &amp; Derecho</span><h3>Abogado Profesional</h3><p>Contratos, cláusulas, arbitraje internacional, due diligence y compliance.</p><button class="btn btn-primary" style="width:100%">Seleccionar →</button></div>
+      <div class="field-card" onclick="selectField('social_security')"><div class="field-icon">🛡️</div><span class="field-tag chip-social_security">Seguridad Social</span><h3>Especialista SS</h3><p>Cotizaciones, pensiones, incapacidades, auditorías UGPP y SG-SST.</p><button class="btn btn-primary" style="width:100%">Seleccionar →</button></div>
+      <div class="field-card" onclick="selectField('payroll')"><div class="field-icon">💰</div><span class="field-tag chip-payroll">Nómina</span><h3>Especialista en Nómina</h3><p>Liquidaciones, retenciones, horas extras, auditorías y automatización.</p><button class="btn btn-primary" style="width:100%">Seleccionar →</button></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ONBOARDING — Módulo 0
-══════════════════════════════════════════════════════════ -->
+<!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
   <div class="onboard-wrap">
-    <div class="onboard-header">
-      <span class="eyebrow" id="onboardEyebrow">Módulo 0 · Antes de empezar</span>
-      <h1 class="h1" style="margin-bottom:10px" id="onboardTitle">Aprende a responder<br>como un profesional</h1>
-      <p class="muted">3 pasos rápidos antes de tu primera misión</p>
+    <div style="text-align:center;margin-bottom:32px">
+      <span class="eyebrow" id="obEyebrow">Módulo 0</span>
+      <h1 class="h1" id="obTitle" style="margin-bottom:8px">Antes de empezar</h1>
+      <p class="muted">3 pasos rápidos — no te los saltes</p>
     </div>
     <div class="onboard-dots">
       <div class="onboard-dot active" id="dot-0"></div>
@@ -662,177 +518,193 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-
       <div class="onboard-dot" id="dot-2"></div>
     </div>
 
-    <!-- Step 0 -->
-    <div class="onboard-card active" id="onboard-0">
-      <div class="onboard-card-icon" id="onboard0-icon">🎯</div>
-      <h2 id="onboard0-title">¿Qué hace buena una respuesta profesional?</h2>
-      <p id="onboard0-body">La IA evalúa tu respuesta igual que lo haría un gerente real: no solo si "tiene sentido", sino si está bien estructurada, usa la terminología correcta y propone acciones concretas.</p>
-      <p>Una respuesta ganadora tiene 4 ingredientes:</p>
-      <div class="concept-grid" id="onboard0-grid"></div>
+    <!-- Step 0: What is a prompt -->
+    <div class="onboard-card active" id="ob-0">
+      <div style="font-size:36px;margin-bottom:14px">🎯</div>
+      <h2 class="h2" style="margin-bottom:10px">Tu trabajo NO es resolver el caso</h2>
+      <p style="color:var(--ink2);font-size:14px;line-height:1.75;margin-bottom:14px">En WorkSim AI, <strong>tu tarea es diseñar el PROMPT</strong> que le darías a la IA para que ella resuelva el caso. Esta es la habilidad profesional más valiosa de la era de la IA.</p>
+      <div class="comparison-box" id="ob0-comparison">
+        <div class="comp-side comp-bad">
+          <div class="comp-label bad">❌ Error común</div>
+          <div class="comp-text" id="ob0-bad">Cargando…</div>
+        </div>
+        <div class="comp-side comp-good">
+          <div class="comp-label good">✅ Lo correcto</div>
+          <div class="comp-text" id="ob0-good">Cargando…</div>
+        </div>
+      </div>
       <div class="onboard-nav">
         <span class="muted">Paso 1 de 3</span>
-        <button class="btn btn-primary" onclick="nextOnboardStep(1)">Siguiente →</button>
+        <button class="btn btn-primary" onclick="nextOb(1)">Siguiente →</button>
       </div>
     </div>
 
-    <!-- Step 1 -->
-    <div class="onboard-card" id="onboard-1">
-      <div class="onboard-card-icon">🧱</div>
-      <h2>La estructura que te da más puntos</h2>
-      <p>Sigue este patrón y verás cómo tu score sube. No es rígido, es una guía para pensar con claridad:</p>
-      <div class="prompt-example" id="onboard1-example"></div>
-      <p class="muted"><strong style="color:#a78bfa">Morado</strong> = rol &nbsp;|&nbsp; <strong style="color:#34d399">Verde</strong> = contexto &nbsp;|&nbsp; <strong style="color:#fbbf24">Amarillo</strong> = entregable</p>
+    <!-- Step 1: Structure -->
+    <div class="onboard-card" id="ob-1">
+      <div style="font-size:36px;margin-bottom:14px">🧱</div>
+      <h2 class="h2" style="margin-bottom:10px">La estructura de un buen prompt</h2>
+      <p style="color:var(--ink2);font-size:14px;line-height:1.75;margin-bottom:4px">Todo prompt profesional tiene 3 partes. Apréndetelas:</p>
+      <div class="concept-grid">
+        <div class="concept-item"><div class="concept-label">🎭 Rol</div><p>Define quién es la IA: "Actúa como analista financiero / abogado / especialista en..."</p></div>
+        <div class="concept-item"><div class="concept-label">📋 Contexto</div><p>Incluye los datos relevantes del caso directamente en el prompt</p></div>
+        <div class="concept-item"><div class="concept-label">📤 Output</div><p>Especifica qué debe entregar la IA y en qué formato</p></div>
+        <div class="concept-item"><div class="concept-label">🔢 Estructura</div><p>Pide la respuesta en secciones numeradas para mayor claridad</p></div>
+      </div>
+      <div class="prompt-box" id="ob1-example">Cargando…</div>
+      <p class="muted"><span style="color:#a78bfa">■</span> Rol &nbsp;|&nbsp; <span style="color:#34d399">■</span> Contexto &nbsp;|&nbsp; <span style="color:#fbbf24">■</span> Output</p>
       <div class="onboard-nav">
-        <button class="btn btn-ghost" onclick="nextOnboardStep(0)">← Atrás</button>
-        <button class="btn btn-primary" onclick="nextOnboardStep(2)">Siguiente →</button>
+        <button class="btn btn-ghost" onclick="nextOb(0)">← Atrás</button>
+        <button class="btn btn-primary" onclick="nextOb(2)">Siguiente →</button>
       </div>
     </div>
 
-    <!-- Step 2 -->
-    <div class="onboard-card" id="onboard-2">
-      <div class="onboard-card-icon">✍️</div>
-      <h2>Practica sin presión</h2>
-      <p id="onboard2-case-wrap">Escribe una respuesta corta al caso de práctica. <strong>No hay evaluación estricta</strong> — solo recibirás orientación sobre el formato.</p>
-      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:13px 15px;margin:12px 0;font-size:13px;color:var(--ink2);border:1px solid var(--border)" id="onboard2-case"></div>
-      <div>
-        <div class="guided-label" style="font-size:13px;font-weight:700;margin-bottom:7px">Tu respuesta (2-4 oraciones está bien):</div>
-        <textarea id="guidedResponse" class="guided-textarea" placeholder="Empieza con el rol…" oninput="checkGuidedResponse()"></textarea>
-        <div class="guided-feedback" id="guidedFeedback"></div>
-      </div>
+    <!-- Step 2: Practice -->
+    <div class="onboard-card" id="ob-2">
+      <div style="font-size:36px;margin-bottom:14px">✍️</div>
+      <h2 class="h2" style="margin-bottom:10px">Practica sin presión</h2>
+      <p style="color:var(--ink2);font-size:14px;line-height:1.75;margin-bottom:12px">Escribe un prompt para este caso de práctica. No hay evaluación — solo orientación.</p>
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--ink2);border:1px solid var(--border);margin-bottom:14px" id="ob2-case">Cargando…</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:7px">Escribe tu prompt aquí:</div>
+      <textarea id="guidedTA" class="guided-ta" placeholder="Empieza con: Actúa como [rol]..." oninput="checkGuided()"></textarea>
+      <div class="guided-fb" id="guidedFb"></div>
       <div class="onboard-nav">
-        <button class="btn btn-ghost" onclick="nextOnboardStep(1)">← Atrás</button>
-        <button class="btn btn-primary" id="finishOnboardBtn" onclick="finishOnboarding()" style="opacity:.5;pointer-events:none">Comenzar misiones →</button>
+        <button class="btn btn-ghost" onclick="nextOb(1)">← Atrás</button>
+        <button class="btn btn-primary" id="finishObBtn" onclick="finishOnboarding()" style="opacity:.45;pointer-events:none">Comenzar misiones →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     DASHBOARD
-══════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD -->
 <div id="screen-dashboard" class="screen">
-  <div class="dashboard-wrap">
-    <div id="certBannerArea"></div>
-
-    <!-- Profession switcher -->
-    <div class="prof-switcher" id="profSwitcher">
-      <button class="prof-switch-btn active" id="switchBanking" onclick="switchProfession('banking')">🏦 Banca</button>
-      <button class="prof-switch-btn" id="switchLegal" onclick="switchProfession('legal')">⚖️ Legal</button>
+  <div class="dash-wrap">
+    <div id="certArea"></div>
+    <div class="field-switcher" id="fieldSwitcher">
+      <button class="field-sw-btn active" id="sw-banking" onclick="switchField('banking')">🏦 Banca</button>
+      <button class="field-sw-btn" id="sw-legal" onclick="switchField('legal')">⚖️ Legal</button>
+      <button class="field-sw-btn" id="sw-social_security" onclick="switchField('social_security')">🛡️ Seg. Social</button>
+      <button class="field-sw-btn" id="sw-payroll" onclick="switchField('payroll')">💰 Nómina</button>
     </div>
-
-    <!-- Hero CTA -->
-    <div class="hero-cta banking" id="heroCta">
+    <div class="hero-cta hcta-banking" id="heroCta">
       <div style="position:relative;z-index:1">
-        <div class="hero-cta-eyebrow" id="heroEyebrow">WorkSim AI · Banca</div>
-        <div class="hero-cta-title" id="heroTitle">Comienza tu entrenamiento</div>
-        <div class="hero-cta-sub" id="heroSub">Tu primera misión está lista</div>
+        <div class="hcta-eyebrow" id="hcEyebrow">WorkSim AI</div>
+        <div class="hcta-title" id="hcTitle">Comienza tu entrenamiento</div>
+        <div class="hcta-sub" id="hcSub">Tu primera misión está lista</div>
       </div>
-      <div class="hero-cta-action">
-        <button class="btn-white" id="heroBtn" onclick="handleHeroCTA()"><span id="heroBtnText">Iniciar →</span></button>
-      </div>
+      <div style="position:relative;z-index:1"><button class="btn-white" onclick="handleCTA()"><span id="hcBtnTxt">Iniciar →</span></button></div>
     </div>
-
-    <!-- Stats -->
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-val" id="statCompleted">0</div><div class="stat-label">Misiones completadas</div></div>
-      <div class="stat-card"><div class="stat-val" id="statAvg">—</div><div class="stat-label">Score promedio</div></div>
-      <div class="stat-card"><div class="stat-val" id="statAttempts">0</div><div class="stat-label">Intentos totales</div></div>
+      <div class="stat-card"><div class="stat-val" id="statC">0</div><div class="stat-lbl">Misiones completadas</div></div>
+      <div class="stat-card"><div class="stat-val" id="statA">—</div><div class="stat-lbl">Score promedio</div></div>
+      <div class="stat-card"><div class="stat-val" id="statT">0</div><div class="stat-lbl">Intentos totales</div></div>
     </div>
-
-    <!-- Progress -->
     <div class="prog-wrap">
-      <div class="prog-header">
-        <span style="font-size:13px;font-weight:700;color:var(--ink2)">Progreso hacia certificación</span>
-        <span id="progressLabel" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brand);font-weight:700">0 / 5</span>
-      </div>
-      <div class="prog-bar"><div class="prog-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="prog-hdr"><strong>Progreso hacia certificación</strong><span id="progLbl" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brand);font-weight:700">0 / 20</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
     </div>
-
-    <!-- Mission path -->
-    <div class="path-section-title">Ruta de aprendizaje</div>
+    <div class="path-title">Ruta de aprendizaje</div>
     <div id="missionPath"><div class="empty-state"><div class="icon">⏳</div><p>Cargando misiones…</p></div></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MISSION SCREEN
-══════════════════════════════════════════════════════════ -->
+<!-- MISSION -->
 <div id="screen-mission" class="screen">
   <div class="mission-wrap">
-    <button class="back-btn" onclick="showDashboard()">← Volver al inicio</button>
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
+
+    <!-- PROMPT MODE BANNER — always visible -->
+    <div class="prompt-mode-banner">
+      <div class="pmb-icon">🤖</div>
+      <div>
+        <div class="pmb-label">Modo de entrenamiento</div>
+        <div class="pmb-title">Tu tarea: diseñar el PROMPT, no resolver el caso</div>
+        <div class="pmb-sub">Escribe el prompt que le darías a la IA para que ella analice este caso. Evalúan: rol, contexto, estructura y output esperado.</div>
+      </div>
+      <div class="pmb-badge">🎯 Modo Prompt</div>
+    </div>
 
     <div class="narrative-card" id="narrativeCard" style="display:none">
-      <div style="font-size:24px;flex-shrink:0">🎭</div>
-      <div>
-        <div class="narrative-label">Tu situación</div>
-        <div class="narrative-body" id="narrativeText">—</div>
-      </div>
+      <div style="font-size:22px;flex-shrink:0">🎭</div>
+      <div><div class="narr-label">Tu situación</div><div class="narr-body" id="narrativeText">—</div></div>
     </div>
 
     <div class="mission-layout">
       <!-- LEFT: Briefing -->
       <div class="briefing">
-        <div class="briefing-section">
-          <div class="briefing-label brand">🎯 Objetivo</div>
-          <div class="briefing-title" id="missionTitle">—</div>
-          <div class="briefing-body" id="missionObjective">—</div>
+        <div class="bf-sec">
+          <div class="bf-label brand">🎯 Objetivo del prompt</div>
+          <div class="bf-title" id="mTitle">—</div>
+          <div class="bf-body" id="mObjective">—</div>
         </div>
-        <div class="briefing-section">
-          <div class="briefing-label blue">📋 Datos del caso</div>
-          <div class="briefing-body" id="missionData">—</div>
+        <div class="bf-sec">
+          <div class="bf-label blue">📋 Datos del caso (incluye estos en tu prompt)</div>
+          <div class="bf-body" id="mData">—</div>
         </div>
-        <div class="briefing-section">
-          <div class="briefing-label green">🧠 Qué debe tener tu respuesta</div>
-          <div class="struct-steps" id="missionStructure"></div>
+        <div class="bf-sec">
+          <div class="bf-label green">🧠 Estructura esperada del prompt</div>
+          <div class="struct-steps" id="mStructure"></div>
         </div>
-        <div class="briefing-section">
-          <div class="briefing-label yellow">✅ Criterios de evaluación</div>
-          <div class="criteria-pills" id="missionCriteria"></div>
-          <button class="example-btn" onclick="showExampleModal()">💡 Ver ejemplo de prompt</button>
+        <div class="bf-sec">
+          <div class="bf-label yellow">✅ Criterios de evaluación</div>
+          <div class="criteria-pills" id="mCriteria"></div>
+          <button class="example-btn" onclick="showExample()">💡 Ver ejemplo de prompt</button>
         </div>
       </div>
 
       <!-- RIGHT: Response -->
       <div>
         <div class="retry-bar" id="retryBar">
-          <div class="retry-bar-title">📊 Tu progreso en esta misión</div>
+          <div class="retry-bar-ttl">📊 Tu progreso en esta misión</div>
           <div class="retry-chips" id="retryChips"></div>
         </div>
 
         <div class="response-panel" id="responsePanel">
-          <div class="response-label-row">
-            <span class="response-label">✍️ Tu respuesta</span>
-            <span class="word-count" id="wordCount" style="color:var(--muted)">0 palabras</span>
+          <!-- PROMPT OBJECTIVE always visible -->
+          <div class="prompt-objective">
+            <div class="po-label">🎯 Tu objetivo en esta misión</div>
+            <div class="po-main">Escribe el prompt que le darías a la IA para resolver este caso</div>
+            <div class="po-sub">No resuelvas el caso tú mismo. Diseña la instrucción que la IA necesita para hacerlo.</div>
           </div>
-          <textarea id="responseText" class="response-textarea"
-            placeholder="Empieza con el rol: 'Como analista…' o 'Como abogado…'  Sigue la estructura indicada y termina con propuestas concretas."
-            oninput="updateWordCount()"></textarea>
-          <div class="response-toolbar">
-            <span class="char-hint">Mínimo recomendado: <strong>80 palabras</strong></span>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-ghost btn-sm" onclick="clearResponse()">Limpiar</button>
-              <button class="btn btn-primary" onclick="submitResponse()">Enviar respuesta →</button>
+          <div class="rp-top">
+            <span class="rp-label">✍️ Tu prompt <span class="rp-mode">🤖 Modo Prompt</span></span>
+            <span class="wc" id="wordCount" style="color:var(--muted)">0 palabras</span>
+          </div>
+          <textarea id="responseText" class="response-ta"
+            placeholder="Ej: Actúa como [especialista en...] y analiza el siguiente caso:
+
+[pega aquí los datos del caso]
+
+Entrega:
+1. [primer entregable]
+2. [segundo entregable]
+3. [recomendación final]"
+            oninput="updateWC()"></textarea>
+          <div class="rp-toolbar">
+            <span class="rp-hint">Mínimo: <strong>50 palabras</strong> · Empieza con "Actúa como…"</span>
+            <div style="display:flex;gap:7px">
+              <button class="btn btn-ghost btn-sm" onclick="clearR()">Limpiar</button>
+              <button class="btn btn-primary" onclick="submitR()">Enviar prompt →</button>
             </div>
           </div>
         </div>
 
         <div class="eval-panel" id="evalPanel">
-          <div class="eval-spinner"></div>
-          <div class="eval-title">Analizando tu respuesta…</div>
-          <div class="eval-sub">La IA está revisando tu trabajo</div>
-          <div class="eval-steps-list">
-            <div class="eval-step" id="es1">⏳ Verificando estructura…</div>
-            <div class="eval-step" id="es2">⏳ Evaluando contenido técnico…</div>
-            <div class="eval-step" id="es3">⏳ Midiendo profundidad del análisis…</div>
-            <div class="eval-step" id="es4">⏳ Generando plan de acción…</div>
+          <div class="eval-spin"></div>
+          <div class="eval-title">Evaluando tu prompt…</div>
+          <div class="eval-sub">La IA analiza la calidad del prompt que diseñaste</div>
+          <div class="eval-steps">
+            <div class="eval-step" id="es1">⏳ Verificando rol definido…</div>
+            <div class="eval-step" id="es2">⏳ Revisando contexto incluido…</div>
+            <div class="eval-step" id="es3">⏳ Evaluando estructura del output…</div>
+            <div class="eval-step" id="es4">⏳ Generando plan de mejora…</div>
           </div>
         </div>
 
         <div class="hint-panel" id="hintPanel">
-          <div class="hint-label">💡 Asistente</div>
+          <div class="hint-lbl">💡 Orientación</div>
           <div class="hint-body" id="hintBody">
-            ¿No sabes cómo empezar?
-            <button onclick="getHint()" style="background:none;border:1px solid var(--border);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Manrope',sans-serif;margin-left:6px;color:var(--brand);font-weight:700">Pedir orientación</button>
+            ¿Cómo empezar?
+            <button onclick="getHint()" style="background:none;border:1px solid var(--border);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Manrope',sans-serif;margin-left:6px;color:var(--brand);font-weight:700">Ver pista</button>
           </div>
         </div>
       </div>
@@ -840,81 +712,56 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     RESULTS
-══════════════════════════════════════════════════════════ -->
+<!-- RESULTS -->
 <div id="screen-results" class="screen">
   <div class="results-wrap">
-    <button class="back-btn" onclick="showDashboard()">← Volver al inicio</button>
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
     <span class="eyebrow">Resultado de la evaluación</span>
-    <h1 class="h1" id="resultMissionTitle" style="margin-bottom:28px">—</h1>
+    <h1 class="h1" id="resMissionTitle" style="margin-bottom:24px">—</h1>
     <div class="results-grid">
-      <div class="score-hero">
-        <div class="score-hero-label">Tu puntuación</div>
-        <div class="score-ring">
-          <svg viewBox="0 0 140 140">
-            <circle class="score-ring-bg" cx="70" cy="70" r="58"/>
-            <circle class="score-ring-fill" id="scoreRingFill" cx="70" cy="70" r="58" stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
-          </svg>
-          <div class="score-num-wrap">
-            <div class="score-num" id="scoreNum">—</div>
-            <div class="score-of">/ 100</div>
-          </div>
+      <div id="directWarning" style="display:none" class="direct-warning">
+        <div class="dw-icon">⚠️</div>
+        <div>
+          <div class="dw-title">Respondiste el caso directamente</div>
+          <div class="dw-body">Tu respuesta resuelve el problema en lugar de diseñar el prompt para que la IA lo resuelva. Reintenta comenzando con <strong>"Actúa como [especialista en...]"</strong> y especificando qué debe hacer la IA.</div>
         </div>
-        <div class="score-verdict" id="scoreVerdict">—</div>
-        <div id="deltaPillWrap"></div>
+      </div>
+      <div class="score-hero">
+        <div class="sh-label">Calidad de tu prompt</div>
+        <div class="score-ring">
+          <svg viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="54"/><circle class="ring-fill" id="ringFill" cx="65" cy="65" r="54" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg>
+          <div class="score-num-wrap"><div class="score-num" id="scoreNum">—</div><div class="score-of">/ 100</div></div>
+        </div>
+        <div class="score-vrd" id="scoreVrd">—</div>
+        <div id="deltaPill"></div>
         <div class="attempt-note" id="attemptNote">—</div>
       </div>
-
-      <div class="feedback-panel">
-        <div class="fb-section">
-          <h4>Buen intento, aquí está tu feedback 👇</h4>
-          <div class="fb-text" id="fbText">—</div>
-        </div>
-        <div class="fb-section">
-          <h4>✅ Lo que hiciste bien</h4>
-          <div class="fb-list" id="fbStrengths"></div>
-        </div>
-        <div class="fb-section">
-          <h4>📈 Oportunidades de mejora</h4>
-          <div class="fb-list" id="fbImprovements"></div>
-        </div>
+      <div class="fb-panel">
+        <div class="fb-sec"><h4>Feedback de tu prompt 👇</h4><div class="fb-text" id="fbText">—</div></div>
+        <div class="fb-sec"><h4>✅ Lo que hiciste bien en el prompt</h4><div class="fb-list" id="fbStr"></div></div>
+        <div class="fb-sec"><h4>📈 Mejoras para tu próximo prompt</h4><div class="fb-list" id="fbImp"></div></div>
       </div>
-
       <div class="improve-tip" id="improveTip" style="display:none">
-        <div style="font-size:22px;flex-shrink:0">🗝️</div>
-        <div>
-          <div class="improve-tip-title">Cómo mejorar tu respuesta</div>
-          <div class="improve-tip-body" id="improveTipBody">—</div>
-        </div>
+        <div style="font-size:20px;flex-shrink:0">🗝️</div>
+        <div><div class="it-title">Cómo mejorar tu prompt</div><div class="it-body" id="improveTipBody">—</div></div>
       </div>
-
       <div class="action-band" id="actionBand" style="display:none">
-        <div class="action-band-header">
-          <span style="font-size:28px">🗺️</span>
-          <div>
-            <div class="action-band-title">Tu plan de acción</div>
-            <div class="action-band-sub">Qué hacer diferente en el próximo intento</div>
-          </div>
-        </div>
-        <div class="action-steps-grid" id="actionStepsGrid"></div>
+        <div class="ab-hdr"><span style="font-size:26px">🗺️</span><div><div class="ab-title">Plan para mejorar tu prompt</div><div class="ab-sub">Qué cambiar en tu próximo intento</div></div></div>
+        <div class="action-grid" id="actionGrid"></div>
       </div>
-
       <div class="results-actions">
-        <button class="btn btn-primary btn-lg" onclick="showDashboard()">← Volver al inicio</button>
-        <button class="btn btn-secondary" id="retryResultBtn" onclick="retryMission()">🔁 Reintentar</button>
+        <button class="btn btn-primary btn-lg" onclick="showDashboard()">← Volver al dashboard</button>
+        <button class="btn btn-secondary" id="retryBtn" onclick="retryMission()">🔁 Reintentar prompt</button>
         <button class="btn btn-ghost" onclick="showHistory()">Ver historial</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     HISTORY
-══════════════════════════════════════════════════════════ -->
+<!-- HISTORY -->
 <div id="screen-history" class="screen">
   <div class="history-wrap">
-    <button class="back-btn" onclick="showDashboard()">← Volver al inicio</button>
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
     <span class="eyebrow">Registro completo</span>
     <h1 class="h1" style="margin-bottom:8px">Historial de Resultados</h1>
     <div id="historyContent"></div>
@@ -922,403 +769,252 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-
 </div>
 
 <!-- Example modal -->
-<div class="modal-overlay" id="exampleModal" onclick="closeExampleModal(event)">
+<div class="modal-overlay" id="exModal" onclick="closeEx(event)">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-hdr">
       <div class="modal-title">💡 Ejemplo de prompt profesional</div>
-      <button class="modal-close" onclick="closeExampleModal()">✕</button>
+      <button class="modal-close" onclick="closeEx()">✕</button>
     </div>
-    <div class="modal-note">⚠️ Este ejemplo usa un contexto diferente — entiende la estructura, no lo copies directamente.</div>
-    <div class="prompt-example" id="examplePromptContent" style="font-size:12px;line-height:1.9"></div>
-    <p class="muted" style="margin-top:10px">La clave: <strong>rol + datos concretos + propuesta accionable</strong></p>
+    <div class="modal-note">⚠️ Contexto diferente — entiende la estructura, no copies el contenido</div>
+    <div class="prompt-box" id="exContent" style="font-size:12px;line-height:1.9"></div>
+    <p class="muted" style="margin-top:9px">Clave: <strong>rol + datos del caso + output estructurado</strong></p>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Config ────────────────────────────────────────────────────────────────────
 const API = 'http://localhost:8000/api';
 const USER_ID = 1;
-const ONBOARDING_KEY = 'worksim_onboarding_';  // + profession
+const OB_KEY = 'worksim_ob_';
+
+const FIELD_CFG = {
+  banking:{ label:'Banca', icon:'🏦', chipClass:'chip-banking', ctaClass:'hcta-banking',
+    obTitle:'Aprende a diseñar prompts bancarios',
+    badExample:'La morosidad del 3.2% es alta. Se deben provisionar $180,000 y lanzar un programa de recuperación en 30 días.',
+    goodExample:'Actúa como analista financiero…\nAnaliza estos datos…\nEntrega: resumen + alerta + 1 acción',
+    promptExample:`<span class="pr-rol">Actúa como analista financiero de sucursal bancaria.</span>\n\n<span class="pr-ctx">Analiza estos datos del trimestre:\n→ Ingresos: $45,200 · Gastos: $32,100\n→ Morosidad: 3.2% (umbral: 2.5%)\n→ Cuentas nuevas: 87 · Cerradas: 23 · NPS: 68</span>\n\n<span class="pr-out">Entrega en este formato:\n1. Resumen ejecutivo (máximo 3 oraciones)\n2. Alerta principal identificada y por qué es crítica\n3. Una acción concreta para el próximo trimestre</span>`,
+    practiceCase:'El área de captación reporta que la tasa de apertura de cuentas cayó 20% vs el mes anterior. El gerente pide un análisis breve antes de la reunión de hoy.' },
+  legal:{ label:'Legal', icon:'⚖️', chipClass:'chip-legal', ctaClass:'hcta-legal',
+    obTitle:'Aprende a diseñar prompts jurídicos',
+    badExample:'La cláusula de penalidad de 3 meses es excesiva. Hay que negociar a máximo 1 mes y agregar una cláusula de fuerza mayor.',
+    goodExample:'Actúa como abogado especialista en contratos…\nAnaliza estas cláusulas…\nEntrega: riesgo + clasificación + modificación propuesta',
+    promptExample:`<span class="pr-rol">Actúa como abogado especialista en contratos comerciales.</span>\n\n<span class="pr-ctx">Analiza este contrato de arrendamiento:\n→ Penalidad por terminación: 3 meses de renta\n→ Sin cláusula de fuerza mayor\n→ Jurisdicción exclusiva del arrendador</span>\n\n<span class="pr-out">Entrega:\n1. Las 3 cláusulas más riesgosas (Alto/Medio/Bajo)\n2. Por qué cada una es problemática\n3. Modificación específica que debes negociar</span>`,
+    practiceCase:'Un cliente envía por WhatsApp un contrato de servicios con una cláusula que permite al proveedor modificar precios con 24 horas de aviso. Necesita tu evaluación urgente.' },
+  social_security:{ label:'Seg. Social', icon:'🛡️', chipClass:'chip-social_security', ctaClass:'hcta-social_security',
+    obTitle:'Aprende a diseñar prompts de seguridad social',
+    badExample:'El IBC es $3,100,000 (salario + comisiones). Los aportes son: salud 4%, pensión 4% empleado y 8.5%+12% empleador. La incapacidad se descuenta de los días efectivos.',
+    goodExample:'Actúa como especialista en seguridad social…\nDados estos datos del empleado…\nCalcula y entrega: IBC + aportes por entidad + tratamiento de la novedad',
+    promptExample:`<span class="pr-rol">Actúa como especialista en liquidación de seguridad social.</span>\n\n<span class="pr-ctx">Calcula los aportes para este empleado:\n→ Salario base: $2,800,000\n→ Comisiones: $450,000\n→ Días trabajados: 28 (2 días de incapacidad)</span>\n\n<span class="pr-out">Entrega:\n1. IBC calculado con justificación\n2. Aportes: salud, pensión y ARL (empleado y empleador)\n3. Tratamiento correcto de los días de incapacidad</span>`,
+    practiceCase:'Una empleada reportó incapacidad de 3 días. El área de nómina no sabe cuánto paga la empresa y cuánto la EPS, ni cómo reflejarlo en el sistema.' },
+  payroll:{ label:'Nómina', icon:'💰', chipClass:'chip-payroll', ctaClass:'hcta-payroll',
+    obTitle:'Aprende a diseñar prompts de nómina',
+    badExample:'El salario devengado es $2,500,000. Las deducciones son: salud $100,000 + pensión $100,000. El neto es $2,300,000.',
+    goodExample:'Actúa como liquidador de nómina…\nDados estos datos del empleado…\nCalcula y entrega: devengado + deducciones + neto a pagar',
+    promptExample:`<span class="pr-rol">Actúa como especialista en liquidación de nómina.</span>\n\n<span class="pr-ctx">Liquida la nómina de este empleado:\n→ Salario: $3,200,000\n→ Días trabajados: 25 de 30\n→ 5 días de vacaciones disfrutadas</span>\n\n<span class="pr-out">Entrega:\n1. Salario devengado con justificación\n2. Deducciones: salud, pensión, retención en la fuente\n3. Neto a pagar y explicación de cada componente</span>`,
+    practiceCase:'Un empleado reclama que su liquidación de contrato está incompleta. Trabajó 3 años y 2 meses. El área de nómina necesita validar si se calcularon bien todos los componentes.' },
+};
+
+const HINTS = {
+  banking:{1:'Empieza: "Actúa como analista financiero". Incluye las 3 cifras clave del caso. Pide: resumen + alerta + 1 acción.',2:'Define rol de riesgo. Incluye los 4 datos de la cartera. Pide: riesgo + severidad + mitigación por cada uno.',3:'Rol de asesor financiero. Incluye el perfil del cliente. Pide: 3 productos con justificación.',4:'Rol consultor de procesos. Incluye tiempos de cada etapa. Pide: cuello de botella + propuestas + tiempos.',5:'Rol consultor digital. Incluye volumen y costos. Pide: qué automatizar + ROI + riesgos.'},
+  legal:{101:'Rol abogado contractual. Incluye las cláusulas del contrato. Pide: riesgo + clasificación + modificación.',102:'Rol abogado M&A. Incluye qué proteger y las partes. Pide: NDA completa con 4 elementos.',103:'Rol abogado que traduce a lenguaje de negocios. Incluye los montos. Pide: resumen claro + opciones + recomendación.',104:'Rol abogado internacional. Incluye las cláusulas. Pide: semáforo por cláusula + top 3 riesgos + recomendación.',105:'Rol litigante societario. Incluye los hechos. Pide: evaluación posición + análisis carta + plan 72h.'},
+  social_security:{201:'Rol especialista SS. Incluye salario, comisiones y días. Pide: IBC + aportes por entidad + tratamiento incapacidad.',202:'Rol analista SS. Incluye salario y días de incapacidad. Pide: valor por día + responsabilidad empleador/EPS + registro.',203:'Rol especialista afiliaciones. Incluye datos del empleado. Pide: proceso por entidad + plazos + documentos.',204:'Rol asesor previsional. Incluye semanas y saldos. Pide: verificación requisitos + cálculo + integración fondos.',205:'Rol laboralista maternidad. Incluye semana de embarazo y cargo. Pide: fuero + licencia + consecuencias.'},
+  payroll:{301:'Rol liquidador nómina. Incluye datos de los 3 empleados. Pide: devengado + deducciones + neto por cada uno.',302:'Rol especialista prestaciones. Incluye los grupos de empleados. Pide: base de cálculo + prima por grupo.',303:'Rol especialista liquidaciones. Incluye antigüedad y pendientes. Pide: todos los componentes + indemnización + plazo.',304:'Rol especialista retención. Incluye ingresos y deducciones. Pide: depuración + UVT + retención mensual.',305:'Rol especialista nómina multipunto. Incluye datos por ciudad. Pide: auxilio transporte + base aportes + viáticos.'},
+};
+
+const EXAMPLES = {
+  banking:{1:`<span class="pr-rol">Actúa como gerente de marketing de una empresa de telecomunicaciones.</span>\n\n<span class="pr-ctx">Analiza estos datos de campaña Q2:\n→ Inversión: $28,000 · Conversión: 4.1% · ROI: -12%\n→ Canal email: mejor desempeño (CTR 6.8%)</span>\n\n<span class="pr-out">Entrega:\n1. Resumen ejecutivo del ROI\n2. Canal que debe potenciarse\n3. Una acción concreta para Q3</span>`,2:`<span class="pr-rol">Actúa como analista de riesgo de una aseguradora.</span>\n\n<span class="pr-ctx">Evalúa esta cartera de seguros:\n→ Siniestralidad: 67% (benchmark: 55%)\n→ Fraudes: 23 (vs 9 el año pasado)\n→ Concentración zona norte: 48%</span>\n\n<span class="pr-out">Entrega:\n1. Top 3 riesgos con severidad Alta/Media/Baja\n2. Razón de por qué es crítico\n3. Medida de mitigación por cada uno</span>`},
+  legal:{101:`<span class="pr-rol">Actúa como abogado de derecho inmobiliario.</span>\n\n<span class="pr-ctx">Analiza este contrato de arrendamiento de oficina:\n→ Penalidad: 6 meses de renta por terminación\n→ Sin mantenimiento estructural definido\n→ Jurisdicción en ciudad del arrendador</span>\n\n<span class="pr-out">Entrega:\n1. Las 3 cláusulas más riesgosas (Alto/Medio/Bajo)\n2. Por qué cada una perjudica al arrendatario\n3. Modificación específica a negociar en cada una</span>`,102:`<span class="pr-rol">Actúa como abogado corporativo especialista en propiedad intelectual.</span>\n\n<span class="pr-ctx">Redacta una NDA para fusión farmacéutica:\n→ Información: fórmulas, ensayos clínicos, pipeline\n→ Partes: empresa local y fondo extranjero</span>\n\n<span class="pr-out">Entrega la cláusula con:\n1. Definición de información confidencial\n2. Obligaciones de ambas partes\n3. Vigencia y excepciones\n4. Consecuencias del incumplimiento</span>`},
+  social_security:{201:`<span class="pr-rol">Actúa como analista de nómina y seguridad social.</span>\n\n<span class="pr-ctx">Calcula los aportes de este trabajador:\n→ Salario: $3,500,000 · Bonificación: $200,000\n→ Días trabajados: 30 · Sin novedades</span>\n\n<span class="pr-out">Entrega:\n1. IBC calculado justificando qué incluye y qué no\n2. Aportes: salud, pensión, ARL (empleado y empleador)\n3. Resumen total carga prestacional del período</span>`,202:`<span class="pr-rol">Actúa como especialista en incapacidades y seguridad social.</span>\n\n<span class="pr-ctx">Gestiona esta incapacidad:\n→ Empleado: salario $2,900,000\n→ Incapacidad médica general: 20 días\n→ EPS: Nueva EPS</span>\n\n<span class="pr-out">Entrega:\n1. Valor diario de la incapacidad\n2. Responsabilidad empleador vs EPS por día\n3. Cómo hacer la reclamación a la EPS</span>`},
+  payroll:{301:`<span class="pr-rol">Actúa como liquidador de nómina senior.</span>\n\n<span class="pr-ctx">Liquida este empleado:\n→ Salario: $2,800,000 · 30 días trabajados\n→ Comisión del mes: $350,000\n→ Sin otras novedades</span>\n\n<span class="pr-out">Entrega:\n1. Total devengado con todos los conceptos\n2. Deducciones: salud, pensión, retención\n3. Neto a pagar con explicación de cada línea</span>`,302:`<span class="pr-rol">Actúa como especialista en liquidación de prestaciones sociales.</span>\n\n<span class="pr-ctx">Calcula la prima de servicios:\n→ Empleado con salario variable (comisiones)\n→ Ingresó hace 4 meses\n→ Semestre: enero-junio</span>\n\n<span class="pr-out">Entrega:\n1. Base de cálculo para salario variable\n2. Prima proporcional por tiempo trabajado\n3. Fecha límite de pago</span>`},
+};
 
 // ── State ─────────────────────────────────────────────────────────────────────
+let currentField = localStorage.getItem('worksim_field') || null;
 let currentMission = null;
 let lastResult = null;
 let missions = [];
 let userProgress = {};
-let currentProfession = localStorage.getItem('worksim_profession') || null;
-let currentOnboardStep = 0;
+let obStep = 0;
 
-// ── Profession config ─────────────────────────────────────────────────────────
-const PROF_CONFIG = {
-  banking: {
-    label: 'Banca', icon: '🏦', color: 'banking',
-    onboardTitle: 'Aprende a responder como analista bancario',
-    onboardEyebrow: 'Módulo 0 · Track Banca',
-    concepts: [
-      { label: '🎭 Rol', text: 'Escribe desde el rol del analista o profesional que pide el caso' },
-      { label: '📋 Contexto', text: 'Demuestra que entendiste los datos financieros del caso' },
-      { label: '🔢 Estructura', text: 'Organiza tu respuesta en secciones numeradas' },
-      { label: '⚡ Acción', text: 'Termina con propuestas concretas y medibles' },
-    ],
-    promptExample: `<span class="pr-rol">Como analista financiero de la sucursal,</span>\n\n<span class="pr-ctx">analizo los datos del trimestre:\n→ Ingresos: $45,200 con margen positivo vs gastos $32,100\n→ Morosidad 3.2% supera el umbral estándar del 2.5%\n→ NPS 68: satisfacción moderada, margen de mejora</span>\n\n<span class="pr-out">Entrego el resumen ejecutivo:\n1. Resultado: margen positivo de $13,100 pero con alerta\n2. Riesgo crítico: morosidad — requiere provisiones adicionales\n3. Acción: implementar programa de recuperación temprana en 30 días</span>`,
-    practiceCase: 'Un cliente llama porque su tarjeta fue rechazada. Al revisar, ves un pago vencido de $180 desde hace 15 días. ¿Qué le explicas y qué haces?',
-  },
-  legal: {
-    label: 'Legal', icon: '⚖️', color: 'legal',
-    onboardTitle: 'Aprende a usar IA en tu práctica legal',
-    onboardEyebrow: 'Módulo 0 · Track Legal',
-    concepts: [
-      { label: '⚖️ Rol', text: 'Escribe desde el rol del abogado o asesor legal del caso' },
-      { label: '📋 Contexto', text: 'Identifica los hechos jurídicos relevantes del caso' },
-      { label: '🔢 Estructura', text: 'Organiza con secciones: análisis, opciones, recomendación' },
-      { label: '⚡ Acción', text: 'Termina con una recomendación legal clara y fundamentada' },
-    ],
-    promptExample: `<span class="pr-rol">Como abogado junior especialista en contratos comerciales,</span>\n\n<span class="pr-ctx">analizo el contrato de arrendamiento:\n→ Cláusula de terminación anticipada: penalidad 3 meses (RIESGO ALTO)\n→ Sin cláusula de fuerza mayor — cliente queda desprotegido\n→ Jurisdicción exclusiva del arrendador: desventaja procesal</span>\n\n<span class="pr-out">Análisis y recomendación:\n1. Cláusula crítica #1: penalidad desproporcionada — negociar a 1 mes\n2. Cláusula crítica #2: agregar cláusula de fuerza mayor estándar\n3. Recomendación: no firmar sin estas modificaciones mínimas</span>`,
-    practiceCase: 'Un cliente te envía por WhatsApp una foto de un contrato de servicio que está a punto de firmar. Nota que hay una cláusula que dice "el proveedor puede modificar precios con 24 horas de aviso". ¿Qué le dices?',
-  },
-};
-
-const BANKING_EXAMPLES = {
-  1: `<span class="pr-rol">Como analista financiero del área de marketing,</span>\n\n<span class="pr-ctx">analizo los datos de la campaña Q2:\n→ Inversión publicitaria: $28,000\n→ Conversión a ventas: 4.1% / ROI: -12%\n→ Canal email: mejor desempeño (CTR 6.8%)</span>\n\n<span class="pr-out">Resumen ejecutivo:\n1. Resultado clave: ROI negativo del 12% — ajuste inmediato\n2. Alerta: costo por lead 35% sobre benchmark\n3. Acción: reasignar 60% del presupuesto a canal email para Q3</span>`,
-  2: `<span class="pr-rol">Como analista de riesgo en una aseguradora,</span>\n\n<span class="pr-ctx">evalúo la cartera de seguros de vehículos:\n→ Siniestralidad Q3: 67% (benchmark: 55%)\n→ Fraudes detectados: 23 (vs 9 el año pasado)\n→ Concentración zona norte: 48%</span>\n\n<span class="pr-out">Riesgos identificados:\n1. Siniestralidad alta — Severidad: ALTA — revisar suscripción\n2. Fraude creciente — Severidad: ALTA — scoring antifraude\n3. Concentración geográfica — Severidad: MEDIA — diversificar</span>`,
-  3: `<span class="pr-rol">Como asesor de inversiones en wealth management,</span>\n\n<span class="pr-ctx">atiendo a médico, 52 años, $8,500/mes,\nherencia de $80,000. Meta: proteger capital.</span>\n\n<span class="pr-out">Recomendaciones:\n1. Fondo renta fija (60%) — perfil conservador — 7-8% anual\n2. Seguro de vida con ahorro (30%) — protección + beneficio fiscal\n3. ETF diversificado (10%) — exposición controlada a crecimiento</span>`,
-  4: `<span class="pr-rol">Como consultor de operaciones en una clínica,</span>\n\n<span class="pr-ctx">el proceso de admisión tarda 52 min:\n→ Validación de seguro: 22 min (cuello de botella)\n→ Registro de datos: 15 min (20% errores)</span>\n\n<span class="pr-out">Plan de optimización:\n1. Cuello: validación de seguro — API directa (-18 min)\n2. Registro: formulario digital (-10 min, -errores)\n3. Meta: 20 min total · Métricas: tiempo/paciente, NPS admisión</span>`,
-  5: `<span class="pr-rol">Como líder de transformación digital en telecomunicaciones,</span>\n\n<span class="pr-ctx">call center: 1,200 llamadas/día, 70% simples,\ncosto $3.80/llamada, satisfacción 71%</span>\n\n<span class="pr-out">Propuesta de automatización:\n1. Automatizar: 70% casos simples con chatbot NLP\n2. Humanos: reclamaciones, cancelaciones, fraude\n3. ROI: 840 llamadas × $3.80 × 22 días = $70k/mes ahorro\n4. Riesgo: resistencia del equipo → plan de reentrenamiento</span>`,
-};
-
-const LEGAL_EXAMPLES = {
-  11: `<span class="pr-rol">Como abogado junior especialista en contratos comerciales,</span>\n\n<span class="pr-ctx">analizo contrato de arrendamiento de oficina:\n→ Penalidad: 6 meses de renta (excesiva)\n→ Sin cláusula de mantenimiento estructural\n→ Jurisdicción exclusiva del arrendador en otra ciudad</span>\n\n<span class="pr-out">Cláusulas de riesgo:\n1. Penalidad excesiva — Riesgo: ALTO — negociar a 2 meses\n2. Sin fuerza mayor — Riesgo: ALTO — agregar cláusula estándar\n3. Jurisdicción desfavorable — Riesgo: MEDIO — solicitar neutral</span>`,
-  12: `<span class="pr-rol">Como abogado corporativo especialista en propiedad intelectual,</span>\n\n<span class="pr-ctx">redacto NDA para fusión farmacéutica:\n→ Información a proteger: fórmulas, ensayos clínicos, pipeline\n→ Partes: empresa local y fondo de inversión extranjero\n→ Plazo: 3 años post-negociación</span>\n\n<span class="pr-out">Cláusula de Confidencialidad:\n1. Def: incluye toda información técnica, financiera y estratégica\n2. Obligaciones: no divulgar, no usar, restituir en 30 días\n3. Vigencia: 3 años desde firma, con excepciones legales\n4. Incumplimiento: daños y perjuicios + medidas cautelares</span>`,
-  13: `<span class="pr-rol">Como abogado litigante especialista en derecho laboral,</span>\n\n<span class="pr-ctx">resumo resolución judicial laboral para CFO:\n→ Condena: reinstalación de 8 trabajadores o $200k\n→ Salarios caídos: $45,000 adicionales\n→ Recurso de apelación: 15 días hábiles</span>\n\n<span class="pr-out">Resumen ejecutivo:\n1. Qué pasó: tribunal nos condena por outsourcing irregular\n2. Impacto económico: $245,000 mínimo, hasta $620k si perdemos apelación\n3. Opciones: apelar (70% prob. reducción) o negociar (liquidación directa)\n4. Recomendación: apelar — evidencia favorable en registros contables</span>`,
-  14: `<span class="pr-rol">Como abogado especialista en contratos internacionales,</span>\n\n<span class="pr-ctx">evalúo acuerdo de distribución exclusiva:\n→ Exclusividad 8 años — cláusula de salida compleja\n→ Mínimo de compra $30k/mes o penalidad\n→ Arbitraje en Londres bajo reglas LCIA</span>\n\n<span class="pr-out">Evaluación de riesgos:\n🔴 Exclusividad rígida: limita crecimiento — renegociar a 5 años\n🔴 Mínimos de compra: riesgo de liquidez — agregar cláusula de ajuste\n🟡 Arbitraje internacional: costoso pero neutral\nRecomendación: NEGOCIAR antes de firmar — puntos 1 y 2 son inaceptables</span>`,
-  15: `<span class="pr-rol">Como abogado litigante con experiencia en conflictos societarios,</span>\n\n<span class="pr-ctx">respondo a carta de requerimiento de ex-socio:\n→ Demanda: $800k por supuesta apropiación de oportunidad\n→ Acuerdo de separación con finiquito firmado hace 6 meses\n→ El contrato en cuestión se firmó 4 meses después de su salida</span>\n\n<span class="pr-out">Respuesta al cliente:\n1. Posición fuerte: finiquito cubre el período, cronología favorable\n2. Análisis carta: sin sustento — el contrato es posterior a su salida\n3. Plan 72h: reunión mañana + recopilar registros de negociación\n4. Estrategia: carta de respaldo jurídico y oferta de mediación voluntaria</span>`,
-};
-
-const BANKING_HINTS = {
-  1: 'Empieza citando los 3 números clave. Identifica cuál dato es la alarma. Cierra con una propuesta medible.',
-  2: 'Ordena los riesgos de mayor a menor impacto. Para cada uno: nombre, severidad (Alta/Media/Baja) y mitigación concreta.',
-  3: 'Piensa: (1) qué hacer con el bono ahora, (2) proteger hijos en universidad, (3) beneficios para viajes. Un producto por necesidad.',
-  4: 'Identifica cuál paso tarda más. Luego: ¿eliminar? ¿automatizar? ¿simplificar? Incluye tiempos proyectados.',
-  5: 'Separa: qué SÍ automatiza la IA y qué NO. Calcula ahorro: llamadas/día × costo × días. Define cómo medirías el éxito.',
-};
-
-const LEGAL_HINTS = {
-  11: 'Identifica las 3 cláusulas más desventajosas para tu cliente. Clasifica por impacto económico o procesal. Propón alternativas específicas.',
-  12: 'Una buena cláusula NDA define: qué ES confidencial, qué NO LO ES, qué pueden hacer las partes y qué pasa si incumplen.',
-  13: 'El CEO no es abogado. Usa números concretos, evita términos técnicos. Estructura: qué pasó → cuánto cuesta → qué hacemos.',
-  14: 'Usa semáforo: Rojo (inaceptable), Amarillo (negociable), Verde (aceptable). El cliente necesita una recomendación clara: firmar o no.',
-  15: 'El cliente está en pánico — primero calma, luego estrategia. Evalúa la fortaleza de tu posición con los hechos disponibles.',
-};
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadProgress(), loadMissions()]);
-  updateUserDisplay();
-
-  if (!currentProfession) {
-    showScreen('landing');
-  } else {
-    updateProfChip();
-    renderDashboard();
-    showScreen('dashboard');
-    document.getElementById('navDashboard').style.display = '';
-  }
+  await Promise.all([loadMissions(), loadProgress()]);
+  updateUser();
+  if (!currentField) { showScreen('landing'); return; }
+  updateChip();
+  document.getElementById('navDash').style.display = '';
+  renderDash();
+  showScreen('dashboard');
 }
 
 async function loadMissions() {
-  if (!currentProfession) return;
-  try {
-    const r = await fetch(`${API}/missions/?user_id=${USER_ID}&profession=${currentProfession}`);
-    const d = await r.json();
-    missions = d.missions || [];
-  } catch { missions = []; }
+  if (!currentField) return;
+  try { const r = await fetch(`${API}/missions/?user_id=${USER_ID}&profession=${currentField}`); missions = (await r.json()).missions || []; }
+  catch { missions = []; }
 }
 
 async function loadProgress() {
-  if (!currentProfession) return;
-  try {
-    const r = await fetch(`${API}/users/${USER_ID}/progress?profession=${currentProfession}`);
-    userProgress = await r.json();
-  } catch { userProgress = {}; }
+  if (!currentField) return;
+  try { const r = await fetch(`${API}/users/${USER_ID}/progress?profession=${currentField}`); userProgress = await r.json(); }
+  catch { userProgress = {}; }
 }
 
-function updateUserDisplay() {
-  const name = userProgress.user_name || 'Demo';
-  document.getElementById('userName').textContent = name;
-  document.getElementById('userInitial').textContent = name[0].toUpperCase();
+function updateUser() {
+  const n = userProgress.user_name || 'Demo';
+  document.getElementById('userName').textContent = n;
+  document.getElementById('userAv').textContent = n[0].toUpperCase();
 }
 
-function updateProfChip() {
-  if (!currentProfession) return;
-  const cfg = PROF_CONFIG[currentProfession];
-  const chip = document.getElementById('profChip');
+function updateChip() {
+  if (!currentField) return;
+  const cfg = FIELD_CFG[currentField];
+  const chip = document.getElementById('fieldChip');
   chip.style.display = 'flex';
-  chip.className = `profession-chip ${currentProfession}`;
-  document.getElementById('profChipIcon').textContent = cfg.icon;
-  document.getElementById('profChipLabel').textContent = cfg.label;
+  chip.className = `field-chip ${cfg.chipClass}`;
+  document.getElementById('chipIcon').textContent = cfg.icon;
+  document.getElementById('chipLabel').textContent = cfg.label;
 }
 
-// ── Landing ───────────────────────────────────────────────────────────────────
-function goHome() {
-  showScreen('landing');
-}
+// ── Field selection ───────────────────────────────────────────────────────────
+function goHome() { showScreen('landing'); }
+function showFieldPicker() { showScreen('profpicker'); }
 
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-}
-
-function showProfessionPicker() {
-  showScreen('profpicker');
-}
-
-async function selectProfession(prof) {
-  currentProfession = prof;
-  localStorage.setItem('worksim_profession', prof);
-  updateProfChip();
-  document.getElementById('navDashboard').style.display = '';
-
-  // Update backend
-  try {
-    await fetch(`${API}/users/${USER_ID}/profession`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profession: prof })
-    });
-  } catch { /* non-critical */ }
-
+async function selectField(f) {
+  currentField = f; localStorage.setItem('worksim_field', f);
+  updateChip(); document.getElementById('navDash').style.display = '';
+  try { await fetch(`${API}/users/${USER_ID}/profession`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({profession:f}) }); } catch {}
   await Promise.all([loadMissions(), loadProgress()]);
-
-  const doneKey = ONBOARDING_KEY + prof;
-  if (!localStorage.getItem(doneKey)) {
-    setupOnboarding(prof);
-    showScreen('onboarding');
-  } else {
-    renderDashboard();
-    showScreen('dashboard');
-    showToast(`${PROF_CONFIG[prof].icon} Track ${PROF_CONFIG[prof].label} activado`);
-  }
+  if (!localStorage.getItem(OB_KEY + f)) { setupOb(f); showScreen('onboarding'); }
+  else { renderDash(); showScreen('dashboard'); showToast(`${FIELD_CFG[f].icon} Campo ${FIELD_CFG[f].label} activado`); }
 }
 
-// ── Profession switch from dashboard ─────────────────────────────────────────
-async function switchProfession(prof) {
-  currentProfession = prof;
-  localStorage.setItem('worksim_profession', prof);
-  updateProfChip();
-
-  // Update switcher buttons
-  document.getElementById('switchBanking').className = `prof-switch-btn ${prof === 'banking' ? 'active' : ''}`;
-  document.getElementById('switchLegal').className = `prof-switch-btn ${prof === 'legal' ? 'active' : ''}`;
-
+async function switchField(f) {
+  currentField = f; localStorage.setItem('worksim_field', f); updateChip();
+  ['banking','legal','social_security','payroll'].forEach(k => {
+    const el = document.getElementById(`sw-${k}`);
+    if (el) el.className = `field-sw-btn${f === k ? ' active' : ''}`;
+  });
   await Promise.all([loadMissions(), loadProgress()]);
-  renderDashboard();
-  showToast(`${PROF_CONFIG[prof].icon} Cambiando a ${PROF_CONFIG[prof].label}`);
+  renderDash();
+  showToast(`${FIELD_CFG[f].icon} ${FIELD_CFG[f].label}`);
 }
 
 // ── Onboarding ────────────────────────────────────────────────────────────────
-function setupOnboarding(prof) {
-  const cfg = PROF_CONFIG[prof];
-  document.getElementById('onboardEyebrow').textContent = cfg.onboardEyebrow;
-  document.getElementById('onboardTitle').innerHTML = cfg.onboardTitle;
-
-  // Concepts grid
-  document.getElementById('onboard0-grid').innerHTML = cfg.concepts.map(c => `
-    <div class="concept-item">
-      <div class="concept-label">${c.label}</div>
-      <p>${c.text}</p>
-    </div>`).join('');
-
-  // Prompt example
-  document.getElementById('onboard1-example').innerHTML = cfg.promptExample;
-
-  // Practice case
-  document.getElementById('onboard2-case').innerHTML = `<strong>Caso de práctica:</strong> ${cfg.practiceCase}`;
-  document.getElementById('guidedResponse').value = '';
-  document.getElementById('guidedFeedback').className = 'guided-feedback';
-  document.getElementById('guidedFeedback').style.display = 'none';
-  document.getElementById('finishOnboardBtn').style.opacity = '.5';
-  document.getElementById('finishOnboardBtn').style.pointerEvents = 'none';
-
-  currentOnboardStep = 0;
+function setupOb(f) {
+  const cfg = FIELD_CFG[f];
+  document.getElementById('obEyebrow').textContent = `Módulo 0 · Campo ${cfg.label}`;
+  document.getElementById('obTitle').textContent = cfg.obTitle;
+  document.getElementById('ob0-bad').textContent = cfg.badExample;
+  document.getElementById('ob0-good').textContent = cfg.goodExample;
+  document.getElementById('ob1-example').innerHTML = cfg.promptExample;
+  document.getElementById('ob2-case').textContent = cfg.practiceCase;
+  document.getElementById('guidedTA').value = '';
+  document.getElementById('guidedFb').className = 'guided-fb';
+  document.getElementById('guidedFb').style.display = 'none';
+  const fb = document.getElementById('finishObBtn');
+  fb.style.opacity = '.45'; fb.style.pointerEvents = 'none';
+  obStep = 0;
   [0,1,2].forEach(i => {
-    document.getElementById(`onboard-${i}`).classList.remove('active');
-    const dot = document.getElementById(`dot-${i}`);
-    dot.className = 'onboard-dot';
+    document.getElementById(`ob-${i}`).classList.remove('active');
+    document.getElementById(`dot-${i}`).className = 'onboard-dot';
   });
-  document.getElementById('onboard-0').classList.add('active');
+  document.getElementById('ob-0').classList.add('active');
   document.getElementById('dot-0').classList.add('active');
 }
 
-function nextOnboardStep(step) {
-  document.getElementById(`onboard-${currentOnboardStep}`).classList.remove('active');
-  document.getElementById(`dot-${currentOnboardStep}`).classList.remove('active');
-  document.getElementById(`dot-${currentOnboardStep}`).classList.add('done');
-  currentOnboardStep = step;
-  document.getElementById(`onboard-${step}`).classList.add('active');
-  document.getElementById(`dot-${step}`).classList.remove('done');
-  document.getElementById(`dot-${step}`).classList.add('active');
+function nextOb(step) {
+  document.getElementById(`ob-${obStep}`).classList.remove('active');
+  const prevDot = document.getElementById(`dot-${obStep}`);
+  prevDot.className = `onboard-dot ${step > obStep ? 'done' : ''}`;
+  obStep = step;
+  document.getElementById(`ob-${step}`).classList.add('active');
+  document.getElementById(`dot-${step}`).className = 'onboard-dot active';
 }
 
-function checkGuidedResponse() {
-  const text = document.getElementById('guidedResponse').value.trim();
-  const words = text ? text.split(/\s+/).length : 0;
-  const fb = document.getElementById('guidedFeedback');
-  const btn = document.getElementById('finishOnboardBtn');
-  const lower = text.toLowerCase();
-  if (words < 5) { fb.style.display = 'none'; btn.style.opacity = '.5'; btn.style.pointerEvents = 'none'; return; }
-
-  const hasSolution = ['solución','plazo','acuerdo','explicar','informar','comunicar','propongo','recomiendo','cláusula','modificar','negociar','revisar'].some(w => lower.includes(w));
-  const hasRole = ['como ','analista','abogado','asesor','representante','profesional'].some(w => lower.includes(w));
-  const hasAction = ['procedemos','ofrezco','realizamos','puede','implementar','sugiero'].some(w => lower.includes(w));
-
+function checkGuided() {
+  const text = document.getElementById('guidedTA').value.trim().toLowerCase();
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const fb = document.getElementById('guidedFb');
+  const btn = document.getElementById('finishObBtn');
+  fb.style.display = 'none'; if (words < 5) { btn.style.opacity='.45';btn.style.pointerEvents='none'; return; }
+  const hasRole = ['actúa como','actua como','eres un','como experto','como especialista','como analista','como abogado','como consultor','como asesor'].some(w => text.includes(w));
+  const hasOutput = ['entrega','genera','propón','formato','lista','identifica','calcula','redacta','analiza'].some(w => text.includes(w));
   fb.style.display = 'block';
-  if (words >= 20 && hasSolution && (hasRole || hasAction)) {
-    fb.className = 'guided-feedback good show';
-    fb.innerHTML = '✅ <strong>¡Muy bien!</strong> Tu respuesta tiene los elementos clave: rol profesional, identificas el problema y propones una acción. Eso es exactamente lo que espera la IA.';
-  } else if (words >= 10 && hasSolution) {
-    fb.className = 'guided-feedback ok show';
-    fb.innerHTML = '👍 <strong>Buen inicio.</strong> Mencionas la solución. Añade el rol ("Como [profesional]…") y un paso de acción concreto para completar la estructura.';
-  } else {
-    fb.className = 'guided-feedback start show';
-    fb.innerHTML = '💡 <strong>Sigue desarrollando.</strong> Intenta incluir: (1) tu rol, (2) qué identificas y (3) qué propones hacer.';
-  }
-  if (words >= 10) { btn.style.opacity = '1'; btn.style.pointerEvents = 'all'; }
+  if (words >= 20 && hasRole && hasOutput) { fb.className='guided-fb good show'; fb.innerHTML='✅ <strong>¡Perfecto!</strong> Tu prompt tiene rol claro y especifica el output. La IA sabría exactamente qué hacer con esto.'; }
+  else if (words >= 10 && hasRole) { fb.className='guided-fb ok show'; fb.innerHTML='👍 <strong>Buen inicio.</strong> Tienes el rol. Añade qué debe entregar la IA: "Entrega: 1... 2... 3..."'; }
+  else { fb.className='guided-fb start show'; fb.innerHTML='💡 <strong>Sigue desarrollando.</strong> Empieza con "Actúa como [especialista]..." y dile qué analizar y qué entregar.'; }
+  if (words >= 10) { btn.style.opacity='1'; btn.style.pointerEvents='all'; }
 }
 
 function finishOnboarding() {
-  localStorage.setItem(ONBOARDING_KEY + currentProfession, 'done');
-  renderDashboard();
-  showScreen('dashboard');
-  showToast(`🎉 ¡Módulo 0 completado! Tu primera misión está desbloqueada.`);
+  localStorage.setItem(OB_KEY + currentField, 'done');
+  renderDash(); showScreen('dashboard');
+  showToast('🎉 ¡Módulo 0 completado! Primera misión desbloqueada.');
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
-function renderDashboard() {
-  const cfg = PROF_CONFIG[currentProfession] || PROF_CONFIG.banking;
+function renderDash() {
+  const cfg = FIELD_CFG[currentField] || FIELD_CFG.banking;
   const completed = userProgress.completed_missions || 0;
   const avg = userProgress.average_score || 0;
   const results = userProgress.mission_results || [];
-  const totalAttempts = results.reduce((s, r) => s + (r.attempts || 0), 0);
+  const totalAttempts = results.reduce((s,r) => s+(r.attempts||0), 0);
   const isCert = userProgress.is_certified;
+  const total = userProgress.total_missions || 20;
 
-  // Switcher state
-  document.getElementById('switchBanking').className = `prof-switch-btn ${currentProfession === 'banking' ? 'active' : ''}`;
-  document.getElementById('switchLegal').className = `prof-switch-btn ${currentProfession === 'legal' ? 'active' : ''}`;
+  ['banking','legal','social_security','payroll'].forEach(k => {
+    const el = document.getElementById(`sw-${k}`);
+    if (el) el.className = `field-sw-btn${currentField===k?' active':''}`;
+  });
 
-  // Stats
-  document.getElementById('statCompleted').textContent = completed;
-  document.getElementById('statAvg').textContent = avg ? avg.toFixed(1) : '—';
-  document.getElementById('statAttempts').textContent = totalAttempts;
+  document.getElementById('statC').textContent = completed;
+  document.getElementById('statA').textContent = avg ? avg.toFixed(1) : '—';
+  document.getElementById('statT').textContent = totalAttempts;
+  const pct = total > 0 ? Math.round(completed/total*100) : 0;
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progLbl').textContent = `${completed} / ${total}`;
 
-  // Progress
-  document.getElementById('progressFill').style.width = (completed / 5 * 100) + '%';
-  document.getElementById('progressLabel').textContent = `${completed} / 5`;
-
-  // Hero CTA
   const heroCta = document.getElementById('heroCta');
-  heroCta.className = `hero-cta ${currentProfession}`;
-  document.getElementById('heroEyebrow').textContent = `WorkSim AI · ${cfg.label}`;
-  const nextMission = missions.find(m => m.unlocked && !m.completed);
-  if (completed === 0) {
-    document.getElementById('heroTitle').textContent = `Comienza tu entrenamiento ${cfg.label}`;
-    document.getElementById('heroSub').textContent = 'Tu primera misión está lista. ¡Anímate!';
-    document.getElementById('heroBtnText').textContent = 'Iniciar Misión 1 →';
-  } else if (nextMission) {
-    document.getElementById('heroTitle').textContent = 'Continuar entrenamiento';
-    document.getElementById('heroSub').textContent = `Siguiente: ${nextMission.title}`;
-    document.getElementById('heroBtnText').textContent = 'Continuar →';
-  } else if (isCert) {
-    document.getElementById('heroTitle').textContent = '¡Certificación obtenida! 🏆';
-    document.getElementById('heroSub').textContent = 'Completaste todas las misiones con éxito';
-    document.getElementById('heroBtnText').textContent = 'Ver progreso';
-  } else {
-    document.getElementById('heroTitle').textContent = 'Sigue mejorando';
-    document.getElementById('heroSub').textContent = 'Reintenta las misiones para subir tu score';
-    document.getElementById('heroBtnText').textContent = 'Ver misiones';
-  }
+  heroCta.className = `hero-cta ${cfg.ctaClass}`;
+  document.getElementById('hcEyebrow').textContent = `WorkSim AI · ${cfg.label}`;
+  const nextM = missions.find(m => m.unlocked && !m.completed);
+  if (!completed) { document.getElementById('hcTitle').textContent=`Comienza en ${cfg.label}`; document.getElementById('hcSub').textContent='Tu primera misión está lista'; document.getElementById('hcBtnTxt').textContent='Iniciar Misión 1 →'; }
+  else if (nextM) { document.getElementById('hcTitle').textContent='Continuar entrenamiento'; document.getElementById('hcSub').textContent=`Siguiente: ${nextM.title}`; document.getElementById('hcBtnTxt').textContent='Continuar →'; }
+  else if (isCert) { document.getElementById('hcTitle').textContent='¡Certificación obtenida! 🏆'; document.getElementById('hcSub').textContent=`Promedio: ${avg.toFixed(1)}/100`; document.getElementById('hcBtnTxt').textContent='Ver progreso'; }
+  else { document.getElementById('hcTitle').textContent='Sigue mejorando tu prompt'; document.getElementById('hcSub').textContent='Reintenta para subir el score'; document.getElementById('hcBtnTxt').textContent='Ver misiones'; }
 
-  // Cert banner
-  document.getElementById('certBannerArea').innerHTML = isCert ? `
-    <div class="cert-banner">
-      <h2>🏆 ¡Certificación ${cfg.label} Obtenida!</h2>
-      <p>Completaste las 5 misiones con promedio de ${avg.toFixed(1)}/100.</p>
-    </div>` : '';
+  document.getElementById('certArea').innerHTML = isCert ? `<div class="cert-banner"><h2>🏆 ¡Certificación ${cfg.label} Obtenida!</h2><p>Completaste las ${total} misiones con promedio ${avg.toFixed(1)}/100.</p></div>` : '';
 
-  // Module 0 card
-  const m0Done = localStorage.getItem(ONBOARDING_KEY + currentProfession);
+  const obDone = localStorage.getItem(OB_KEY + currentField);
   const resultMap = {};
   results.forEach(r => resultMap[r.mission_id] = r);
 
-  let html = `
-    <div style="margin-bottom:14px">
-      <div class="mod0-card" onclick="${m0Done ? '' : `setupOnboarding('${currentProfession}');showScreen('onboarding')`}">
-        <div class="mod0-icon">📚</div>
-        <div class="mod0-text">
-          <h3>Módulo 0 — ${m0Done ? 'Repasa' : 'Aprende'} cómo responder como profesional ${cfg.label}</h3>
-          <p>${m0Done ? 'Completado · Haz clic para repasar' : 'Obligatorio antes de tu primera misión'}</p>
-        </div>
-        <span class="mod0-badge ${m0Done ? 'done' : ''}">${m0Done ? '✓ Completado' : 'Obligatorio'}</span>
-      </div>
-    </div>
-    <div class="mission-path">`;
+  let html = `<div style="margin-bottom:12px"><div class="mod0-strip" onclick="${obDone?`setupOb('${currentField}');showScreen('onboarding')`:''}"><div class="mod0-icon">📚</div><div class="mod0-text"><h3>Módulo 0 — ${obDone?'Repasa':'Aprende'} cómo diseñar prompts ${cfg.label}</h3><p>${obDone?'Completado · Haz clic para repasar la estructura':'Obligatorio antes de tu primera misión'}</p></div><span class="mod0-badge ${obDone?'done':'todo'}">${obDone?'✓ Completado':'Obligatorio'}</span></div></div><div class="mission-path">`;
 
-  if (!missions.length) {
-    html += '<div class="empty-state"><div class="icon">⚠️</div><p>No se cargaron las misiones. Verifica que el backend esté corriendo en localhost:8000.</p></div>';
-  } else {
-    missions.forEach((m, i) => {
+  if (!missions.length) { html += '<div class="empty-state"><div class="icon">⚠️</div><p>No se cargaron misiones. Verifica que el backend esté corriendo.</p></div>'; }
+  else {
+    missions.forEach((m,i) => {
       const res = resultMap[m.id];
-      const isLast = i === missions.length - 1;
-      const nodeClass = m.completed ? 'done' : m.unlocked ? 'available' : 'locked';
-      const nodeEmoji = m.completed ? '✓' : m.unlocked ? '▶' : '🔒';
-      const cardClass = m.completed ? 'done' : m.unlocked ? 'available' : 'locked';
-      const connClass = m.completed ? 'done' : m.unlocked ? 'active' : '';
-      const clickFn = m.unlocked
-        ? `startMission(${m.id})`
-        : `showToast('Completa la misión anterior con score ≥ 70 para desbloquear esta')`;
-
-      let scoreBadge = res
-        ? `<span class="path-score ${res.best_score >= 70 ? 'pass' : 'fail'}">${res.best_score >= 70 ? '✓' : '✗'} ${res.best_score}/100</span>`
-        : `<span class="muted" style="font-size:12px">Sin intentos</span>`;
-
-      let statusBadge = m.completed
-        ? `<span class="badge badge-green">✓ Completada</span>`
-        : m.unlocked
-          ? `<span class="badge badge-brand">🔓 Disponible</span>`
-          : `<span class="badge badge-muted">🔒 Bloqueada</span>`;
-
-      html += `
-        <div class="path-item">
-          ${!isLast ? `<div class="path-connector ${connClass}"></div>` : ''}
-          <div class="path-node ${nodeClass}">${nodeEmoji}</div>
-          <div class="path-card ${cardClass}" onclick="${clickFn}">
-            <div class="path-card-top">
-              <div class="path-card-meta">
-                <span class="badge level-${m.level}">${m.level}</span>
-                ${statusBadge}
-              </div>
-            </div>
-            <div class="path-card-title">${m.title}</div>
-            <div class="path-card-desc">${m.description.substring(0, 120)}…</div>
-            <div class="path-card-footer">
-              ${scoreBadge}
-              <button class="btn ${m.unlocked ? 'btn-primary btn-sm' : 'btn-ghost btn-sm'}" ${!m.unlocked ? 'disabled style="opacity:.4"' : ''}>
-                ${m.completed ? 'Reintentar' : m.unlocked ? 'Iniciar →' : '🔒'}
-              </button>
-            </div>
-          </div>
-        </div>`;
+      const isLast = i === missions.length-1;
+      const nc = m.completed ? 'done' : m.unlocked ? 'available' : 'locked';
+      const ne = m.completed ? '✓' : m.unlocked ? '▶' : '🔒';
+      const cc = m.completed ? 'done' : m.unlocked ? 'available' : 'locked';
+      const lc = m.completed ? 'done' : m.unlocked ? 'active' : '';
+      const click = m.unlocked ? `startMission(${m.id})` : `showToast('🔒 Completa la misión anterior con score ≥ 70')`;
+      const scoreBadge = res ? `<span class="pc-score ${res.best_score>=70?'pass':'fail'}">${res.best_score>=70?'✓':'✗'} ${res.best_score}/100</span>` : `<span class="muted" style="font-size:12px">Sin intentos</span>`;
+      const statusBadge = m.completed ? '<span class="badge badge-green">✓ Completada</span>' : m.unlocked ? '<span class="badge badge-brand">🔓 Disponible</span>' : '<span class="badge badge-muted">🔒 Bloqueada</span>';
+      html += `<div class="path-item">${!isLast?`<div class="path-line ${lc}"></div>`:''}<div class="path-node ${nc}">${ne}</div><div class="path-card ${cc}" onclick="${click}"><div class="pc-top"><div class="pc-meta"><span class="badge level-${m.level}">${m.level}</span>${statusBadge}</div></div><div class="pc-title">${m.title}</div><div class="pc-desc">${m.description.substring(0,110)}…</div><div class="pc-footer">${scoreBadge}<button class="btn ${m.unlocked?'btn-primary btn-sm':'btn-ghost btn-sm'}" ${!m.unlocked?'disabled style="opacity:.35"':''}>${m.completed?'Reintentar':m.unlocked?'Iniciar →':'🔒'}</button></div></div></div>`;
     });
   }
   html += '</div>';
   document.getElementById('missionPath').innerHTML = html;
 }
 
-function handleHeroCTA() {
+function handleCTA() {
   const next = missions.find(m => m.unlocked && !m.completed);
   if (next) startMission(next.id);
-  else if (missions.length) showToast('Revisa la ruta de aprendizaje para ver el estado de cada misión');
 }
 
 // ── Mission ───────────────────────────────────────────────────────────────────
@@ -1331,175 +1027,145 @@ async function startMission(id) {
   } catch { showToast('Error de conexión'); return; }
 
   const nc = document.getElementById('narrativeCard');
-  if (currentMission.narrative) {
-    nc.style.display = 'flex';
-    document.getElementById('narrativeText').textContent = currentMission.narrative;
-  } else nc.style.display = 'none';
+  if (currentMission.narrative) { nc.style.display='flex'; document.getElementById('narrativeText').textContent=currentMission.narrative; }
+  else nc.style.display='none';
 
-  document.getElementById('missionTitle').textContent = currentMission.title;
-  document.getElementById('missionObjective').textContent = currentMission.objective || currentMission.description;
-  document.getElementById('missionData').textContent = currentMission.description;
+  document.getElementById('mTitle').textContent = currentMission.title;
+  document.getElementById('mObjective').textContent = currentMission.objective || currentMission.description;
+  document.getElementById('mData').textContent = currentMission.description;
 
-  const structLines = (currentMission.expected_structure || '').split('\n').filter(Boolean);
-  document.getElementById('missionStructure').innerHTML = structLines.map((line, i) => {
-    const text = line.replace(/^\d+\.\s*/, '');
-    return `<div class="struct-step"><span class="step-num">${i+1}</span><span class="step-text">${text}</span></div>`;
+  const structs = (currentMission.expected_structure||'').split('\n').filter(Boolean);
+  document.getElementById('mStructure').innerHTML = structs.map((l,i) => {
+    const t = l.replace(/^\d+\.\s*/,'');
+    return `<div class="struct-step"><span class="step-num">${i+1}</span><span class="step-text">${t}</span></div>`;
   }).join('');
 
-  document.getElementById('missionCriteria').innerHTML = (currentMission.criteria || '').split(',')
+  document.getElementById('mCriteria').innerHTML = (currentMission.criteria||'').split(',')
     .map(c => `<span class="criteria-pill">${c.trim()}</span>`).join('');
 
-  const history = currentMission.attempts_history || [];
-  const retryBar = document.getElementById('retryBar');
-  if (history.length) {
-    retryBar.style.display = 'block';
-    document.getElementById('retryChips').innerHTML = history.map((h, i) => {
-      const prev = i > 0 ? history[i-1].score : null;
-      const delta = prev !== null ? h.score - prev : null;
-      const ds = delta !== null ? ` (${delta >= 0 ? '+' : ''}${delta})` : '';
-      return `<span class="retry-chip ${h.score >= 70 ? 'pass' : 'fail'}">Intento ${h.attempt}: ${h.score}/100${ds}</span>`;
+  const hist = currentMission.attempts_history || [];
+  const rb = document.getElementById('retryBar');
+  if (hist.length) {
+    rb.style.display='block';
+    document.getElementById('retryChips').innerHTML = hist.map((h,i) => {
+      const prev = i>0 ? hist[i-1].score : null;
+      const d = prev!==null ? h.score-prev : null;
+      const ds = d!==null ? ` (${d>=0?'+':''}${d})` : '';
+      return `<span class="retry-chip ${h.score>=70?'pass':'fail'}">Intento ${h.attempt}: ${h.score}/100${ds}</span>`;
     }).join('');
-  } else retryBar.style.display = 'none';
+  } else rb.style.display='none';
 
-  document.getElementById('responseText').value = '';
-  updateWordCount();
+  document.getElementById('responseText').value=''; updateWC();
   document.getElementById('evalPanel').classList.remove('active');
-  document.getElementById('responsePanel').style.display = 'block';
-  document.getElementById('hintPanel').style.display = 'block';
-  document.getElementById('hintBody').innerHTML = `¿No sabes cómo empezar? <button onclick="getHint()" style="background:none;border:1px solid var(--border);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Manrope',sans-serif;margin-left:6px;color:var(--brand);font-weight:700">Pedir orientación</button>`;
+  document.getElementById('responsePanel').style.display='block';
+  document.getElementById('hintPanel').style.display='block';
+  document.getElementById('hintBody').innerHTML = `¿Cómo empezar? <button onclick="getHint()" style="background:none;border:1px solid var(--border);padding:4px 9px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Manrope',sans-serif;margin-left:6px;color:var(--brand);font-weight:700">Ver pista</button>`;
   showScreen('mission');
 }
 
-function updateWordCount() {
-  const words = document.getElementById('responseText').value.trim().split(/\s+/).filter(Boolean).length;
+function updateWC() {
+  const w = document.getElementById('responseText').value.trim().split(/\s+/).filter(Boolean).length;
   const el = document.getElementById('wordCount');
-  el.textContent = `${words} palabras`;
-  el.style.color = words >= 80 ? 'var(--green)' : words >= 40 ? 'var(--yellow)' : 'var(--muted)';
+  el.textContent = `${w} palabras`;
+  el.style.color = w>=80?'var(--green)':w>=40?'var(--yellow)':'var(--muted)';
 }
 
-function clearResponse() { document.getElementById('responseText').value = ''; updateWordCount(); }
+function clearR() { document.getElementById('responseText').value=''; updateWC(); }
 
-async function submitResponse() {
+async function submitR() {
   const text = document.getElementById('responseText').value.trim();
-  if (text.length < 20) { showToast('⚠️ Escribe una respuesta más completa'); return; }
+  if (text.length < 15) { showToast('⚠️ Escribe un prompt más completo'); return; }
 
-  document.getElementById('responsePanel').style.display = 'none';
-  document.getElementById('hintPanel').style.display = 'none';
+  document.getElementById('responsePanel').style.display='none';
+  document.getElementById('hintPanel').style.display='none';
   document.getElementById('evalPanel').classList.add('active');
 
-  const stepData = [
-    { id:'es1', delay:400, done:'✅ Estructura verificada' },
-    { id:'es2', delay:1100, done:'✅ Contenido técnico evaluado' },
-    { id:'es3', delay:1900, done:'✅ Profundidad del análisis medida' },
-    { id:'es4', delay:2700, done:'✅ Plan de acción generado' },
-  ];
-  stepData.forEach(s => {
-    setTimeout(() => document.getElementById(s.id).classList.add('visible'), s.delay);
-    setTimeout(() => {
-      const el = document.getElementById(s.id);
-      el.classList.add('done');
-      el.textContent = s.done;
-    }, s.delay + 600);
+  const steps = [{id:'es1',d:400,done:'✅ Rol verificado'},{id:'es2',d:1100,done:'✅ Contexto revisado'},{id:'es3',d:1900,done:'✅ Estructura evaluada'},{id:'es4',d:2700,done:'✅ Plan generado'}];
+  steps.forEach(s => {
+    setTimeout(() => document.getElementById(s.id).classList.add('visible'), s.d);
+    setTimeout(() => { const el=document.getElementById(s.id); el.classList.add('done'); el.textContent=s.done; }, s.d+600);
   });
 
   try {
-    const r = await fetch(`${API}/submissions/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: USER_ID, mission_id: currentMission.id, response: text })
-    });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Error'); }
+    const r = await fetch(`${API}/submissions/`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_ID, mission_id:currentMission.id, response:text}) });
+    if (!r.ok) { const e=await r.json(); throw new Error(e.detail||'Error'); }
     lastResult = await r.json();
     await loadProgress();
     setTimeout(() => showResults(lastResult), 3400);
   } catch(e) {
     document.getElementById('evalPanel').classList.remove('active');
-    document.getElementById('responsePanel').style.display = 'block';
-    document.getElementById('hintPanel').style.display = 'block';
-    stepData.forEach(s => {
-      const el = document.getElementById(s.id);
-      el.classList.remove('visible','done');
-      el.textContent = el.textContent.replace('✅','⏳');
-    });
+    document.getElementById('responsePanel').style.display='block';
+    document.getElementById('hintPanel').style.display='block';
+    steps.forEach(s => { const el=document.getElementById(s.id); el.classList.remove('visible','done'); el.textContent=el.textContent.replace('✅','⏳'); });
     showToast(`❌ ${e.message}`);
   }
 }
 
 function getHint() {
   const id = currentMission?.id;
-  const prof = currentMission?.profession || currentProfession;
-  const hints = prof === 'legal' ? LEGAL_HINTS : BANKING_HINTS;
-  const text = hints[id] || 'Sigue la estructura numerada y usa datos concretos del caso.';
+  const fieldHints = HINTS[currentField] || {};
+  const text = fieldHints[id] || 'Empieza con "Actúa como [especialista en...]". Incluye los datos del caso. Pide el output en secciones numeradas.';
   document.getElementById('hintBody').innerHTML = `<em style="color:var(--ink2)">${text}</em>`;
 }
 
-function showExampleModal() {
+function showExample() {
   const id = currentMission?.id;
-  const prof = currentMission?.profession || currentProfession;
-  const examples = prof === 'legal' ? LEGAL_EXAMPLES : BANKING_EXAMPLES;
-  const content = examples[id] || examples[Object.keys(examples)[0]];
-  document.getElementById('examplePromptContent').innerHTML = content;
-  document.getElementById('exampleModal').classList.add('show');
+  const fieldEx = EXAMPLES[currentField] || {};
+  const content = fieldEx[id] || fieldEx[Object.keys(fieldEx)[0]] || '';
+  document.getElementById('exContent').innerHTML = content || '<em style="color:var(--muted)">Ejemplo no disponible para esta misión</em>';
+  document.getElementById('exModal').classList.add('show');
 }
-
-function closeExampleModal(e) {
-  if (!e || e.target === document.getElementById('exampleModal')) {
-    document.getElementById('exampleModal').classList.remove('show');
-  }
-}
+function closeEx(e) { if (!e || e.target===document.getElementById('exModal')) document.getElementById('exModal').classList.remove('show'); }
 
 // ── Results ───────────────────────────────────────────────────────────────────
 function showResults(result) {
-  document.getElementById('resultMissionTitle').textContent = result.mission_title || currentMission.title;
+  document.getElementById('resMissionTitle').textContent = result.mission_title || currentMission.title;
   const score = result.score;
   const pass = score >= 70;
 
-  const circ = 364.4;
-  const ring = document.getElementById('scoreRingFill');
-  ring.className = `score-ring-fill ${pass ? 'pass' : 'fail'}`;
-  setTimeout(() => { ring.style.strokeDashoffset = circ - (score / 100) * circ; }, 100);
+  // Direct answer warning
+  const dw = document.getElementById('directWarning');
+  dw.style.display = result.is_direct_answer ? 'flex' : 'none';
 
+  // Score ring
+  const circ = 339.3;
+  const ring = document.getElementById('ringFill');
+  ring.className = `ring-fill ${pass?'pass':'fail'}`;
+  setTimeout(() => { ring.style.strokeDashoffset = circ - (score/100)*circ; }, 100);
   document.getElementById('scoreNum').textContent = score;
-  document.getElementById('scoreNum').className = `score-num ${pass ? 'pass' : 'fail'}`;
-  document.getElementById('scoreVerdict').textContent = pass ? '¡Misión superada! 🎉' : 'Buen intento, sigue mejorando';
-  document.getElementById('scoreVerdict').className = `score-verdict ${pass ? 'pass' : 'fail'}`;
+  document.getElementById('scoreNum').className = `score-num ${pass?'pass':'fail'}`;
+  document.getElementById('scoreVrd').textContent = pass ? '¡Prompt aprobado! 🎉' : 'Sigue mejorando el prompt';
+  document.getElementById('scoreVrd').className = `score-vrd ${pass?'pass':'fail'}`;
 
-  const dpw = document.getElementById('deltaPillWrap');
+  const dp = document.getElementById('deltaPill');
   if (result.score_delta !== null && result.score_delta !== undefined) {
-    const sign = result.score_delta >= 0 ? '+' : '';
-    const cls = result.score_delta >= 0 ? 'pos' : 'neg';
-    dpw.innerHTML = `<span class="delta-pill ${cls}">${result.score_delta >= 0 ? '↑' : '↓'} ${sign}${result.score_delta} vs intento anterior</span>`;
-  } else dpw.innerHTML = '';
+    const sign = result.score_delta>=0?'+':''; const cls=result.score_delta>=0?'pos':'neg';
+    dp.innerHTML = `<span class="delta-pill ${cls}">${result.score_delta>=0?'↑':'↓'} ${sign}${result.score_delta} vs intento anterior</span>`;
+  } else dp.innerHTML='';
 
   document.getElementById('attemptNote').textContent = `Intento #${result.attempt} · ${new Date().toLocaleDateString('es')}`;
   document.getElementById('fbText').textContent = result.feedback;
 
-  const makeList = (items, dotClass) =>
-    (items||[]).map(s => `<div class="fb-item"><span class="fb-dot ${dotClass}"></span>${s}</div>`).join('')
-    || `<div class="fb-item"><span class="fb-dot ${dotClass}"></span>Evaluación completada</div>`;
-
-  document.getElementById('fbStrengths').innerHTML = makeList(result.strengths, 'green');
-  document.getElementById('fbImprovements').innerHTML = makeList(result.improvements, 'brand');
+  const makeList = (items, dotCls) => (items||[]).map(s=>`<div class="fb-item"><span class="fb-dot ${dotCls}"></span>${s}</div>`).join('') || `<div class="fb-item"><span class="fb-dot ${dotCls}"></span>Evaluación completada</div>`;
+  document.getElementById('fbStr').innerHTML = makeList(result.strengths,'green');
+  document.getElementById('fbImp').innerHTML = makeList(result.improvements,'brand');
 
   const tip = document.getElementById('improveTip');
   if (!pass && result.improvements?.length) {
-    tip.style.display = 'flex';
-    document.getElementById('improveTipBody').textContent =
-      `Enfócate en: ${result.improvements.slice(0,2).join(' · ')}. Revisa el ejemplo de prompt y la estructura antes de reintentar.`;
-  } else tip.style.display = 'none';
+    tip.style.display='flex';
+    document.getElementById('improveTipBody').textContent = `Para mejorar tu prompt: ${result.improvements.slice(0,2).join(' · ')}. Revisa el ejemplo de la misión antes de reintentar.`;
+  } else tip.style.display='none';
 
   const ap = result.action_plan || [];
   const ab = document.getElementById('actionBand');
   if (ap.length) {
-    ab.style.display = 'block';
-    document.getElementById('actionStepsGrid').innerHTML = ap.map((step, i) =>
-      `<div class="action-step"><span class="action-step-num">${i+1}</span><span class="action-step-text">${step}</span></div>`
-    ).join('');
-  } else ab.style.display = 'none';
+    ab.style.display='block';
+    document.getElementById('actionGrid').innerHTML = ap.map((s,i)=>`<div class="action-step"><span class="as-num">${i+1}</span><span class="as-text">${s}</span></div>`).join('');
+  } else ab.style.display='none';
 
-  document.getElementById('retryResultBtn').textContent = `🔁 Reintentar (intento ${result.attempt + 1})`;
+  document.getElementById('retryBtn').textContent = `🔁 Reintentar prompt (intento ${result.attempt+1})`;
   showScreen('results');
-  showToast(pass ? `🎯 ¡Misión superada con ${score}/100!` : `📊 ${score}/100 — revisa el plan de acción y reintenta`);
+  showToast(pass ? `🎯 ¡Prompt aprobado! ${score}/100` : `📊 ${score}/100 — revisa el plan de acción`);
 }
 
 function retryMission() { if (currentMission) startMission(currentMission.id); }
@@ -1508,54 +1174,19 @@ function retryMission() { if (currentMission) startMission(currentMission.id); }
 async function showHistory() {
   showScreen('history');
   try {
-    const url = currentProfession
-      ? `${API}/submissions/history/${USER_ID}?profession=${currentProfession}`
-      : `${API}/submissions/history/${USER_ID}`;
-    const r = await fetch(url);
-    const d = await r.json();
+    const url = currentField ? `${API}/submissions/history/${USER_ID}?profession=${currentField}` : `${API}/submissions/history/${USER_ID}`;
+    const d = await (await fetch(url)).json();
     const h = d.history || [];
-    if (!h.length) {
-      document.getElementById('historyContent').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Aún no tienes entregas registradas.</p></div>';
-      return;
-    }
-    document.getElementById('historyContent').innerHTML = `
-      <table class="history-table">
-        <thead><tr><th>Misión</th><th>Área</th><th>Nivel</th><th>Score</th><th>Intento</th><th>Fecha</th></tr></thead>
-        <tbody>${h.map(row => `
-          <tr>
-            <td>${row.mission_title}</td>
-            <td><span class="badge ${row.profession === 'legal' ? 'badge-brand' : ''}" style="${row.profession === 'banking' ? 'background:#dbeafe;color:#1e40af' : ''}">${row.profession === 'legal' ? '⚖️ Legal' : '🏦 Banca'}</span></td>
-            <td><span class="badge level-${row.mission_level}">${row.mission_level}</span></td>
-            <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${row.score>=70?'var(--green)':'var(--red)'}">${row.score}/100</td>
-            <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">#${row.attempt}</td>
-            <td style="color:var(--muted);font-size:12px">${new Date(row.submitted_at).toLocaleString('es')}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
-  } catch {
-    document.getElementById('historyContent').innerHTML = '<div class="empty-state"><p>Error al cargar historial.</p></div>';
-  }
+    if (!h.length) { document.getElementById('historyContent').innerHTML='<div class="empty-state"><div class="icon">📭</div><p>Sin entregas registradas aún.</p></div>'; return; }
+    const fieldLabel = {banking:'🏦 Banca',legal:'⚖️ Legal',social_security:'🛡️ Seg. Social',payroll:'💰 Nómina'};
+    document.getElementById('historyContent').innerHTML = `<table class="history-table"><thead><tr><th>Misión</th><th>Campo</th><th>Nivel</th><th>Score</th><th>Intento</th><th>Fecha</th></tr></thead><tbody>${h.map(row=>`<tr><td>${row.mission_title}</td><td>${fieldLabel[row.profession]||row.profession}</td><td><span class="badge level-${row.mission_level}">${row.mission_level}</span></td><td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${row.score>=70?'var(--green)':'var(--red)'}">${row.score}/100</td><td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">#${row.attempt}</td><td style="color:var(--muted);font-size:12px">${new Date(row.submitted_at).toLocaleString('es')}</td></tr>`).join('')}</tbody></table>`;
+  } catch { document.getElementById('historyContent').innerHTML='<div class="empty-state"><p>Error al cargar historial.</p></div>'; }
 }
 
 // ── Nav ───────────────────────────────────────────────────────────────────────
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-async function showDashboard() {
-  await Promise.all([loadMissions(), loadProgress()]);
-  renderDashboard();
-  showScreen('dashboard');
-}
-
-function showToast(msg, dur=3800) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
-}
+function showScreen(name) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(`screen-${name}`).classList.add('active'); window.scrollTo(0,0); }
+async function showDashboard() { await Promise.all([loadMissions(),loadProgress()]); renderDash(); showScreen('dashboard'); }
+function showToast(msg,dur=3800) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
 
 init();
 </script>

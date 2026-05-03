@@ -1,292 +1,678 @@
 import sqlite3
 import os
-import json
 
 DB_PATH = os.getenv("DB_PATH", "simulator.db")
 
-# ── Banking missions (profession='banking', ids 1-5) ─────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# BANKING — 20 missions (ids 1-20)
+# ─────────────────────────────────────────────────────────────────────────────
 BANKING_MISSIONS = [
-    {
-        "id": 1, "profession": "banking", "order": 1,
-        "title": "Resumen Financiero Ejecutivo",
-        "narrative": (
-            "Eres analista junior en la sucursal Norte del banco. Tu gerente, antes de entrar "
-            "a una junta con la dirección regional, te pide en 10 minutos un resumen ejecutivo "
-            "con los datos del trimestre. Lo que escribas irá directo a la presentación."
-        ),
-        "description": (
-            "Datos del trimestre: ingresos por comisiones $45,200 · gastos operativos $32,100 · "
-            "morosidad 3.2% · nuevas cuentas abiertas: 87 · cuentas cerradas: 23 · NPS: 68."
-        ),
-        "objective": (
-            "Redactar un resumen financiero ejecutivo que destaque los puntos críticos, "
-            "identifique la principal alerta de riesgo y proponga una acción concreta."
-        ),
-        "expected_structure": (
-            "1. Resumen de resultados (cifras clave en 2-3 oraciones)\n"
-            "2. Alerta de riesgo identificada (cuál es y por qué es crítica)\n"
-            "3. Recomendación accionable para el próximo trimestre"
-        ),
-        "level": "Básico",
-        "criteria": "precisión de datos, identificación de riesgo, claridad ejecutiva, propuesta accionable",
-        "max_score": 100,
-    },
-    {
-        "id": 2, "profession": "banking", "order": 2,
-        "title": "Identificación de Riesgos en Cartera",
-        "narrative": (
-            "El área de riesgo acaba de recibir la auditoría trimestral. El director te llama: "
-            "'Necesito saber exactamente dónde estamos expuestos antes de que lleguen los auditores mañana.'"
-        ),
-        "description": (
-            "Cartera de créditos personales: 30% con score < 600 · tasa de impago subió de 1.8% a 4.1% · "
-            "concentración en construcción: 38% · 15% de créditos con garantías vencidas."
-        ),
-        "objective": (
-            "Identificar los 3 riesgos más críticos, clasificarlos por severidad "
-            "y proponer una medida de mitigación concreta para cada uno."
-        ),
-        "expected_structure": (
-            "1. Riesgo #1: [nombre] · Severidad: Alta/Media/Baja · Mitigación\n"
-            "2. Riesgo #2: [nombre] · Severidad: Alta/Media/Baja · Mitigación\n"
-            "3. Riesgo #3: [nombre] · Severidad: Alta/Media/Baja · Mitigación"
-        ),
-        "level": "Intermedio",
-        "criteria": "identificación de riesgos, clasificación por severidad, medidas de mitigación viables",
-        "max_score": 100,
-    },
-    {
-        "id": 3, "profession": "banking", "order": 3,
-        "title": "Recomendaciones de Producto al Cliente",
-        "narrative": (
-            "Cliente VIP en sala de espera. Carlos Méndez, empresario, lleva 8 años con el banco "
-            "y recibió un bono de $50,000. El asesor titular está de vacaciones y tú lo atenderás."
-        ),
-        "description": (
-            "Perfil: empresario, 45 años, ingresos $12,000/mes, hipoteca al 60%, sin inversiones activas, "
-            "viajero frecuente, 2 hijos en universidad. Bono disponible: $50,000."
-        ),
-        "objective": (
-            "Diseñar 3 recomendaciones priorizadas de productos bancarios con justificación "
-            "y beneficios concretos para este perfil específico."
-        ),
-        "expected_structure": (
-            "1. Recomendación principal: [producto] · Por qué le conviene · Beneficio concreto\n"
-            "2. Recomendación secundaria: [producto] · Por qué le conviene · Beneficio concreto\n"
-            "3. Recomendación complementaria: [producto] · Por qué le conviene · Beneficio concreto"
-        ),
-        "level": "Intermedio",
-        "criteria": "adecuación al perfil, justificación técnica, beneficios concretos, orden lógico",
-        "max_score": 100,
-    },
-    {
-        "id": 4, "profession": "banking", "order": 4,
-        "title": "Optimización del Proceso de Apertura de Cuentas",
-        "narrative": (
-            "El banco perdió 3 clientes esta semana. El proceso tarda 47 minutos. "
-            "El gerente te convoca: 'Quiero un plan antes de las 5pm. Debemos bajar a 20 minutos.'"
-        ),
-        "description": (
-            "Proceso actual: 47 min total · validación de documentos: 18 min · captura: 12 min · "
-            "aprobación supervisor: 10 min · entrega kit: 7 min. Problemas: 23% rechazos, "
-            "supervisores disponibles 70% del tiempo, 8% errores de captura."
-        ),
-        "objective": (
-            "Proponer un plan que reduzca el proceso a menos de 20 minutos indicando qué "
-            "eliminar, automatizar o rediseñar, con métricas de éxito medibles."
-        ),
-        "expected_structure": (
-            "1. Diagnóstico: cuello de botella principal\n"
-            "2. Propuestas de mejora por etapa (eliminar/automatizar/rediseñar)\n"
-            "3. Tiempo proyectado por etapa\n"
-            "4. Métricas de éxito"
-        ),
-        "level": "Avanzado",
-        "criteria": "análisis del cuello de botella, propuestas concretas, viabilidad, métricas claras",
-        "max_score": 100,
-    },
-    {
-        "id": 5, "profession": "banking", "order": 5,
-        "title": "Diseño de Automatización con IA",
-        "narrative": (
-            "850 llamadas diarias, agentes agotados, tasa de éxito del 38%. El director de tecnología "
-            "te pide la propuesta de IA para el comité ejecutivo del lunes."
-        ),
-        "description": (
-            "Operación: 850 llamadas/día · 65% casos simples · costo por llamada: $4.20 · "
-            "tasa de éxito: 38% · costo mensual estimado: $107,100."
-        ),
-        "objective": (
-            "Diseñar una propuesta de automatización con IA: qué automatizar, qué tecnología, "
-            "cómo medir el ROI y cómo gestionar los riesgos."
-        ),
-        "expected_structure": (
-            "1. Alcance: qué se automatiza y qué queda con humanos\n"
-            "2. Tecnología propuesta y justificación\n"
-            "3. ROI esperado y métricas de éxito\n"
-            "4. Riesgos y plan de mitigación"
-        ),
-        "level": "Avanzado",
-        "criteria": "selección de casos, justificación técnica de IA, métricas de ROI, gestión de riesgos",
-        "max_score": 100,
-    },
+  {"id":1,"profession":"banking","order":1,"level":"Básico",
+   "title":"Resumen Financiero de Sucursal",
+   "narrative":"Eres analista junior. Tu gerente entra a junta en 10 minutos y necesita un resumen del trimestre. Lo que escribas irá directo a la presentación.",
+   "description":"Datos: ingresos $45,200 · gastos $32,100 · morosidad 3.2% · cuentas nuevas 87 · cuentas cerradas 23 · NPS 68.",
+   "objective":"Diseña el prompt que le darías a la IA para que genere un resumen ejecutivo del trimestre con alertas y recomendaciones.",
+   "expected_structure":"1. Actúa como [rol bancario]\n2. Analiza estos datos: [insertar cifras]\n3. Identifica la alerta principal\n4. Entrega: resumen + alerta + 1 acción concreta",
+   "criteria":"rol claro, datos incluidos, estructura pedida, acción concreta",
+   "max_score":100},
+  {"id":2,"profession":"banking","order":2,"level":"Básico",
+   "title":"Análisis de Morosidad por Segmento",
+   "narrative":"El director de riesgo necesita saber qué segmento de clientes tiene más impago antes de la reunión de mañana con auditores.",
+   "description":"Cartera: segmento pyme morosidad 6.1% · personas naturales 2.8% · corporativo 0.4%. Total cartera $12M. Benchmark sector: 2.5%.",
+   "objective":"Diseña el prompt para que la IA analice la morosidad por segmento e identifique acciones prioritarias.",
+   "expected_structure":"1. Actúa como [especialista en riesgo]\n2. Compara morosidad vs benchmark\n3. Prioriza segmento crítico\n4. Propón 2 acciones de mitigación",
+   "criteria":"rol definido, datos usados, comparación con benchmark, acciones específicas",
+   "max_score":100},
+  {"id":3,"profession":"banking","order":3,"level":"Básico",
+   "title":"Recomendación de Producto a Cliente",
+   "narrative":"Cliente VIP con bono de $50,000. El asesor titular está de vacaciones. Tienes 30 minutos para preparar la reunión.",
+   "description":"Carlos Méndez, 45 años, empresario, ingresos $12,000/mes, hipoteca 60% pagada, sin inversiones, viaja al exterior, 2 hijos en universidad.",
+   "objective":"Diseña el prompt para que la IA recomiende los 3 mejores productos bancarios para este perfil específico.",
+   "expected_structure":"1. Actúa como [asesor financiero]\n2. Perfil del cliente: [datos]\n3. Necesidades identificadas: [lista]\n4. Recomienda 3 productos con justificación y beneficio concreto por cada uno",
+   "criteria":"perfil detallado, necesidades identificadas, productos justificados, beneficio por cliente",
+   "max_score":100},
+  {"id":4,"profession":"banking","order":4,"level":"Básico",
+   "title":"Diagnóstico de Proceso Lento",
+   "narrative":"El banco perdió 3 clientes esta semana. El proceso de apertura tarda 47 minutos. El gerente quiere un diagnóstico antes de las 5pm.",
+   "description":"Proceso: validación docs 18 min · captura datos 12 min · aprobación supervisor 10 min · entrega kit 7 min. Errores: 23% rechazos, supervisores disponibles 70% del tiempo.",
+   "objective":"Diseña el prompt para que la IA diagnostique el cuello de botella y proponga reducir el proceso a menos de 20 minutos.",
+   "expected_structure":"1. Actúa como [consultor de procesos]\n2. Analiza cada etapa y su duración\n3. Identifica el mayor cuello de botella\n4. Propón qué eliminar / automatizar / rediseñar con tiempo estimado",
+   "criteria":"análisis por etapa, cuello de botella nombrado, propuestas específicas, tiempo estimado",
+   "max_score":100},
+  {"id":5,"profession":"banking","order":5,"level":"Básico",
+   "title":"Propuesta de Automatización IA Cobranza",
+   "narrative":"850 llamadas diarias, tasa de éxito 38%. El director de tecnología necesita la propuesta para el comité ejecutivo del lunes.",
+   "description":"Operación: 850 llamadas/día · 65% casos simples · costo $4.20/llamada · costo mensual $107,100.",
+   "objective":"Diseña el prompt para que la IA elabore una propuesta de automatización con ROI, tecnología sugerida y gestión de riesgos.",
+   "expected_structure":"1. Actúa como [consultor de transformación digital]\n2. Analiza el volumen y tipos de llamadas\n3. Define qué automatizar y qué dejar a humanos\n4. Calcula ROI estimado y lista 3 riesgos con mitigación",
+   "criteria":"rol definido, separación automático/humano, cálculo ROI, riesgos y mitigación",
+   "max_score":100},
+  {"id":6,"profession":"banking","order":6,"level":"Intermedio",
+   "title":"Análisis de Riesgo de Crédito",
+   "narrative":"El comité de crédito tiene 3 solicitudes de alto monto mañana. Necesitan análisis de riesgo de cada una antes de las 8am.",
+   "description":"Solicitante A: empresa constructora, 5 años operando, deuda/patrimonio 2.1, flujo positivo últimos 2 años, sector en contracción 8%. Solicita $500,000.",
+   "objective":"Diseña el prompt para que la IA analice el riesgo crediticio del solicitante y emita una recomendación fundada.",
+   "expected_structure":"1. Actúa como [analista de crédito senior]\n2. Evalúa: capacidad de pago, endeudamiento, sector, historial\n3. Clasifica riesgo: bajo/medio/alto con justificación\n4. Recomienda: aprobar / condicionar / rechazar con condiciones",
+   "criteria":"evaluación multidimensional, clasificación de riesgo justificada, recomendación clara, condiciones si aplica",
+   "max_score":100},
+  {"id":7,"profession":"banking","order":7,"level":"Intermedio",
+   "title":"Detección de Patrones de Fraude",
+   "narrative":"El sistema marcó 47 transacciones como sospechosas. El equipo de fraude tiene 2 horas para decidir cuáles bloquear.",
+   "description":"Transacciones: 12 retiros ATM en ciudades distintas en 6 horas · 8 compras online en montos redondos · 5 transferencias a cuentas nuevas > $3,000 cada una · 22 microtransacciones de $0.01.",
+   "objective":"Diseña el prompt para que la IA clasifique las transacciones por nivel de riesgo y priorice las que deben bloquearse primero.",
+   "expected_structure":"1. Actúa como [especialista en fraude bancario]\n2. Analiza cada patrón de transacción\n3. Clasifica por riesgo: crítico / alto / medio\n4. Lista en orden de prioridad de bloqueo con justificación",
+   "criteria":"análisis por patrón, clasificación de riesgo, orden de prioridad, justificación de cada una",
+   "max_score":100},
+  {"id":8,"profession":"banking","order":8,"level":"Intermedio",
+   "title":"Estrategia de Captación de Clientes",
+   "narrative":"La sucursal perdió 15% de depósitos en el último trimestre frente a neobancos. El gerente necesita una estrategia de retención y captación.",
+   "description":"Perfil clientes perdidos: 72% millennials · promedio edad 31 años · todos con smartphone · razón de salida: comisiones altas y proceso lento. Competidor principal ofrece cero comisiones y apertura en 5 minutos.",
+   "objective":"Diseña el prompt para que la IA cree una estrategia de captación y retención dirigida a este segmento específico.",
+   "expected_structure":"1. Actúa como [estratega de marketing bancario]\n2. Analiza el perfil y las razones de fuga\n3. Diseña 3 iniciativas concretas con responsable y plazo\n4. Define métricas de éxito para cada iniciativa",
+   "criteria":"segmento entendido, causas abordadas, iniciativas concretas con plazo, métricas definidas",
+   "max_score":100},
+  {"id":9,"profession":"banking","order":9,"level":"Intermedio",
+   "title":"Reestructuración de Deuda Empresarial",
+   "narrative":"Cliente corporativo con $2.3M en deuda renegocia condiciones. Tiene flujo positivo pero enfrenta vencimiento masivo en 90 días.",
+   "description":"Deuda actual: $2.3M · tasa promedio 14.5% · 6 créditos distintos · vencimiento más crítico: $800,000 en 90 días · flujo mensual disponible: $120,000 · activos garantizables: $1.8M.",
+   "objective":"Diseña el prompt para que la IA proponga un esquema de reestructuración viable para el cliente y el banco.",
+   "expected_structure":"1. Actúa como [asesor de banca empresarial]\n2. Analiza la situación de liquidez vs vencimientos\n3. Propón esquema de consolidación y nuevas condiciones\n4. Define garantías requeridas y cronograma de pagos",
+   "criteria":"análisis de liquidez, esquema de consolidación viable, garantías, cronograma realista",
+   "max_score":100},
+  {"id":10,"profession":"banking","order":10,"level":"Intermedio",
+   "title":"Análisis de Rentabilidad por Producto",
+   "narrative":"La dirección quiere saber qué productos bancarios tienen mejor margen real. Los datos de costos están disponibles pero no cruzados con ingresos.",
+   "description":"Productos: tarjeta de crédito ingresos $340,000 costos $290,000 · crédito hipotecario ingresos $580,000 costos $410,000 · cuenta de nómina ingresos $120,000 costos $95,000 · seguro vinculado ingresos $210,000 costos $88,000.",
+   "objective":"Diseña el prompt para que la IA calcule la rentabilidad real de cada producto y priorice donde invertir recursos.",
+   "expected_structure":"1. Actúa como [analista de rentabilidad bancaria]\n2. Calcula margen por producto en % y valor absoluto\n3. Rankea de mayor a menor rentabilidad\n4. Recomienda 2 productos para potenciar y 1 para revisar",
+   "criteria":"cálculos correctos, ranking con valores, recomendaciones basadas en datos, acción clara",
+   "max_score":100},
+  {"id":11,"profession":"banking","order":11,"level":"Avanzado",
+   "title":"Plan de Gestión de Crisis de Liquidez",
+   "narrative":"El banco enfrenta retiros masivos por rumores en redes sociales. En 48 horas salieron $18M. El comité de crisis se reúne en 1 hora.",
+   "description":"Reservas actuales: $45M · ratio de liquidez: 18% (mínimo regulatorio 12%) · líneas de crédito disponibles: $30M · créditos vencidos próximos 7 días: $8M · depósitos que vencen esta semana: $22M.",
+   "objective":"Diseña el prompt para que la IA elabore un plan de gestión de crisis de liquidez con acciones para las próximas 72 horas.",
+   "expected_structure":"1. Actúa como [director de tesorería en crisis]\n2. Evalúa la brecha de liquidez en escenario base y estresado\n3. Lista acciones inmediatas (0-24h), corto plazo (24-72h) y comunicación\n4. Define indicadores de alerta temprana para el seguimiento",
+   "criteria":"cálculo de brecha, acciones por horizonte temporal, comunicación incluida, indicadores de seguimiento",
+   "max_score":100},
+  {"id":12,"profession":"banking","order":12,"level":"Avanzado",
+   "title":"Diseño de Scoring Crediticio con IA",
+   "narrative":"El banco quiere reemplazar el scoring manual por un modelo de IA. El equipo de datos tiene variables históricas de 50,000 clientes.",
+   "description":"Variables disponibles: historial de pagos, ingresos declarados, nivel educativo, antigüedad laboral, zona geográfica, número de productos bancarios, visitas app. Tasa de impago histórica: 4.2%.",
+   "objective":"Diseña el prompt para que la IA proponga la arquitectura del modelo de scoring, las variables clave y el proceso de validación.",
+   "expected_structure":"1. Actúa como [científico de datos en banca]\n2. Selecciona y justifica las 5 variables más predictivas\n3. Propón tipo de modelo (regresión logística, árbol, red neuronal) con justificación\n4. Define métricas de validación y umbrales de decisión",
+   "criteria":"selección de variables justificada, modelo propuesto con razones, métricas de validación, umbrales definidos",
+   "max_score":100},
+  {"id":13,"profession":"banking","order":13,"level":"Avanzado",
+   "title":"Auditoría de Cumplimiento Regulatorio",
+   "narrative":"La superintendencia financiera realizará auditoría en 30 días. Se detectaron 12 hallazgos en el último reporte interno.",
+   "description":"Hallazgos: 3 críticos (KYC incompleto en 340 cuentas · provisiones subestimadas $1.2M · reporte SARLAFT atrasado 45 días) · 5 mayores · 4 menores. Multa potencial estimada: $800,000.",
+   "objective":"Diseña el prompt para que la IA cree un plan de remediación priorizando los hallazgos críticos antes de la auditoría.",
+   "expected_structure":"1. Actúa como [oficial de cumplimiento bancario]\n2. Clasifica hallazgos por impacto regulatorio y multa potencial\n3. Crea plan de remediación con responsable, plazo y evidencia requerida por hallazgo\n4. Define cronograma de cierre para los 30 días disponibles",
+   "criteria":"clasificación por impacto, plan con responsable y plazo, evidencia definida, cronograma 30 días",
+   "max_score":100},
+  {"id":14,"profession":"banking","order":14,"level":"Avanzado",
+   "title":"Evaluación de Fusión Bancaria",
+   "narrative":"El banco recibió una oferta de adquisición de un competidor regional. El directorio necesita análisis antes de la junta extraordinaria.",
+   "description":"Banco objetivo: activos $340M · cartera vigente 88% · morosidad 2.1% · ROE 14% · 23 sucursales · 180,000 clientes · precio oferta: $85M (1.8x valor en libros).",
+   "objective":"Diseña el prompt para que la IA evalúe si la adquisición crea valor, los riesgos principales y las condiciones que debería imponer el comprador.",
+   "expected_structure":"1. Actúa como [analista de fusiones y adquisiciones bancarias]\n2. Evalúa la valoración (¿el precio es justo?)\n3. Identifica 3 riesgos principales de la integración\n4. Lista 5 condiciones que el comprador debe incluir en el acuerdo",
+   "criteria":"análisis de valoración, riesgos de integración identificados, condiciones específicas, recomendación clara",
+   "max_score":100},
+  {"id":15,"profession":"banking","order":15,"level":"Avanzado",
+   "title":"Transformación Digital de Sucursal",
+   "narrative":"El banco quiere convertir 10 sucursales físicas en formato digital reduciendo costos 40% en 18 meses sin perder clientes mayores.",
+   "description":"Perfil clientes afectados: 65% mayores de 55 años · 30% no tienen smartphone · 20% visitan sucursal semanalmente · transacciones presenciales: 8,400/mes por sucursal · costo por transacción presencial: $12.",
+   "objective":"Diseña el prompt para que la IA elabore un plan de transformación digital que incluya manejo del cambio para clientes mayores.",
+   "expected_structure":"1. Actúa como [director de transformación digital bancaria]\n2. Segmenta clientes por nivel de adopción digital\n3. Diseña modelo de sucursal híbrida con servicios presenciales mínimos\n4. Crea plan de migración con métricas y gestión del cambio para adultos mayores",
+   "criteria":"segmentación de clientes, modelo híbrido definido, plan de migración, gestión del cambio incluida",
+   "max_score":100},
+  {"id":16,"profession":"banking","order":16,"level":"Complejo",
+   "title":"Gestión de Portafolio de Inversiones",
+   "narrative":"El área de tesorería administra $80M en inversiones. El contexto macroeconómico cambió radicalmente: inflación subió al 8.5% y la tasa de referencia subió 150 puntos básicos.",
+   "description":"Portafolio actual: TES 40% · acciones locales 25% · fondos de deuda privada 20% · liquidez 15%. Duración promedio: 4.2 años. Objetivo: proteger capital y mantener retorno real positivo.",
+   "objective":"Diseña el prompt para que la IA proponga una reconfiguración del portafolio adaptada al nuevo contexto macroeconómico.",
+   "expected_structure":"1. Actúa como [gestor de portafolios institucional]\n2. Analiza el impacto del cambio macro en cada clase de activo\n3. Propón nueva distribución con porcentajes y justificación\n4. Estima el impacto en retorno y riesgo del nuevo portafolio vs el actual",
+   "criteria":"análisis macro por activo, nueva distribución con %, justificación técnica, comparación de retorno/riesgo",
+   "max_score":100},
+  {"id":17,"profession":"banking","order":17,"level":"Complejo",
+   "title":"Análisis de Stress Testing",
+   "narrative":"El regulador exige stress testing bajo 3 escenarios macroeconómicos antes del cierre del año. El equipo de riesgo tiene 2 semanas.",
+   "description":"Escenarios: base (crecimiento 2.5%), adverso (recesión -1.5%, desempleo +3%), severo (crisis -4%, desempleo +8%, devaluación 30%). Cartera total: $450M. Capital regulatorio actual: 14.2%.",
+   "objective":"Diseña el prompt para que la IA ejecute el stress testing y estime el impacto en capital bajo cada escenario.",
+   "expected_structure":"1. Actúa como [especialista en riesgo sistémico bancario]\n2. Define supuestos de impacto para cada escenario en cartera y capital\n3. Calcula el capital proyectado en cada escenario\n4. Identifica el umbral donde el banco incumple el mínimo regulatorio",
+   "criteria":"supuestos definidos por escenario, cálculos de capital proyectado, umbral de incumplimiento, recomendaciones de mitigación",
+   "max_score":100},
+  {"id":18,"profession":"banking","order":18,"level":"Complejo",
+   "title":"Diseño de Producto Financiero Inclusivo",
+   "narrative":"El banco busca bancarizar 50,000 nuevos clientes de economía informal en zonas rurales. Inversión disponible: $2M. Plazo: 24 meses.",
+   "description":"Segmento objetivo: agricultores y comerciantes informales · ingreso promedio $380/mes · sin historial crediticio · acceso a smartphone 60% · distancia promedio a sucursal más cercana: 85 km.",
+   "objective":"Diseña el prompt para que la IA cree un producto financiero inclusivo viable para este segmento, con modelo de riesgo alternativo.",
+   "expected_structure":"1. Actúa como [especialista en finanzas inclusivas]\n2. Define las características del producto (monto, plazo, garantías alternativas)\n3. Propón modelo de scoring alternativo sin historial crediticio\n4. Diseña el canal de distribución y la estrategia de educación financiera",
+   "criteria":"producto caracterizado, scoring alternativo propuesto, canal definido, educación financiera incluida",
+   "max_score":100},
+  {"id":19,"profession":"banking","order":19,"level":"Complejo",
+   "title":"Respuesta a Crisis Reputacional",
+   "narrative":"Un periodista publicó que el banco cobra comisiones ocultas a adultos mayores. La nota viral tiene 2M de vistas en 6 horas. El call center colapsó.",
+   "description":"Hechos: la comisión existe pero está en letra pequeña del contrato · afecta 12,000 clientes · monto promedio cobrado: $45 · la superintendencia ya solicitó informe en 24 horas · 3 congresistas pidieron investigación.",
+   "objective":"Diseña el prompt para que la IA elabore la estrategia de respuesta a la crisis reputacional con comunicado, plan de acción y respuesta regulatoria.",
+   "expected_structure":"1. Actúa como [director de comunicaciones y asuntos corporativos]\n2. Redacta el comunicado oficial (tono, reconocimiento, acción)\n3. Define el plan de compensación a clientes afectados\n4. Prepara la respuesta al regulador con cronograma de remediación",
+   "criteria":"comunicado con tono apropiado, compensación definida, respuesta regulatoria, cronograma de remediación",
+   "max_score":100},
+  {"id":20,"profession":"banking","order":20,"level":"Complejo",
+   "title":"Arquitectura de Open Banking",
+   "narrative":"El banco debe cumplir con la regulación de Open Banking en 6 meses. Es el primero en el grupo en implementarlo. El CTO necesita la hoja de ruta técnica.",
+   "description":"Estado actual: core bancario legacy (COBOL, 35 años) · 0 APIs públicas · datos en silos · equipo tech: 45 personas · presupuesto: $1.5M · socios potenciales: 8 fintechs interesadas.",
+   "objective":"Diseña el prompt para que la IA cree la hoja de ruta técnica de implementación de Open Banking respetando las restricciones dadas.",
+   "expected_structure":"1. Actúa como [arquitecto de soluciones bancarias]\n2. Define las 5 APIs prioritarias con casos de uso\n3. Propón arquitectura de integración con el core legacy\n4. Crea hoja de ruta por fases con hitos en 6 meses y gestión de riesgos técnicos",
+   "criteria":"APIs priorizadas, arquitectura de integración, fases con hitos, riesgos técnicos gestionados",
+   "max_score":100},
 ]
 
-# ── Legal missions (profession='legal', ids 11-15) ────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# LEGAL — 20 missions (ids 101-120)
+# ─────────────────────────────────────────────────────────────────────────────
 LEGAL_MISSIONS = [
-    {
-        "id": 11, "profession": "legal", "order": 1,
-        "title": "Análisis de Contrato de Arrendamiento",
-        "narrative": (
-            "Eres abogado junior en un despacho. Tu socio te envía un contrato de arrendamiento "
-            "comercial firmado hace 3 años. El cliente quiere saber si está protegido antes de "
-            "renovar. Tienes 30 minutos para el análisis previo a la reunión."
-        ),
-        "description": (
-            "Contrato de arrendamiento comercial con las siguientes cláusulas: renta mensual $8,500 "
-            "con incremento anual del 8% · plazo 5 años sin opción de prórroga automática · "
-            "arrendatario responde por daños estructurales · cláusula penal del 3 meses de renta "
-            "por terminación anticipada · sin cláusula de caso fortuito o fuerza mayor · "
-            "jurisdicción exclusiva en ciudad del arrendador."
-        ),
-        "objective": (
-            "Identificar las cláusulas de mayor riesgo para el arrendatario, clasificarlas "
-            "por nivel de riesgo y proponer una negociación para cada una."
-        ),
-        "expected_structure": (
-            "1. Cláusula de riesgo #1: [nombre] · Riesgo: Alto/Medio/Bajo · Propuesta de negociación\n"
-            "2. Cláusula de riesgo #2: [nombre] · Riesgo: Alto/Medio/Bajo · Propuesta de negociación\n"
-            "3. Cláusula de riesgo #3: [nombre] · Riesgo: Alto/Medio/Bajo · Propuesta de negociación\n"
-            "4. Recomendación general al cliente"
-        ),
-        "level": "Básico",
-        "criteria": "precisión jurídica, identificación de riesgos contractuales, propuestas de negociación viables, claridad al cliente",
-        "max_score": 100,
-    },
-    {
-        "id": 12, "profession": "legal", "order": 2,
-        "title": "Redacción de Cláusula de Confidencialidad",
-        "narrative": (
-            "Una startup tecnológica contrata tu despacho para una fusión. El socio te pide "
-            "redactar una cláusula NDA robusta antes de la reunión de due diligence mañana. "
-            "'Que sea sólida pero no ahuyente al comprador', te dice."
-        ),
-        "description": (
-            "Contexto: empresa de software con valuación de $2M en proceso de adquisición. "
-            "Información sensible a proteger: código fuente, base de clientes (340 empresas), "
-            "contratos con 5 proveedores clave, proyecciones financieras a 3 años, "
-            "tecnología patentada pendiente de registro. Partes: empresa vendedora (México) "
-            "y comprador potencial (EEUU). Duración deseada: protección post-negociación."
-        ),
-        "objective": (
-            "Redactar una cláusula de confidencialidad completa que proteja los activos "
-            "de la empresa sin ser excesivamente restrictiva para el proceso de negociación."
-        ),
-        "expected_structure": (
-            "1. Definición de información confidencial (qué queda incluido y excluido)\n"
-            "2. Obligaciones de las partes (qué pueden y no pueden hacer con la información)\n"
-            "3. Plazo de vigencia y condiciones de terminación\n"
-            "4. Consecuencias del incumplimiento (penalidades y remedios)"
-        ),
-        "level": "Intermedio",
-        "criteria": "precisión jurídica, completitud de la cláusula, equilibrio entre protección y viabilidad, lenguaje técnico apropiado",
-        "max_score": 100,
-    },
-    {
-        "id": 13, "profession": "legal", "order": 3,
-        "title": "Resumen Jurídico Ejecutivo",
-        "narrative": (
-            "El CEO de tu cliente corporativo tiene reunión con inversionistas en 2 horas. "
-            "Te llama: 'Necesito que me expliques en términos simples qué significa esta "
-            "resolución judicial y qué riesgo tenemos. Sin jerga legal, que lo entiendan todos.'"
-        ),
-        "description": (
-            "Resolución judicial en proceso laboral colectivo: el tribunal determinó que la empresa "
-            "incurrió en prácticas de contratación irregular (outsourcing no permitido) durante "
-            "2019-2022 afectando a 47 trabajadores. Se ordena: reinstalación de 12 trabajadores "
-            "o pago de liquidación equivalente a $340,000 total · pago de salarios caídos "
-            "desde la fecha de despido · multa administrativa de $45,000 · recurso de apelación "
-            "disponible con plazo de 15 días hábiles · riesgo de demanda colectiva adicional "
-            "de los 35 trabajadores restantes estimado en $850,000."
-        ),
-        "objective": (
-            "Redactar un resumen ejecutivo claro, sin jerga legal, que explique la situación, "
-            "los montos en riesgo, las opciones disponibles y la recomendación estratégica."
-        ),
-        "expected_structure": (
-            "1. Qué pasó (en lenguaje claro, máximo 3 oraciones)\n"
-            "2. Qué significa para la empresa (impacto económico total)\n"
-            "3. Opciones disponibles con pros y contras de cada una\n"
-            "4. Recomendación del despacho con justificación"
-        ),
-        "level": "Intermedio",
-        "criteria": "claridad para no abogados, precisión de los hechos, análisis completo de opciones, recomendación fundamentada",
-        "max_score": 100,
-    },
-    {
-        "id": 14, "profession": "legal", "order": 4,
-        "title": "Evaluación de Riesgos en Contrato Comercial",
-        "narrative": (
-            "Tu cliente está a punto de firmar un contrato de distribución exclusiva con una "
-            "empresa extranjera. Es su mayor acuerdo hasta la fecha. Te pide: "
-            "'Dime si debo firmar esto o no, y por qué.' Tienes una hora."
-        ),
-        "description": (
-            "Contrato de distribución exclusiva internacional: exclusividad en territorio nacional "
-            "por 10 años irrevocables · mínimo de compra mensual de $50,000 o penalidad del 20% · "
-            "proveedor puede terminar el contrato con 30 días de aviso por 'incumplimiento a su "
-            "discreción' · todos los conflictos se resuelven en arbitraje en Ginebra bajo reglas ICC · "
-            "ley aplicable: Suiza · cláusula de no competencia por 3 años post-terminación en "
-            "todo Latinoamérica · el distribuidor asume todos los costos de marketing y certificaciones."
-        ),
-        "objective": (
-            "Realizar una evaluación completa de riesgos del contrato, clasificarlos por "
-            "nivel de exposición y emitir una recomendación clara sobre si firmar o negociar."
-        ),
-        "expected_structure": (
-            "1. Semáforo de riesgos: lista de cláusulas problemáticas con nivel (Rojo/Amarillo/Verde)\n"
-            "2. Top 3 riesgos críticos con análisis de impacto\n"
-            "3. Propuestas de modificación para cada riesgo crítico\n"
-            "4. Recomendación final: firmar / negociar primero / no firmar — con justificación"
-        ),
-        "level": "Avanzado",
-        "criteria": "completitud del análisis, identificación de riesgos ocultos, propuestas viables, claridad de la recomendación",
-        "max_score": 100,
-    },
-    {
-        "id": 15, "profession": "legal", "order": 5,
-        "title": "Respuesta Profesional a Cliente en Crisis",
-        "narrative": (
-            "Son las 8pm del viernes. Un cliente importante te escribe en pánico: acaba de recibir "
-            "una carta de requerimiento de $1.2M de un ex-socio alegando apropiación indebida. "
-            "El lunes hay reunión de consejo. Necesita tu respuesta esta noche."
-        ),
-        "description": (
-            "Situación: carta de requerimiento por $1.2M alegando que tu cliente se apropió de "
-            "oportunidad de negocio del ex-socio (contrato con empresa gobierno por $3M). "
-            "Hechos disponibles: el ex-socio salió de la empresa hace 8 meses por acuerdo mutuo · "
-            "el contrato con gobierno se firmó 6 meses después de su salida · existe acuerdo de "
-            "separación firmado con cláusula de finiquito · el ex-socio no tenía rol activo en "
-            "las negociaciones con el gobierno según registros internos · plazo para responder: "
-            "10 días hábiles según la carta."
-        ),
-        "objective": (
-            "Redactar una respuesta profesional al cliente que: calme la situación con base en los "
-            "hechos, explique la posición legal, defina los pasos inmediatos y genere confianza."
-        ),
-        "expected_structure": (
-            "1. Evaluación inicial de la situación (fortalezas y debilidades de tu posición)\n"
-            "2. Análisis de la carta de requerimiento (validez, fundamentos, riesgos)\n"
-            "3. Plan de acción inmediato (próximas 72 horas)\n"
-            "4. Respuesta recomendada al ex-socio (estrategia de negociación o defensa)"
-        ),
-        "level": "Avanzado",
-        "criteria": "manejo de crisis, precisión jurídica, comunicación clara con cliente, estrategia legal sólida",
-        "max_score": 100,
-    },
+  {"id":101,"profession":"legal","order":1,"level":"Básico",
+   "title":"Análisis de Contrato de Arrendamiento",
+   "narrative":"Eres abogado junior. Tu socio te envía un contrato antes de una reunión con el cliente en 30 minutos. Necesitas identificar las cláusulas problemáticas.",
+   "description":"Contrato comercial: renta $8,500/mes · incremento anual 8% · plazo 5 años sin prórroga · arrendatario responde por daños estructurales · penalidad 3 meses por terminación anticipada · sin cláusula de fuerza mayor · jurisdicción exclusiva del arrendador.",
+   "objective":"Diseña el prompt para que la IA identifique las cláusulas de mayor riesgo y proponga negociaciones específicas.",
+   "expected_structure":"1. Actúa como [abogado especialista en contratos comerciales]\n2. Analiza cada cláusula e identifica las 3 más riesgosas\n3. Clasifica riesgo: Alto/Medio/Bajo con justificación\n4. Propón modificación específica para cada cláusula problemática",
+   "criteria":"análisis por cláusula, clasificación de riesgo, modificaciones propuestas, lenguaje jurídico",
+   "max_score":100},
+  {"id":102,"profession":"legal","order":2,"level":"Básico",
+   "title":"Redacción de Cláusula de Confidencialidad",
+   "narrative":"Startup tecnológica en proceso de adquisición. Due diligence mañana. El socio pide una NDA sólida pero que no ahuyente al comprador.",
+   "description":"Empresa: software, valuación $2M · información a proteger: código fuente, 340 clientes, contratos con 5 proveedores, proyecciones 3 años, patente pendiente · partes: vendedora (México) y comprador (EEUU).",
+   "objective":"Diseña el prompt para que la IA redacte una cláusula NDA completa y equilibrada para este contexto específico.",
+   "expected_structure":"1. Actúa como [abogado corporativo especialista en M&A]\n2. Define qué es y qué no es información confidencial\n3. Establece obligaciones, plazo y excepciones\n4. Incluye consecuencias de incumplimiento proporcionales",
+   "criteria":"definición de confidencialidad, obligaciones claras, excepciones legales, consecuencias proporcionales",
+   "max_score":100},
+  {"id":103,"profession":"legal","order":3,"level":"Básico",
+   "title":"Resumen Jurídico para Ejecutivo",
+   "narrative":"CEO con reunión de inversionistas en 2 horas. Te llama: 'Explícame qué significa esta resolución judicial en términos simples y qué riesgo tenemos.'",
+   "description":"Resolución: outsourcing irregular 2019-2022 afectando 47 trabajadores · reinstalación de 12 o pago $340,000 · salarios caídos $45,000 · multa $45,000 · apelación disponible 15 días · riesgo colectivo adicional: $850,000.",
+   "objective":"Diseña el prompt para que la IA redacte un resumen ejecutivo claro, sin jerga legal, con opciones y recomendación.",
+   "expected_structure":"1. Actúa como [abogado que traduce lenguaje legal a lenguaje de negocios]\n2. Explica qué ocurrió en máximo 3 oraciones simples\n3. Cuantifica el impacto económico total en escenarios\n4. Presenta opciones con pros/contras y recomendación",
+   "criteria":"lenguaje claro no técnico, cuantificación de impacto, opciones con pros/contras, recomendación fundamentada",
+   "max_score":100},
+  {"id":104,"profession":"legal","order":4,"level":"Básico",
+   "title":"Evaluación de Contrato de Distribución",
+   "narrative":"Cliente a punto de firmar contrato de distribución exclusiva internacional. Es su mayor acuerdo. Te pide: '¿Debo firmar esto o no?'",
+   "description":"Contrato: exclusividad 10 años irrevocables · mínimo compra $50,000/mes o penalidad 20% · terminación con 30 días por 'incumplimiento a discreción del proveedor' · arbitraje en Ginebra · no competencia 3 años en toda Latinoamérica.",
+   "objective":"Diseña el prompt para que la IA evalúe el contrato con semáforo de riesgos y emita recomendación clara.",
+   "expected_structure":"1. Actúa como [abogado especialista en contratos internacionales]\n2. Evalúa cada cláusula con semáforo (Rojo/Amarillo/Verde)\n3. Analiza los 3 riesgos críticos con impacto económico estimado\n4. Recomienda: firmar / negociar primero / no firmar con condiciones",
+   "criteria":"semáforo por cláusula, impacto económico estimado, top 3 riesgos, recomendación con condiciones",
+   "max_score":100},
+  {"id":105,"profession":"legal","order":5,"level":"Básico",
+   "title":"Respuesta a Cliente en Crisis Legal",
+   "narrative":"8pm del viernes. Cliente recibe carta de requerimiento de $1.2M de un ex-socio alegando apropiación indebida. El lunes hay reunión de consejo.",
+   "description":"Situación: ex-socio salió hace 8 meses por acuerdo mutuo · contrato con gobierno firmado 6 meses después de su salida · acuerdo de separación con finiquito · ex-socio no tenía rol activo en negociaciones · plazo respuesta: 10 días hábiles.",
+   "objective":"Diseña el prompt para que la IA redacte una respuesta profesional al cliente que calme la situación y defina pasos inmediatos.",
+   "expected_structure":"1. Actúa como [abogado litigante con experiencia en conflictos societarios]\n2. Evalúa la fortaleza de la posición legal con los hechos disponibles\n3. Analiza la carta de requerimiento (validez, fundamentos, riesgos)\n4. Define plan de acción 72 horas y estrategia de negociación o defensa",
+   "criteria":"evaluación de posición legal, análisis de la carta, plan 72 horas, estrategia definida",
+   "max_score":100},
+  {"id":106,"profession":"legal","order":6,"level":"Intermedio",
+   "title":"Due Diligence Legal de Empresa",
+   "narrative":"Fondo de inversión quiere comprar empresa de logística. Tienes 5 días para el due diligence legal. El socio quiere el informe el viernes.",
+   "description":"Empresa objetivo: 8 años operando · 3 litigios laborales activos · 2 contratos con clientes vencidos no renovados · marca registrada con oposición pendiente · inmueble principal con hipoteca al 70% · 45 empleados.",
+   "objective":"Diseña el prompt para que la IA estructure el proceso de due diligence legal e identifique los riesgos que podrían frenar la transacción.",
+   "expected_structure":"1. Actúa como [abogado M&A especialista en due diligence]\n2. Lista las 5 áreas legales críticas a revisar en 5 días\n3. Identifica los 3 riesgos que podrían ser deal breakers\n4. Propón condiciones o garantías para mitigar cada riesgo",
+   "criteria":"áreas de revisión priorizadas, deal breakers identificados, condiciones de mitigación, lenguaje de transacción",
+   "max_score":100},
+  {"id":107,"profession":"legal","order":7,"level":"Intermedio",
+   "title":"Defensa en Demanda Laboral Colectiva",
+   "narrative":"Sindicato de 120 trabajadores demanda por supresión irregular de beneficios. Audiencia en 3 semanas. El cliente está en pánico.",
+   "description":"Demanda: supresión de prima extraoficial de $200/mes vigente 12 años · el cliente la eliminó por restructuración · no hay documento escrito que la establezca · 3 precedentes jurisprudenciales a favor de los trabajadores · costo total si pierden: $2.88M.",
+   "objective":"Diseña el prompt para que la IA construya la estrategia de defensa y evalúe si es mejor litigar o negociar.",
+   "expected_structure":"1. Actúa como [abogado laboralista litigante]\n2. Evalúa la fortaleza de la defensa vs los precedentes\n3. Cuantifica el costo de litigar vs el costo de negociar\n4. Recomienda estrategia con argumentos clave para la audiencia",
+   "criteria":"evaluación de fortaleza legal, análisis costo/beneficio litigio vs negociación, argumentos para audiencia, recomendación clara",
+   "max_score":100},
+  {"id":108,"profession":"legal","order":8,"level":"Intermedio",
+   "title":"Estructuración de Joint Venture",
+   "narrative":"Dos empresas quieren crear una sociedad conjunta para explotar una tecnología. Cada una tiene miedos distintos sobre el control.",
+   "description":"Empresa A: tiene la tecnología patentada, quiere 51% y control de decisiones · Empresa B: tiene el capital ($3M) y la red de distribución, quiere protección de inversión · plazo del proyecto: 7 años · sector: salud digital.",
+   "objetivo":"Diseña el prompt para que la IA proponga la estructura legal del joint venture que equilibre los intereses de ambas partes.",
+   "expected_structure":"1. Actúa como [abogado corporativo especialista en joint ventures]\n2. Propón la estructura societaria con distribución de control\n3. Define cláusulas de protección para el inversionista minoritario\n4. Establece mecanismos de salida (drag along, tag along, put/call options)",
+   "criteria":"estructura societaria clara, protección del minoritario, mecanismos de salida definidos, equilibrio de intereses",
+   "max_score":100},
+  {"id":109,"profession":"legal","order":9,"level":"Intermedio",
+   "title":"Análisis de Responsabilidad por Datos Personales",
+   "narrative":"Empresa sufrió hackeo. Datos de 50,000 usuarios expuestos. La autoridad de protección de datos notificó investigación. El CEO quiere saber qué tan grave es.",
+   "description":"Datos expuestos: nombre, email, teléfono, historial de compras · notificación a usuarios: no se ha hecho · tiempo desde el hackeo: 72 horas · autoridad tiene 15 días para recibir el reporte · multa máxima posible: 4% de los ingresos anuales ($1.8M).",
+   "objective":"Diseña el prompt para que la IA evalúe la responsabilidad legal y el plan de respuesta bajo normativa de protección de datos.",
+   "expected_structure":"1. Actúa como [abogado especialista en privacidad y datos personales]\n2. Evalúa el nivel de responsabilidad según la normativa aplicable\n3. Define el plan de notificación a usuarios y a la autoridad\n4. Estima el rango de multa y cómo reducirla con cooperación",
+   "criteria":"evaluación de responsabilidad, plan de notificación, reporte a autoridad, estimación de multa con mitigación",
+   "max_score":100},
+  {"id":110,"profession":"legal","order":10,"level":"Intermedio",
+   "title":"Negociación de Términos Contractuales",
+   "narrative":"Cliente recibió contrato de servicios de un proveedor clave. Sin este proveedor, detiene operaciones. El proveedor tiene más poder pero hay margen de negociación.",
+   "description":"Contrato proveedor: pago anticipado 60% · penalidad por cancelación 40% del contrato · SLA de 99% de disponibilidad sin compensación · propiedad intelectual de personalizaciones queda en el proveedor · renovación automática con 12 meses de aviso.",
+   "objective":"Diseña el prompt para que la IA identifique qué cláusulas negociar en orden de prioridad y cómo argumentar cada petición.",
+   "expected_structure":"1. Actúa como [abogado negociador de contratos tecnológicos]\n2. Prioriza las 3 cláusulas más desfavorables en orden de importancia\n3. Propón contrapropuesta específica para cada una con argumento de negociación\n4. Define el punto de no retorno (qué es inaceptable aunque el proveedor no ceda)",
+   "criteria":"priorización de cláusulas, contrapropuestas específicas, argumentos de negociación, punto de no retorno definido",
+   "max_score":100},
+  {"id":111,"profession":"legal","order":11,"level":"Avanzado",
+   "title":"Arbitraje Internacional Comercial",
+   "narrative":"Empresa colombiana en arbitraje contra proveedor alemán por $4.5M. Primera audiencia en 6 semanas bajo reglas ICC. Primer arbitraje internacional del despacho.",
+   "description":"Controversia: proveedor entregó software con defectos críticos · cliente perdió $4.5M en contratos · proveedor alega que el cliente modificó el software sin autorización · aplicación de CISG (Convención de Viena) · sede del arbitraje: París.",
+   "objective":"Diseña el prompt para que la IA elabore la estrategia de defensa para la primera audiencia bajo reglas ICC y CISG.",
+   "expected_structure":"1. Actúa como [árbitro y abogado especialista en comercio internacional]\n2. Analiza la aplicación del CISG al caso específico\n3. Identifica los argumentos más fuertes para ambas partes\n4. Propón la estrategia y las pruebas prioritarias para la primera audiencia",
+   "criteria":"análisis CISG, argumentos por parte, estrategia de primera audiencia, pruebas priorizadas",
+   "max_score":100},
+  {"id":112,"profession":"legal","order":12,"level":"Avanzado",
+   "title":"Defensa en Proceso Antimonopolio",
+   "narrative":"Autoridad de competencia investiga a empresa por posible abuso de posición dominante. Tienen 3 meses para responder la investigación.",
+   "description":"Empresa: 68% de participación de mercado en distribución de medicamentos · práctica investigada: descuentos exclusivos que excluyen competidores · 3 denunciantes: competidores más pequeños · multa potencial: hasta 10% de ingresos anuales ($12M).",
+   "objective":"Diseña el prompt para que la IA construya la defensa antimonopolio y proponga compromisos para evitar la sanción máxima.",
+   "expected_structure":"1. Actúa como [abogado especialista en libre competencia]\n2. Evalúa si los descuentos configuran abuso según jurisprudencia de competencia\n3. Construye los argumentos de defensa (eficiencias, beneficios al consumidor)\n4. Propón compromisos voluntarios que podrían reducir la sanción",
+   "criteria":"análisis de abuso vs eficiencias, argumentos de defensa, compromisos voluntarios, estrategia frente a la autoridad",
+   "max_score":100},
+  {"id":113,"profession":"legal","order":13,"level":"Avanzado",
+   "title":"Reestructuración Societaria para Expansión",
+   "narrative":"Grupo familiar quiere expandir a 3 países. La estructura actual (una sola empresa) genera riesgos fiscales y de responsabilidad. El consejo quiere la propuesta antes del cierre fiscal.",
+   "description":"Grupo actual: empresa en Colombia con $15M en activos · operaciones en México y Perú sin estructura formal · 4 socios familiares · mezcla de deuda personal y corporativa · tributación actual: 35% tasa efectiva.",
+   "objetivo":"Diseña el prompt para que la IA proponga la estructura societaria óptima para la expansión regional minimizando riesgos.",
+   "expected_structure":"1. Actúa como [abogado corporativo especialista en estructuración societaria regional]\n2. Propón la estructura de holding con subsidiarias por país\n3. Define el flujo de dividendos y préstamos intercompañía\n4. Identifica los riesgos de la transición y cómo manejarlos",
+   "criteria":"estructura de holding propuesta, flujo de dividendos definido, riesgos de transición, impacto fiscal estimado",
+   "max_score":100},
+  {"id":114,"profession":"legal","order":14,"level":"Avanzado",
+   "title":"Gestión de Crisis Contractual",
+   "narrative":"Tu cliente principal incumplió su contrato más grande ($8M) invocando fuerza mayor por pandemia. El proveedor amenaza con demandar. Hay 72 horas para resolver.",
+   "description":"Contrato: $8M · incumplimiento: 4 meses de retraso en entrega · cliente invoca fuerza mayor (COVID) · contrato firmado en 2021, después del inicio de la pandemia · cláusula de fuerza mayor: 'eventos imprevisibles e irresistibles' · el retraso causó pérdidas al proveedor de $2.1M.",
+   "objetivo":"Diseña el prompt para que la IA evalúe la viabilidad de la defensa de fuerza mayor y la estrategia de negociación en 72 horas.",
+   "expected_structure":"1. Actúa como [abogado especialista en resolución de contratos bajo presión]\n2. Analiza si la fuerza mayor aplica al caso (firmado post-pandemia)\n3. Evalúa la exposición real del cliente si la defensa falla\n4. Diseña la estrategia de negociación para las 72 horas",
+   "criteria":"análisis de viabilidad de fuerza mayor, exposición si falla, estrategia de negociación, límite de concesiones",
+   "max_score":100},
+  {"id":115,"profession":"legal","order":15,"level":"Avanzado",
+   "title":"Regulación de Fintech",
+   "narrative":"Startup fintech lanzó app de préstamos sin licencia. Regulador los citó. El fundador no sabía que necesitaba autorización previa. Audiencia en 10 días.",
+   "description":"App: préstamos entre $200-$2,000 · 8,000 usuarios activos · $1.2M en préstamos desembolsados · tasa de interés: 3% mensual · regulador: Superintendencia Financiera · sanción potencial: suspensión operaciones + multa $500,000.",
+   "objetivo":"Diseña el prompt para que la IA elabore la estrategia de respuesta al regulador y el camino de regularización.",
+   "expected_structure":"1. Actúa como [abogado especialista en regulación fintech]\n2. Evalúa la infracción real y el nivel de responsabilidad subjetiva\n3. Diseña la respuesta a la audiencia (reconocimiento + plan de regularización)\n4. Propón el camino de licenciamiento con cronograma realista",
+   "criteria":"evaluación de infracción, responsabilidad subjetiva, respuesta a audiencia, plan de regularización con plazos",
+   "max_score":100},
+  {"id":116,"profession":"legal","order":16,"level":"Complejo",
+   "title":"Litigio de Propiedad Intelectual",
+   "narrative":"Empresa nacional descubrió que una multinacional usa su patente registrada sin licencia hace 3 años. El consejo quiere saber si vale la pena litigar internacionalmente.",
+   "description":"Patente: tecnología de procesamiento de pagos, registrada en Colombia y EEUU · uso no autorizado: 3 años en EEUU · estimado de ventas del infractor: $45M/año · costo estimado de litigio en EEUU: $2-4M · probabilidad de éxito: 60% según peritos.",
+   "objetivo":"Diseña el prompt para que la IA evalúe la estrategia de enforcement de la patente y calcule si el litigio es rentable.",
+   "expected_structure":"1. Actúa como [abogado especialista en litigio de propiedad intelectual internacional]\n2. Calcula el daño potencial reclamable (royalties + daños punitivos)\n3. Evalúa la estrategia: litigio directo vs licencia negociada vs acuerdo\n4. Recomienda con análisis costo-beneficio de cada opción",
+   "criteria":"cálculo de daño reclamable, evaluación de estrategias, análisis costo-beneficio, recomendación con probabilidades",
+   "max_score":100},
+  {"id":117,"profession":"legal","order":17,"level":"Complejo",
+   "title":"Defensa en Proceso Penal Empresarial",
+   "narrative":"Empresa enfrenta investigación penal por corrupción. Dos ejecutivos mencionados. La investigación es por hechos del 2018-2020. El CEO pide consejo esta noche.",
+   "description":"Investigación: pagos a funcionario público para obtener licitaciones · involucrados: VP Comercial y Director de Licitaciones · monto investigado: $450,000 · los pagos aparecen como 'servicios de consultoría' en la contabilidad · la empresa cooperó con auditoría interna en 2021.",
+   "objetivo":"Diseña el prompt para que la IA evalúe la exposición penal y la estrategia de defensa para la empresa y los individuos.",
+   "expected_structure":"1. Actúa como [abogado penalista especialista en delitos corporativos]\n2. Evalúa la exposición penal de la empresa vs los individuos\n3. Analiza si la cooperación previa puede ser un factor atenuante\n4. Recomienda estrategia: defensa separada empresa/individuos o colaboración con la fiscalía",
+   "criteria":"evaluación de exposición por sujeto, análisis de atenuantes, separación de defensas, estrategia frente a la fiscalía",
+   "max_score":100},
+  {"id":118,"profession":"legal","order":18,"level":"Complejo",
+   "title":"Negociación de Liquidación Laboral Masiva",
+   "narrative":"Empresa reestructura y debe liquidar a 200 trabajadores. El proceso debe minimizar el riesgo de demandas y el costo total. Plazo: 60 días.",
+   "description":"Plantilla: 200 empleados · antigüedad promedio 8 años · 35 con fuero sindical · 12 en licencia de maternidad/paternidad · costo mínimo legal estimado: $4.2M · presupuesto disponible: $5M · el sindicato ya amenazó con huelga.",
+   "objetivo":"Diseña el prompt para que la IA elabore la estrategia de liquidación masiva que minimice litigios y respete los fueros.",
+   "expected_structure":"1. Actúa como [abogado laboralista especialista en reestructuraciones]\n2. Clasifica a los trabajadores por categoría de riesgo legal\n3. Diseña el proceso de negociación individual para grupos críticos\n4. Propón el cronograma de 60 días con secuencia de notificaciones",
+   "criteria":"clasificación de trabajadores, manejo de fueros, proceso de negociación por grupo, cronograma de 60 días",
+   "max_score":100},
+  {"id":119,"profession":"legal","order":19,"level":"Complejo",
+   "title":"Diseño de Programa de Cumplimiento",
+   "narrative":"Empresa multinacional quiere implementar programa de compliance después de que una subsidiaria fue sancionada por corrupción. El grupo quiere protegerse legalmente.",
+   "description":"Grupo: 8 subsidiarias en 5 países · sector: construcción e infraestructura · empleados expuestos a riesgo: 340 (comerciales, licitaciones, compras) · presupuesto compliance: $800,000 año · requisito: certificación ISO 37001 en 18 meses.",
+   "objetivo":"Diseña el prompt para que la IA elabore el programa de compliance anticorrupción con estructura, políticas y plan de certificación.",
+   "expected_structure":"1. Actúa como [experto en compliance anticorrupción y certificación ISO 37001]\n2. Define la estructura del programa (comité, oficial, políticas clave)\n3. Identifica los 5 procesos de mayor riesgo y sus controles\n4. Crea la hoja de ruta de 18 meses para la certificación ISO",
+   "criteria":"estructura de gobierno del programa, procesos de riesgo con controles, hoja de ruta con hitos, presupuesto asignado",
+   "max_score":100},
+  {"id":120,"profession":"legal","order":20,"level":"Complejo",
+   "title":"Arbitraje de Inversión Internacional",
+   "narrative":"Estado demandado por inversionista extranjero ante el CIADI. Inversión expropiada sin compensación. Caso de $120M. Primera defensa en 4 meses.",
+   "description":"Tratado BIT aplicable: entre país del inversionista y el Estado · expropiación: concesión minera revocada sin compensación · argumento del Estado: la concesión violaba normas ambientales · jurisprudencia CIADI: 60% a favor de inversionistas en casos similares · honorarios del panel: $800,000.",
+   "objetivo":"Diseña el prompt para que la IA construya la defensa del Estado ante el tribunal CIADI en el caso de expropiación.",
+   "expected_structure":"1. Actúa como [abogado especialista en derecho internacional de inversiones]\n2. Analiza si la revocación constituye expropiación indirecta bajo el BIT\n3. Construye el argumento de defensa (poderes regulatorios del Estado)\n4. Evalúa probabilidad de éxito y propón estrategia de negociación paralela",
+   "criteria":"análisis de expropiación bajo BIT, argumento de poderes regulatorios, evaluación de probabilidad, estrategia paralela",
+   "max_score":100},
 ]
 
-ALL_MISSIONS = BANKING_MISSIONS + LEGAL_MISSIONS
+# ─────────────────────────────────────────────────────────────────────────────
+# SEGURIDAD SOCIAL — 20 missions (ids 201-220)
+# ─────────────────────────────────────────────────────────────────────────────
+SOCIAL_SECURITY_MISSIONS = [
+  {"id":201,"profession":"social_security","order":1,"level":"Básico",
+   "title":"Cálculo de Cotización Mensual",
+   "narrative":"Eres analista en el área de seguridad social de una empresa. El área contable te pregunta por qué el sistema marcó error en la liquidación del mes.",
+   "description":"Empleado: salario base $2,800,000 · auxilios de transporte $162,000 · comisiones mes $450,000 · días trabajados: 28 · incapacidad 2 días.",
+   "objective":"Diseña el prompt para que la IA calcule correctamente la base de cotización y los aportes a seguridad social.",
+   "expected_structure":"1. Actúa como [especialista en seguridad social y liquidación de nómina]\n2. Determina el ingreso base de cotización (IBC) con todos sus componentes\n3. Calcula aportes: salud, pensión, ARL por parte empleado y empleador\n4. Ajusta por los días de incapacidad y explica el tratamiento",
+   "criteria":"IBC correcto, aportes separados por entidad, ajuste por incapacidad, explicación del método",
+   "max_score":100},
+  {"id":202,"profession":"social_security","order":2,"level":"Básico",
+   "title":"Análisis de Novedad por Incapacidad",
+   "narrative":"El empleado reportó incapacidad médica de 15 días. El área de RRHH no sabe qué debe asumir la empresa y qué la EPS.",
+   "description":"Empleado: 3 años en la empresa · salario $3,200,000 · incapacidad médica general de 15 días · aportante a EPS Sura · primeros 2 días: responsabilidad del empleador · días 3-180: EPS paga 66.67%.",
+   "objective":"Diseña el prompt para que la IA calcule el valor de la incapacidad, quién paga cada parte y cómo registrarlo en nómina.",
+   "expected_structure":"1. Actúa como [analista de seguridad social]\n2. Calcula el valor diario de la incapacidad y el total\n3. Determina responsabilidad empleador vs EPS día por día\n4. Indica cómo registrar la novedad y reclamar a la EPS",
+   "criteria":"cálculo diario correcto, responsabilidad por período, proceso de reclamación EPS, registro en nómina",
+   "max_score":100},
+  {"id":203,"profession":"social_security","order":3,"level":"Básico",
+   "title":"Afiliación de Trabajador Nuevo",
+   "narrative":"Trabajador nuevo ingresa el 15 del mes. El área de RRHH no tiene claro los plazos ni el proceso de afiliación a seguridad social.",
+   "description":"Empleado nuevo: cargo operativo · salario $1,800,000 · ingresa 15 de enero · no tiene EPS ni AFP activas · tiene ARL de trabajo anterior (empresa diferente) · contrato término indefinido.",
+   "objective":"Diseña el prompt para que la IA defina el proceso completo de afiliación y los plazos legales de cada entidad.",
+   "expected_structure":"1. Actúa como [especialista en afiliaciones de seguridad social]\n2. Lista el proceso de afiliación a EPS, AFP y ARL con plazos\n3. Calcula los aportes del primer mes proporcional\n4. Identifica los documentos requeridos y riesgos de no hacerlo a tiempo",
+   "criteria":"proceso por entidad, plazos legales, cálculo proporcional primer mes, riesgos de incumplimiento",
+   "max_score":100},
+  {"id":204,"profession":"social_security","order":4,"level":"Básico",
+   "title":"Liquidación de Trabajador con Pensión Voluntaria",
+   "narrative":"Trabajador va a pensionarse. Tiene aportes en AFP obligatoria y fondo de pensiones voluntario. El área no sabe cómo afecta la liquidación final.",
+   "description":"Trabajador: 62 años · 25 años de cotización · saldo en AFP $180,000,000 · saldo pensión voluntaria $45,000,000 · semanas cotizadas: 1,300 · salario promedio últimos 10 años: $4,500,000.",
+   "objective":"Diseña el prompt para que la IA calcule el monto de pensión al que tiene derecho y cómo coordinar los fondos.",
+   "expected_structure":"1. Actúa como [asesor previsional especialista en pensiones]\n2. Verifica si cumple requisitos para pensión de vejez\n3. Calcula el monto de pensión según el régimen (RPM o RAIS)\n4. Explica cómo integrar el fondo voluntario a la pensión",
+   "criteria":"verificación de requisitos, cálculo de monto, régimen aplicado, integración del fondo voluntario",
+   "max_score":100},
+  {"id":205,"profession":"social_security","order":5,"level":"Básico",
+   "title":"Manejo de Trabajador con Licencia de Maternidad",
+   "narrative":"Empleada reporta embarazo semana 12. El área de RRHH no sabe qué fuero aplica, qué paga quién y cómo manejar el reemplazo.",
+   "description":"Empleada: analista financiera · salario $3,800,000 · afiliada a EPS · semana 12 de embarazo · contrato término indefinido · la empresa quiere reducir personal por restructuración.",
+   "objective":"Diseña el prompt para que la IA explique el fuero de maternidad, el proceso de licencia y los riesgos si la empresa despide.",
+   "expected_structure":"1. Actúa como [abogado laboralista especialista en derechos de maternidad]\n2. Explica el fuero de maternidad y su alcance temporal\n3. Calcula el valor de la licencia de maternidad y quién la paga\n4. Advierte las consecuencias legales del despido y cómo manejar el reemplazo",
+   "criteria":"fuero explicado, cálculo de licencia, responsabilidad de pago, consecuencias del despido",
+   "max_score":100},
+  {"id":206,"profession":"social_security","order":6,"level":"Intermedio",
+   "title":"Auditoría de Planilla de Seguridad Social",
+   "narrative":"La UGPP notificó una auditoría a la empresa por inconsistencias en los aportes de los últimos 3 años. El contador necesita preparar la respuesta.",
+   "description":"Hallazgos UGPP: 45 trabajadores con IBC inferior al salario real · 12 casos de comisiones no incluidas en base · 8 trabajadores con traslado de AFP sin soporte · período investigado: enero 2021 - diciembre 2023 · sanción potencial: $380,000,000.",
+   "objective":"Diseña el prompt para que la IA elabore el plan de respuesta a la auditoría UGPP y calcule la exposición real.",
+   "expected_structure":"1. Actúa como [especialista en auditorías de seguridad social y UGPP]\n2. Clasifica los hallazgos por tipo y nivel de riesgo\n3. Calcula la diferencia de aportes por cada tipo de hallazgo\n4. Diseña el plan de respuesta con correcciones y argumentos de defensa",
+   "criteria":"clasificación de hallazgos, cálculo de diferencias, argumentos de defensa, plan de corrección",
+   "max_score":100},
+  {"id":207,"profession":"social_security","order":7,"level":"Intermedio",
+   "title":"Gestión de Accidente Laboral",
+   "narrative":"Trabajador sufrió accidente en planta. Fractura de muñeca. El área de SST no sabe el proceso completo con la ARL ni las obligaciones de la empresa.",
+   "description":"Accidente: fractura de muñeca derecha · trabajador: operario de producción · ARL: Positiva · clase de riesgo: IV · el accidente ocurrió por no usar EPP · la empresa no tenía el procedimiento documentado · incapacidad estimada: 45 días.",
+   "objective":"Diseña el prompt para que la IA guíe el proceso de reporte, atención médica y gestión con ARL paso a paso.",
+   "expected_structure":"1. Actúa como [especialista en seguridad y salud en el trabajo]\n2. Lista el proceso de reporte del accidente con plazos legales\n3. Define qué cubre la ARL y qué responsabilidad tiene la empresa\n4. Identifica las sanciones por no tener el procedimiento documentado",
+   "criteria":"proceso de reporte con plazos, cobertura ARL vs responsabilidad empresa, sanciones por omisión, plan de prevención",
+   "max_score":100},
+  {"id":208,"profession":"social_security","order":8,"level":"Intermedio",
+   "title":"Traslado entre Regímenes de Pensión",
+   "narrative":"Empleado de 42 años quiere trasladarse de AFP privada al régimen de prima media (Colpensiones). El área de RRHH no sabe si puede y qué implica.",
+   "description":"Empleado: 42 años · 18 años cotizando · saldo en AFP $85,000,000 · semanas cotizadas: 936 · salario actual $5,200,000 · le faltan 13 años para pensionarse · en AFP proyecta pensión de $2.1M/mes · en Colpensiones proyecta $3.8M/mes.",
+   "objective":"Diseña el prompt para que la IA evalúe si el traslado es viable, conveniente y el proceso para hacerlo.",
+   "expected_structure":"1. Actúa como [asesor previsional independiente]\n2. Verifica si cumple los requisitos legales para el traslado\n3. Compara las proyecciones de pensión en cada régimen a sus condiciones actuales\n4. Recomienda con análisis de riesgo y el proceso de traslado",
+   "criteria":"verificación de requisitos, comparación de pensiones, análisis de riesgo, proceso de traslado",
+   "max_score":100},
+  {"id":209,"profession":"social_security","order":9,"level":"Intermedio",
+   "title":"Liquidación de Contratista Independiente",
+   "narrative":"La empresa tiene 30 contratistas independientes. La DIAN detectó que algunos realmente son trabajadores dependientes. Riesgo de recaracterización.",
+   "description":"Contratistas: 30 personas · algunos trabajan exclusivamente para la empresa · horario fijo 8am-5pm · usan herramientas de la empresa · promedio de honorarios: $4,200,000/mes · si se recaracterizan: aportes atrasados + sanciones estimadas $2.1M.",
+   "objective":"Diseña el prompt para que la IA evalúe el riesgo de recaracterización y el plan de regularización.",
+   "expected_structure":"1. Actúa como [abogado laboralista especialista en formas de vinculación]\n2. Aplica los criterios de subordinación a la situación descrita\n3. Clasifica a los contratistas por nivel de riesgo de recaracterización\n4. Propón el plan de regularización con costo y cronograma",
+   "criteria":"criterios de subordinación aplicados, clasificación de riesgo, costo de regularización, cronograma",
+   "max_score":100},
+  {"id":210,"profession":"social_security","order":10,"level":"Intermedio",
+   "title":"Pensión por Invalidez",
+   "narrative":"Trabajador sufrió accidente de tránsito (no laboral) y quedó con pérdida de capacidad laboral del 52%. El área no sabe qué pensión le corresponde ni quién la paga.",
+   "description":"Trabajador: 38 años · pérdida de capacidad laboral: 52% (calificada por Junta) · origen: accidente común · semanas cotizadas: 520 · saldo AFP $42,000,000 · salario previo: $2,900,000.",
+   "objective":"Diseña el prompt para que la IA calcule si tiene derecho a pensión de invalidez, el monto y el proceso.",
+   "expected_structure":"1. Actúa como [especialista en pensiones de invalidez]\n2. Verifica si cumple el porcentaje de pérdida y semanas para pensión por invalidez\n3. Calcula el monto de la pensión según el régimen\n4. Explica el proceso de trámite y los documentos requeridos",
+   "criteria":"verificación de requisitos, cálculo de monto, régimen aplicable, proceso de trámite",
+   "max_score":100},
+  {"id":211,"profession":"social_security","order":11,"level":"Avanzado",
+   "title":"Diseño de Plan de Beneficios Extralegales",
+   "narrative":"La empresa quiere mejorar la retención de talento con beneficios extralegales. El presupuesto es $500,000/año para 80 empleados. El reto: que no generen aportes adicionales a seguridad social.",
+   "description":"Plantilla: 80 empleados · salario promedio $3,500,000 · rotación actual: 28% anual · principales causas de salida: salario y beneficios · beneficios actuales: solo los legales · presupuesto adicional: $500,000/año.",
+   "objective":"Diseña el prompt para que la IA proponga un plan de beneficios que mejore la retención sin incrementar la carga de seguridad social.",
+   "expected_structure":"1. Actúa como [especialista en compensación total y beneficios]\n2. Identifica qué beneficios son no constitutivos de salario bajo la ley\n3. Diseña el portafolio de beneficios con el presupuesto disponible\n4. Calcula el ahorro en aportes vs si fueran salario y el impacto en retención",
+   "criteria":"beneficios no constitutivos de salario identificados, portafolio con presupuesto, ahorro calculado, impacto en retención",
+   "max_score":100},
+  {"id":212,"profession":"social_security","order":12,"level":"Avanzado",
+   "title":"Regularización de Empresa con Deuda UGPP",
+   "narrative":"Empresa fue notificada con deuda UGPP de $1.2B por aportes en mora 2018-2022. El gerente quiere saber si hay forma de reducirla antes de que embarguen.",
+   "description":"Deuda UGPP: $1,200,000,000 · concepto: diferencia de aportes y multas · período: 2018-2022 · la empresa tiene liquidez limitada · hay resolución de determinación oficial · opciones: recurso de reconsideración, facilidad de pago, corrección voluntaria.",
+   "objetivo":"Diseña el prompt para que la IA evalúe las opciones legales para reducir o fraccionar la deuda UGPP.",
+   "expected_structure":"1. Actúa como [abogado especialista en controversias UGPP]\n2. Evalúa la procedencia del recurso de reconsideración\n3. Compara: pagar completo vs facilidad de pago vs litigio\n4. Diseña la estrategia óptima con impacto en flujo de caja",
+   "criteria":"análisis del recurso, comparación de opciones, impacto en flujo de caja, estrategia recomendada",
+   "max_score":100},
+  {"id":213,"profession":"social_security","order":13,"level":"Avanzado",
+   "title":"Implementación de Sistema de Gestión SST",
+   "narrative":"Empresa mediana (200 empleados) debe implementar el SG-SST según el Decreto 1072. Han tenido 3 accidentes leves este año. La inspección del Ministerio es en 2 meses.",
+   "description":"Estado actual: no tienen el SG-SST documentado · 200 empleados · 3 accidentes leves este año · el coordinador SST fue contratado hace 1 mes · presupuesto: $80,000,000 · sanción si no cumplen: hasta 500 SMMLV.",
+   "objetivo":"Diseña el prompt para que la IA cree el plan de implementación del SG-SST en 2 meses con priorización de actividades.",
+   "expected_structure":"1. Actúa como [consultor experto en SG-SST bajo Decreto 1072]\n2. Identifica los elementos mínimos que deben estar listos para la inspección\n3. Crea el cronograma de 2 meses con responsables\n4. Prioriza los documentos críticos y el plan de capacitación mínimo",
+   "criteria":"elementos mínimos identificados, cronograma de 2 meses, responsables asignados, documentos prioritarios",
+   "max_score":100},
+  {"id":214,"profession":"social_security","order":14,"level":"Avanzado",
+   "title":"Cálculo de Mesada Pensional en Escenario Complejo",
+   "narrative":"Pensionado reclama que su mesada fue mal liquidada. Tiene semanas en el sector público (Colpensiones) y privado (AFP). El fondo de pensiones le responde que no hay error.",
+   "description":"Pensionado: 62 años · semanas en Colpensiones: 680 · semanas en AFP privada: 640 · total semanas: 1,320 · salario base de liquidación público: $4,200,000 · salario base liquidación privado: $5,800,000 · el pensionado dice que su mesada debería ser más alta.",
+   "objetivo":"Diseña el prompt para que la IA calcule la mesada correcta bajo el esquema de pensión compartida y verifique si hay error.",
+   "expected_structure":"1. Actúa como [perito en cálculo pensional y pensión compartida]\n2. Explica cómo funciona la pensión compartida entre regímenes\n3. Calcula la mesada de cada entidad según sus semanas y salarios\n4. Determina si hay diferencia y cómo reclamarla",
+   "criteria":"explicación del esquema compartido, cálculo por entidad, detección de diferencia, proceso de reclamación",
+   "max_score":100},
+  {"id":215,"profession":"social_security","order":15,"level":"Avanzado",
+   "title":"Gestión de Empresa Multiriesgo ARL",
+   "narrative":"Empresa con 3 actividades económicas distintas (manufactura, ventas, administración) clasifica toda su plantilla en un solo riesgo. La ARL detectó la inconsistencia.",
+   "description":"Empresa: manufactura (clase IV, 80 empleados) · ventas campo (clase II, 45 empleados) · administración (clase I, 30 empleados) · actualmente toda la empresa en clase III · diferencia de aportes estimada: $85,000,000/año.",
+   "objetivo":"Diseña el prompt para que la IA calcule la cotización correcta diferenciada y el proceso de corrección con la ARL.",
+   "expected_structure":"1. Actúa como [especialista en clasificación de riesgo ARL]\n2. Calcula la cotización correcta para cada grupo por actividad económica\n3. Determina la diferencia de aportes acumulada y el proceso de corrección\n4. Define cómo negociar con la ARL para evitar sanción",
+   "criteria":"cálculo diferenciado por actividad, diferencia acumulada, proceso de corrección, estrategia de negociación",
+   "max_score":100},
+  {"id":216,"profession":"social_security","order":16,"level":"Complejo",
+   "title":"Fusión de Empresas y Portabilidad de Derechos",
+   "narrative":"Dos empresas se fusionan. Los trabajadores de la empresa absorbida tienen más antigüedad y mejores beneficios extralegales. El área legal necesita saber qué derechos se conservan.",
+   "description":"Empresa absorbida: 120 empleados · antigüedad promedio 12 años · beneficios: prima extralegal de $500,000/mes · cesantías dobles convenidas · plan de salud complementario · la empresa absorbente no tiene estos beneficios.",
+   "objetivo":"Diseña el prompt para que la IA analice qué derechos adquiridos se conservan en la fusión y cómo manejar las diferencias.",
+   "expected_structure":"1. Actúa como [abogado laboralista especialista en sucesión de empresas]\n2. Analiza qué derechos adquiridos son intangibles en la fusión\n3. Propón cómo homologar los beneficios sin generar conflicto\n4. Diseña el proceso de comunicación con los trabajadores afectados",
+   "criteria":"derechos adquiridos identificados, estrategia de homologación, manejo del conflicto, comunicación con empleados",
+   "max_score":100},
+  {"id":217,"profession":"social_security","order":17,"level":"Complejo",
+   "title":"Programa de Retiro Voluntario",
+   "narrative":"Empresa de 400 empleados necesita reducir planta en 80 personas. Quiere hacerlo por retiro voluntario antes de llegar a despidos. Presupuesto máximo: $2.5B.",
+   "description":"Plantilla objetivo: 80 personas · perfil: mayores de 50 años y alta antigüedad · costo de despido unilateral de este grupo: $3.2B · el retiro voluntario debe ser más atractivo que lo legal pero dentro del presupuesto · riesgo: que se vayan los que la empresa necesita conservar.",
+   "objetivo":"Diseña el prompt para que la IA diseñe el programa de retiro voluntario con el incentivo adecuado y el criterio de selección.",
+   "expected_structure":"1. Actúa como [consultor de restructuración de capital humano]\n2. Calcula el incentivo óptimo que sea atractivo pero dentro del presupuesto\n3. Define los criterios de elegibilidad para minimizar el riesgo de perder talento clave\n4. Diseña el proceso de oferta, plazo y comunicación",
+   "criteria":"incentivo calculado dentro del presupuesto, criterios de elegibilidad, protección de talento clave, proceso de oferta",
+   "max_score":100},
+  {"id":218,"profession":"social_security","order":18,"level":"Complejo",
+   "title":"Investigación de Accidente Mortal",
+   "narrative":"Trabajador murió en accidente laboral en la planta. La empresa enfrenta investigación de Ministerio de Trabajo, ARL y posible proceso penal. El gerente no sabe qué hacer.",
+   "description":"Accidente: trabajador cayó desde 4 metros de altura · no usaba arnés · no había procedimiento de trabajo en alturas · inspección del Ministerio en 48 horas · ARL inicia investigación · familia contrató abogado · la empresa no tiene SG-SST actualizado.",
+   "objetivo":"Diseña el prompt para que la IA elabore el plan de respuesta a las tres investigaciones simultáneas y las acciones inmediatas.",
+   "expected_structure":"1. Actúa como [abogado especialista en accidentes laborales y responsabilidad penal empresarial]\n2. Define las acciones inmediatas en las próximas 48 horas por cada frente\n3. Evalúa la responsabilidad penal de la empresa y los directivos\n4. Diseña la estrategia de atención a la familia y al regulador",
+   "criteria":"acciones inmediatas por frente, evaluación de responsabilidad penal, estrategia con familia, manejo del regulador",
+   "max_score":100},
+  {"id":219,"profession":"social_security","order":19,"level":"Complejo",
+   "title":"Optimización de Carga Prestacional",
+   "narrative":"CFO detectó que la carga prestacional real de la empresa es 52% sobre la nómina bruta. El benchmark del sector es 38%. Pide un análisis y plan de optimización legal.",
+   "description":"Nómina bruta mensual: $450,000,000 · carga prestacional: 52% ($234M) · desglose: seguridad social 25% · prestaciones sociales 18% · aportes parafiscales 9% · sector: manufactura · el benchmark incluye empresas en zonas francas.",
+   "objetivo":"Diseña el prompt para que la IA identifique las causas del exceso y las alternativas legales de optimización.",
+   "expected_structure":"1. Actúa como [consultor especialista en costos laborales y optimización prestacional]\n2. Compara la estructura de costos con el benchmark e identifica dónde está el exceso\n3. Evalúa alternativas legales: zonas francas, contratos especiales, beneficios no salariales\n4. Calcula el ahorro potencial y el costo de implementación de cada alternativa",
+   "criteria":"diagnóstico del exceso, alternativas legales evaluadas, ahorro calculado, costo de implementación",
+   "max_score":100},
+  {"id":220,"profession":"social_security","order":20,"level":"Complejo",
+   "title":"Diseño de Fondo Privado de Cesantías",
+   "narrative":"Empresa grande quiere crear un fondo privado de administración de cesantías para sus 500 empleados como beneficio diferenciador. El área jurídica necesita la estructuración.",
+   "description":"Empresa: 500 empleados · nómina total: $1,800,000,000/mes · cesantías acumuladas en fondos: $2,100,000,000 · el objetivo: mejores rendimientos y beneficios adicionales para empleados · regulación: Superintendencia Financiera requiere aprobación.",
+   "objetivo":"Diseña el prompt para que la IA elabore la estructura legal y financiera para crear el fondo privado de cesantías.",
+   "expected_structure":"1. Actúa como [abogado financiero especialista en fondos de cesantías privados]\n2. Explica los requisitos legales para crear un fondo propio vs fondos mutuos\n3. Propón la estructura legal (fiducia, cooperativa, fondo mutuo de inversión)\n4. Define el proceso regulatorio ante la Superintendencia Financiera",
+   "criteria":"requisitos legales, estructura propuesta con justificación, proceso regulatorio, beneficios vs riesgos",
+   "max_score":100},
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NÓMINA — 20 missions (ids 301-320)
+# ─────────────────────────────────────────────────────────────────────────────
+PAYROLL_MISSIONS = [
+  {"id":301,"profession":"payroll","order":1,"level":"Básico",
+   "title":"Liquidación de Nómina Básica",
+   "narrative":"Es fin de mes. El sistema de nómina marcó un error en la liquidación de 3 empleados. El área contable espera el archivo para pagar mañana.",
+   "description":"Empleado 1: salario $2,500,000 · 30 días trabajados · sin novedades. Empleado 2: salario $3,200,000 · 25 días trabajados · 5 días de vacaciones. Empleado 3: salario $1,800,000 + auxilio transporte · 28 días trabajados · 2 días incapacidad.",
+   "objective":"Diseña el prompt para que la IA calcule la nómina correcta de los 3 empleados incluyendo todas las deducciones legales.",
+   "expected_structure":"1. Actúa como [liquidador de nómina experto]\n2. Calcula el salario devengado de cada empleado según sus días y novedades\n3. Aplica deducciones: salud, pensión, retención en la fuente si aplica\n4. Genera el neto a pagar y explica cada componente",
+   "criteria":"devengado correcto por empleado, deducciones aplicadas, neto calculado, explicación de componentes",
+   "max_score":100},
+  {"id":302,"profession":"payroll","order":2,"level":"Básico",
+   "title":"Cálculo de Prima de Servicios",
+   "narrative":"Junio y diciembre: temporada de primas. El área de nómina tiene 45 empleados con condiciones distintas. Hay dudas sobre quién tiene derecho y cómo se calcula.",
+   "description":"Empleados: 30 con salario fijo · 8 con salario variable (comisiones) · 4 que ingresaron en el semestre · 2 con licencia no remunerada 15 días · 1 con incapacidad prolongada 60 días en el semestre.",
+   "objective":"Diseña el prompt para que la IA calcule la prima correcta para cada grupo con sus particularidades.",
+   "expected_structure":"1. Actúa como [especialista en liquidación de prestaciones sociales]\n2. Define la base de cálculo de prima para salario fijo vs variable\n3. Calcula la proporción para los empleados que ingresaron en el semestre\n4. Aclara el tratamiento de las licencias y las incapacidades en la base",
+   "criteria":"base de cálculo por tipo de salario, proporcional para nuevos, tratamiento de licencias, cálculo final por grupo",
+   "max_score":100},
+  {"id":303,"profession":"payroll","order":3,"level":"Básico",
+   "title":"Liquidación de Contrato",
+   "narrative":"Empleado fue despedido sin justa causa después de 4 años. El área de nómina tiene que liquidar correctamente. El empleado ya está hablando con un abogado.",
+   "description":"Empleado: 4 años 3 meses de antigüedad · salario $4,200,000 · trabajó hasta el 20 del mes · tiene 12 días de vacaciones pendientes · cesantías acumuladas en fondo · fecha de despido: 20 de noviembre.",
+   "objective":"Diseña el prompt para que la IA calcule la liquidación completa incluyendo indemnización y todos los componentes.",
+   "expected_structure":"1. Actúa como [especialista en liquidación de contratos laborales]\n2. Calcula cada componente: vacaciones, prima proporcional, cesantías, intereses\n3. Calcula la indemnización por despido sin justa causa según la ley\n4. Genera el total a pagar y el plazo legal para hacerlo",
+   "criteria":"todos los componentes calculados, indemnización correcta, intereses de cesantías, plazo legal de pago",
+   "max_score":100},
+  {"id":304,"profession":"payroll","order":4,"level":"Básico",
+   "title":"Retención en la Fuente por Salarios",
+   "narrative":"Empleado con salario alto reclama que le están reteniendo más de lo que debe. El área de nómina no tiene claro el procedimiento de depuración.",
+   "description":"Empleado: salario mensual $12,000,000 · medicina prepagada $450,000 · cuota crédito hipotecario $1,800,000 · dependiente económico (1 hijo) · aportes obligatorios a salud y pensión · es su único ingreso.",
+   "objective":"Diseña el prompt para que la IA calcule la retención en la fuente correcta aplicando todas las deducciones permitidas.",
+   "expected_structure":"1. Actúa como [especialista en retención en la fuente por ingresos laborales]\n2. Depura el ingreso gravable aplicando todas las deducciones autorizadas\n3. Convierte a UVT y ubica en la tabla de retención\n4. Calcula la retención mensual y compara con lo que se está aplicando",
+   "criteria":"depuración completa de deducciones, conversión a UVT, tabla de retención aplicada, cálculo mensual correcto",
+   "max_score":100},
+  {"id":305,"profession":"payroll","order":5,"level":"Básico",
+   "title":"Nómina con Empleados en Múltiples Ciudades",
+   "narrative":"La empresa opera en 4 ciudades. El auxilio de transporte y los mínimos cambian según el salario. El área de nómina tiene discrepancias en la liquidación.",
+   "description":"Ciudad 1 (Bogotá): 20 empleados SMMLV · Ciudad 2 (Medellín): 15 empleados con salario 1.5 SMMLV · Ciudad 3 (Cali): 10 empleados con salario 2 SMMLV · Ciudad 4 (Barranquilla): 8 empleados con viáticos fijos $200,000.",
+   "objective":"Diseña el prompt para que la IA determine el auxilio de transporte y la base de aportes para cada ciudad y perfil.",
+   "expected_structure":"1. Actúa como [especialista en nómina multipunto]\n2. Determina quién tiene derecho al auxilio de transporte según el salario\n3. Define la base de aportes para cada perfil salarial\n4. Aclara el tratamiento de los viáticos en la nómina de Barranquilla",
+   "criteria":"elegibilidad de auxilio de transporte, base de aportes por perfil, tratamiento de viáticos, resumen por ciudad",
+   "max_score":100},
+  {"id":306,"profession":"payroll","order":6,"level":"Intermedio",
+   "title":"Nómina de Viajantes y Comisionistas",
+   "narrative":"El área comercial tiene 25 representantes de ventas con esquema de comisiones variable. La nómina de este mes es el doble del mes anterior por un cierre grande.",
+   "description":"Representantes: salario fijo $1,800,000 · comisiones mes: entre $800,000 y $8,500,000 · gastos de representación reembolsados: $300,000 promedio · tienen vehículo asignado con combustible · trabajan en campo sin horario fijo.",
+   "objective":"Diseña el prompt para que la IA calcule la nómina completa y defina qué componentes son salariales y cuáles no.",
+   "expected_structure":"1. Actúa como [especialista en compensación variable y nómina comercial]\n2. Define qué parte de las comisiones y gastos son constitutivos de salario\n3. Calcula la base de aportes y las prestaciones con la variabilidad del mes\n4. Explica el impacto en las cesantías y la prima del período",
+   "criteria":"clasificación salarial vs no salarial, base de aportes variable, impacto en prestaciones, tratamiento del vehículo",
+   "max_score":100},
+  {"id":307,"profession":"payroll","order":7,"level":"Intermedio",
+   "title":"Reconocimiento de Horas Extras y Recargos",
+   "narrative":"Empresa de logística opera 24/7. Los trabajadores del turno nocturno y dominical reclaman que se les pagó mal el mes anterior. El sindicato ya está involucrado.",
+   "description":"Turnos: diurno 6am-6pm · nocturno 6pm-10pm · nocturno tardío 10pm-6am · dominicales · festivos. Un operario trabajó: lunes a viernes diurno 8h/día · sábado 8h diurno · domingo 6h · 2 noches de turno 10pm-6am. Salario base: $2,200,000.",
+   "objective":"Diseña el prompt para que la IA calcule todos los recargos y horas extras que corresponden según la legislación laboral.",
+   "expected_structure":"1. Actúa como [especialista en liquidación de horas extras y turnos]\n2. Identifica el tipo de recargo que aplica a cada hora trabajada\n3. Calcula el porcentaje de recargo para cada jornada\n4. Genera el total de recargos del mes con el desglose por tipo",
+   "criteria":"clasificación correcta por tipo de jornada, porcentajes de recargo aplicados, cálculo por hora, total desglosado",
+   "max_score":100},
+  {"id":308,"profession":"payroll","order":8,"level":"Intermedio",
+   "title":"Nómina Internacional con Expatriados",
+   "narrative":"La empresa envió 3 ejecutivos a trabajar en México por 18 meses. El área de nómina no sabe cómo manejar el doble pago, los impuestos y la seguridad social.",
+   "description":"Ejecutivos: salario en Colombia $18,000,000 · asignación por expatriación: $8,000 USD/mes · vivienda en México pagada por empresa · educación de hijos: $2,000 USD/mes · doble tributación potencial Colombia-México · tratado de doble tributación vigente.",
+   "objective":"Diseña el prompt para que la IA defina la estructura de compensación del expatriado y el manejo fiscal correcto.",
+   "expected_structure":"1. Actúa como [especialista en movilidad internacional y compensación de expatriados]\n2. Define qué componentes son gravables en Colombia vs México\n3. Aplica el tratado de doble tributación para evitar doble pago\n4. Diseña la estructura de nómina dividida (split payroll) óptima",
+   "criteria":"gravabilidad por país, aplicación del tratado, split payroll diseñado, seguridad social en ambos países",
+   "max_score":100},
+  {"id":309,"profession":"payroll","order":9,"level":"Intermedio",
+   "title":"Auditoría de Nómina Histórica",
+   "narrative":"El nuevo CFO detectó inconsistencias en la nómina de los últimos 2 años. Sospecha de errores sistemáticos que pudieron beneficiar o perjudicar a empleados. Necesita el análisis antes del cierre contable.",
+   "description":"Período: 2022-2023 · plantilla promedio: 90 empleados · hallazgos preliminares: 15 empleados con auxilio de transporte que no correspondía · 8 con base de aportes posiblemente subestimada · 3 con liquidaciones de contrato posiblemente incorrectas.",
+   "objective":"Diseña el prompt para que la IA estructure la auditoría de nómina y cuantifique las diferencias.",
+   "expected_structure":"1. Actúa como [auditor especialista en nómina y costos laborales]\n2. Define la metodología de revisión para cada tipo de hallazgo\n3. Calcula la diferencia acumulada para cada grupo de empleados\n4. Propón el plan de corrección y el tratamiento contable de las diferencias",
+   "criteria":"metodología definida, diferencias calculadas, grupos clasificados, plan de corrección con tratamiento contable",
+   "max_score":100},
+  {"id":310,"profession":"payroll","order":10,"level":"Intermedio",
+   "title":"Transición a Sistema de Nómina Digital",
+   "narrative":"La empresa de 300 empleados quiere migrar de Excel a un sistema de nómina en la nube. Han tenido 3 errores en los últimos 6 meses por manejo manual. El gerente quiere el plan antes del próximo trimestre.",
+   "description":"Estado actual: Excel con macros · 3 errores de nómina en 6 meses · costo promedio de error: $45,000,000 · presupuesto para sistema: $80,000,000/año · integración requerida con contabilidad y RRHH · datos históricos: 5 años a migrar.",
+   "objetivo":"Diseña el prompt para que la IA elabore el plan de migración al sistema de nómina digital con gestión de riesgos.",
+   "expected_structure":"1. Actúa como [consultor de implementación de sistemas de nómina]\n2. Define los criterios de selección del software\n3. Crea el plan de migración con fases, responsables y plazos\n4. Identifica los riesgos de la migración y cómo mitigarlos",
+   "criteria":"criterios de selección, plan de migración por fases, gestión de datos históricos, riesgos mitigados",
+   "max_score":100},
+  {"id":311,"profession":"payroll","order":11,"level":"Avanzado",
+   "title":"Estrategia de Compensación Total",
+   "narrative":"La empresa perdió 5 talentos clave este año por salario. El CEO pide diseñar una estrategia de compensación total competitiva sin superar el 15% de incremento en la masa salarial.",
+   "description":"Plantilla: 150 empleados · masa salarial actual: $850,000,000/mes · turnover talentos clave: 5/año · costo de reemplazo estimado: $25,000,000 por persona · benchmark de mercado: la empresa paga 8% por debajo del percentil 50.",
+   "objective":"Diseña el prompt para que la IA proponga una estrategia de compensación total que retenga talento dentro del presupuesto.",
+   "expected_structure":"1. Actúa como [director de compensación y beneficios]\n2. Analiza la brecha frente al benchmark y su costo de cierre\n3. Diseña la mezcla de salary + beneficios + variables que optimice el presupuesto\n4. Prioriza los cargos críticos donde la inversión tiene mayor retorno",
+   "criteria":"análisis de brecha, mezcla de compensación total, priorización de cargos, ROI de la inversión",
+   "max_score":100},
+  {"id":312,"profession":"payroll","order":12,"level":"Avanzado",
+   "title":"Nómina en Proceso de Adquisición",
+   "narrative":"Tu empresa está adquiriendo una empresa más pequeña. Ambas tienen estructuras de nómina distintas. Hay que integrar 80 empleados nuevos sin generar trauma.",
+   "description":"Empresa adquirida: 80 empleados · tiene beneficios extralegales que la empresa compradora no tiene · estructura salarial 12% por encima de la adquirente para cargos similares · sistema de nómina diferente (Siigo vs Helisa) · cesantías en fondos distintos.",
+   "objetivo":"Diseña el prompt para que la IA elabore el plan de integración de nóminas manteniendo los derechos adquiridos.",
+   "expected_structure":"1. Actúa como [especialista en integración de nóminas en fusiones]\n2. Identifica los derechos adquiridos que no pueden tocarse\n3. Define la estrategia de homologación de beneficios y salarios\n4. Crea el plan de migración de sistemas con timeline",
+   "criteria":"derechos adquiridos protegidos, estrategia de homologación, plan de migración de sistemas, comunicación con empleados",
+   "max_score":100},
+  {"id":313,"profession":"payroll","order":13,"level":"Avanzado",
+   "title":"Implementación de Salario Emocional",
+   "narrative":"El área de cultura quiere implementar salario emocional. La directora de RRHH necesita definir qué aplica, qué es constitutivo de salario y cómo medirlo.",
+   "description":"Iniciativas propuestas: home office 3 días/semana · horario flexible · día libre de cumpleaños · presupuesto capacitación $1,500,000/año/empleado · seguro de vida y salud complementaria · cena familiar anual.",
+   "objetivo":"Diseña el prompt para que la IA clasifique las iniciativas, defina su impacto en la nómina y mida el ROI de cada una.",
+   "expected_structure":"1. Actúa como [especialista en salario emocional y compensación no monetaria]\n2. Clasifica cada iniciativa: ¿es constitutiva de salario? ¿genera aportes?\n3. Calcula el costo real por empleado de cada iniciativa\n4. Propón cómo medir el impacto en retención y satisfacción",
+   "criteria":"clasificación salarial/no salarial, costo real calculado, impacto en aportes, métricas de retención",
+   "max_score":100},
+  {"id":314,"profession":"payroll","order":14,"level":"Avanzado",
+   "title":"Nómina de Obra o Labor",
+   "narrative":"Empresa constructora con 200 trabajadores en proyecto. El contrato de obra termina en 5 meses pero el proyecto podría extenderse. El área necesita claridad sobre la liquidación anticipada vs extensión.",
+   "description":"Trabajadores: 200 en contrato de obra · el 60% lleva más de 1 año · el proyecto se extiende 3 meses más · si se liquida: costo estimado $1.8B · si se renueva con nuevo contrato: riesgo de reclamación de contrato indefinido · obras anteriores: 3 proyectos con el mismo personal.",
+   "objetivo":"Diseña el prompt para que la IA evalúe los riesgos de cada opción y recomiende la estrategia de gestión de contratos de obra.",
+   "expected_structure":"1. Actúa como [abogado laboralista especialista en contratos de obra]\n2. Evalúa el riesgo de conversión a contrato indefinido dado el historial\n3. Compara los costos: liquidar ahora vs extender vs nuevo contrato\n4. Recomienda la estrategia con el menor riesgo legal y costo",
+   "criteria":"riesgo de conversión evaluado, comparación de costos, riesgo legal cuantificado, recomendación con justificación",
+   "max_score":100},
+  {"id":315,"profession":"payroll","order":15,"level":"Avanzado",
+   "title":"Descuentos de Nómina y Embargos",
+   "narrative":"Empleado tiene 3 embargos por deudas distintas (crédito banco, cuota alimentaria, cooperativa). El área de nómina no sabe el orden de prelación ni los límites legales.",
+   "description":"Empleado: salario $3,500,000 · Embargo 1: banco por crédito personal $800,000/mes · Embargo 2: cuota alimentaria $700,000/mes (fallo judicial) · Embargo 3: cooperativa interna $400,000/mes · el total excede el límite embargable.",
+   "objetivo":"Diseña el prompt para que la IA defina el orden de prelación, los límites legales y cuánto descontar de cada embargo.",
+   "expected_structure":"1. Actúa como [especialista en descuentos de nómina y embargos laborales]\n2. Define el salario mínimo embargable y el tope máximo de descuentos\n3. Establece el orden de prelación entre los tres embargos\n4. Calcula cuánto se paga a cada acreedor y cómo notificarlos",
+   "criteria":"límite embargable correcto, orden de prelación legal, distribución entre acreedores, proceso de notificación",
+   "max_score":100},
+  {"id":316,"profession":"payroll","order":16,"level":"Complejo",
+   "title":"Diseño de Sistema de Incentivos por Desempeño",
+   "narrative":"La empresa quiere implementar bonos por desempeño para 80 personas. El reto: que motiven el resultado pero no generen expectativas de salario fijo ni aportes adicionales.",
+   "description":"Plantilla objetivo: 80 personas · cargos: comerciales, operativos y administrativos · presupuesto bonos: $600,000,000/año · KPIs actuales: ventas, calidad, satisfacción · el sistema anterior generó conflictos por percepción de inequidad.",
+   "objetivo":"Diseña el prompt para que la IA diseñe el sistema de incentivos que motive, sea percibido como justo y optimice los costos laborales.",
+   "expected_structure":"1. Actúa como [especialista en diseño de sistemas de incentivos y compensación variable]\n2. Define los KPIs por cargo con ponderación y escala de pago\n3. Establece la naturaleza jurídica del bono (no constitutivo de salario) y sus condiciones\n4. Diseña el proceso de comunicación para garantizar percepción de equidad",
+   "criteria":"KPIs definidos por cargo, naturaleza jurídica del bono, condiciones claras, proceso de comunicación",
+   "max_score":100},
+  {"id":317,"profession":"payroll","order":17,"level":"Complejo",
+   "title":"Fusión de Sistemas de Nómina Multinacional",
+   "narrative":"Grupo multinacional con presencia en 5 países debe unificar el reporte de nómina en un solo sistema. Cada país tiene moneda, ley y sistema distintos.",
+   "description":"Países: Colombia (Helisa) · México (Aspel) · Perú (Planilla) · Chile (Softland) · Argentina (Bejerman) · monedas: COP, MXN, PEN, CLP, ARS · el sistema central debe consolidar en USD · el proyecto tiene 12 meses y presupuesto $1.2M USD.",
+   "objetivo":"Diseña el prompt para que la IA elabore la arquitectura del sistema de nómina consolidada multinacional.",
+   "expected_structure":"1. Actúa como [arquitecto de sistemas de RRHH y nómina multinacional]\n2. Define los datos mínimos comunes a reportar desde cada país\n3. Propón la arquitectura de integración (middleware, APIs, consolidación)\n4. Crea el roadmap de 12 meses con riesgos por país y hitos de validación",
+   "criteria":"datos comunes definidos, arquitectura de integración, roadmap de 12 meses, riesgos por país gestionados",
+   "max_score":100},
+  {"id":318,"profession":"payroll","order":18,"level":"Complejo",
+   "title":"Nómina en Crisis Financiera Empresarial",
+   "narrative":"La empresa no tiene caja para pagar la nómina del mes. Los empleados ya saben. El abogado advirtió que el no pago genera responsabilidad penal para los directivos. El plazo es mañana.",
+   "description":"Situación: nómina pendiente $380,000,000 · caja disponible: $45,000,000 · cuentas por cobrar vencidas: $650,000,000 · acreedor bancario con embargo preventivo sobre cuentas · el no pago puede generar demandas laborales y proceso penal.",
+   "objetivo":"Diseña el prompt para que la IA elabore el plan de manejo de la crisis de nómina con alternativas legales y financieras.",
+   "expected_structure":"1. Actúa como [asesor de crisis empresariales con enfoque laboral y financiero]\n2. Prioriza a quién pagar primero con la caja disponible y el criterio legal\n3. Identifica las fuentes de liquidez de emergencia disponibles\n4. Diseña la comunicación con empleados y el plan de pago diferido",
+   "criteria":"priorización legal de pagos, fuentes de liquidez, comunicación con empleados, plan diferido con plazos",
+   "max_score":100},
+  {"id":319,"profession":"payroll","order":19,"level":"Complejo",
+   "title":"Automatización del Proceso de Nómina con IA",
+   "narrative":"El área de nómina procesa $2B/mes con 5 personas. Han tenido errores por volumen. La dirección quiere automatizar con IA pero teme perder el control.",
+   "description":"Proceso actual: 5 personas · $2,000,000,000/mes · errores: 2-3 por mes · tiempo de procesamiento: 3 días · datos de entrada: 15 fuentes distintas (RRHH, ventas, operaciones, contabilidad) · regulación: reporte UGPP, DIAN, Mintrabajo.",
+   "objetivo":"Diseña el prompt para que la IA proponga la arquitectura de automatización de nómina con validaciones y control humano.",
+   "expected_structure":"1. Actúa como [especialista en automatización de procesos de nómina con IA]\n2. Mapea los subprocesos automatizables vs los que requieren juicio humano\n3. Propón la arquitectura técnica con las integraciones necesarias\n4. Define los controles de calidad y el proceso de validación humana crítica",
+   "criteria":"mapeo automatizable/humano, arquitectura técnica, integraciones definidas, controles de calidad",
+   "max_score":100},
+  {"id":320,"profession":"payroll","order":20,"level":"Complejo",
+   "title":"Diseño de Centro de Servicios Compartidos de Nómina",
+   "narrative":"Grupo empresarial con 8 subsidiarias quiere centralizar la nómina en un Centro de Servicios Compartidos. Actualmente cada empresa liquida por su cuenta con resultados inconsistentes.",
+   "description":"Grupo: 8 subsidiarias · 1,200 empleados totales · 8 sistemas de nómina distintos · costo actual total: $480,000,000/mes en gestión de nómina · objetivo: reducir costo 35% en 24 meses · errores actuales: 12 por mes en el grupo.",
+   "objetivo":"Diseña el prompt para que la IA elabore el modelo operativo del Centro de Servicios Compartidos de Nómina.",
+   "expected_structure":"1. Actúa como [consultor de diseño de Centros de Servicios Compartidos]\n2. Define el modelo de gobierno y los SLAs del centro\n3. Diseña la estructura de transición de cada subsidiaria al modelo centralizado\n4. Calcula el ahorro proyectado y el punto de equilibrio del proyecto",
+   "criteria":"modelo de gobierno definido, SLAs establecidos, plan de transición, ahorro calculado con punto de equilibrio",
+   "max_score":100},
+]
+
+ALL_MISSIONS = BANKING_MISSIONS + LEGAL_MISSIONS + SOCIAL_SECURITY_MISSIONS + PAYROLL_MISSIONS
+
+# fix missing 'objective' key in some missions (use 'objetivo' as fallback)
+for m in ALL_MISSIONS:
+    if "objetivo" in m and "objective" not in m:
+        m["objective"] = m.pop("objetivo")
 
 
 def get_connection():
@@ -358,7 +744,6 @@ def init_db():
     except Exception:
         pass
 
-    # Upsert all missions
     for m in ALL_MISSIONS:
         cursor.execute("""
             INSERT INTO missions (id, profession, title, narrative, description, objective,
@@ -383,4 +768,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("✅ Base de datos inicializada — banking + legal missions ready")
+    counts = {}
+    for m in ALL_MISSIONS:
+        counts[m['profession']] = counts.get(m['profession'], 0) + 1
+    print(f"✅ DB inicializada — misiones por campo: {counts}")

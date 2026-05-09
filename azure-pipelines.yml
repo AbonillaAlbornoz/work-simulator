@@ -1,9 +1,17 @@
+# =========================================================
+# WORK SIMULATOR - ENTERPRISE CI/CD
+# Azure DevOps → GitHub Mirror → Render Deploy
+# =========================================================
+
 trigger:
   branches:
     include:
-      - desarrollo
+      - master
+
+pr:
+  branches:
+    include:
       - pruebas
-      - main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -16,124 +24,166 @@ stages:
 # =========================================================
 # STAGE 1 - VALIDACION
 # =========================================================
-- stage: Build
+- stage: Validate
   displayName: 'Validate Application'
 
   jobs:
-  - job: Validate
-    displayName: 'Validate Python App'
+  - job: ValidateApp
+    displayName: 'Validate FastAPI Application'
 
     steps:
+
     - checkout: self
       persistCredentials: true
+      fetchDepth: 0
 
+    # ==========================================
+    # PYTHON VERSION
+    # ==========================================
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.11'
       displayName: 'Use Python 3.11'
 
+    # ==========================================
+    # INSTALL DEPENDENCIES
+    # ==========================================
     - script: |
-        echo "Actualizando pip..."
+        echo "======================================="
+        echo "ACTUALIZANDO PIP"
+        echo "======================================="
+
         python -m pip install --upgrade pip
 
-        echo "Instalando dependencias..."
+        echo "======================================="
+        echo "INSTALANDO DEPENDENCIAS"
+        echo "======================================="
+
         pip install -r requirements.txt
-      displayName: 'Install dependencies'
 
+      displayName: 'Install Dependencies'
+
+    # ==========================================
+    # VALIDATE FASTAPI APP
+    # ==========================================
     - script: |
-        echo "Validando aplicación..."
+        echo "======================================="
+        echo "VALIDANDO FASTAPI"
+        echo "======================================="
+
         python -c "import main; print('Aplicación válida ✅')"
-      displayName: 'Validate application'
+
+      displayName: 'Validate FastAPI App'
 
 
 # =========================================================
-# STAGE 2 - MIRROR A GITHUB
+# STAGE 2 - MIRROR AZURE DEVOPS → GITHUB
 # =========================================================
-- stage: SyncToGitHub
-  displayName: 'Sync Azure DevOps → GitHub'
+- stage: MirrorGitHub
+  displayName: 'Mirror Repository to GitHub'
 
-  dependsOn: Build
+  dependsOn: Validate
 
   jobs:
   - job: PushMirror
-    displayName: 'Push Repository Mirror'
+    displayName: 'Push Mirror to GitHub'
 
     steps:
+
     - checkout: self
       persistCredentials: true
       fetchDepth: 0
 
     - script: |
-        echo "Configurando Git..."
+        echo "======================================="
+        echo "CONFIGURANDO GIT"
+        echo "======================================="
 
         git config --global user.email "pipeline@devops.com"
         git config --global user.name "Azure DevOps Pipeline"
 
-        echo "Mostrando remotos..."
+        echo "======================================="
+        echo "MOSTRANDO REMOTOS"
+        echo "======================================="
+
         git remote -v
 
-        echo "Eliminando remoto github si existe..."
+        echo "======================================="
+        echo "ELIMINANDO REMOTO GITHUB"
+        echo "======================================="
+
         git remote remove github || true
 
-        echo "Agregando remoto GitHub..."
+        echo "======================================="
+        echo "AGREGANDO REMOTO GITHUB"
+        echo "======================================="
 
         git remote add github https://$(GITHUB_USER):$(GITHUB_TOKEN)@github.com/$(GITHUB_USER)/$(GITHUB_REPO).git
 
-        echo "Enviando código a GitHub..."
+        echo "======================================="
+        echo "PUSH A GITHUB"
+        echo "======================================="
 
         git push github HEAD:main --force
 
         echo "Mirror completado correctamente ✅"
 
-      displayName: 'Push to GitHub'
+      displayName: 'Push Repository Mirror'
 
 
 # =========================================================
 # STAGE 3 - VALIDAR SINCRONIZACION
 # =========================================================
 - stage: ValidateMirror
-  displayName: 'Validate GitHub Mirror'
+  displayName: 'Validate GitHub Synchronization'
 
-  dependsOn: SyncToGitHub
+  dependsOn: MirrorGitHub
 
   jobs:
-  - job: CompareRepos
+  - job: CompareRepositories
     displayName: 'Compare Azure DevOps vs GitHub'
 
     steps:
+
     - checkout: self
       persistCredentials: true
       fetchDepth: 0
 
     - script: |
-        echo "Configurando Git..."
+        echo "======================================="
+        echo "CONFIGURANDO GIT"
+        echo "======================================="
 
         git config --global user.email "pipeline@devops.com"
         git config --global user.name "Azure DevOps Pipeline"
-
-        echo "Agregando remoto GitHub..."
 
         git remote remove github || true
 
         git remote add github https://$(GITHUB_USER):$(GITHUB_TOKEN)@github.com/$(GITHUB_USER)/$(GITHUB_REPO).git
 
-        echo "Obteniendo último commit de Azure DevOps..."
+        echo "======================================="
+        echo "OBTENIENDO HASH AZURE DEVOPS"
+        echo "======================================="
 
         AZURE_COMMIT=$(git rev-parse HEAD)
 
-        echo "Commit Azure:"
+        echo "Azure Commit:"
         echo $AZURE_COMMIT
 
-        echo "Consultando commit de GitHub..."
+        echo "======================================="
+        echo "OBTENIENDO HASH GITHUB"
+        echo "======================================="
 
         git fetch github main
 
         GITHUB_COMMIT=$(git rev-parse github/main)
 
-        echo "Commit GitHub:"
+        echo "GitHub Commit:"
         echo $GITHUB_COMMIT
 
-        echo "Comparando commits..."
+        echo "======================================="
+        echo "COMPARANDO COMMITS"
+        echo "======================================="
 
         if [ "$AZURE_COMMIT" = "$GITHUB_COMMIT" ]; then
           echo "Repositorios sincronizados correctamente ✅"
@@ -143,4 +193,66 @@ stages:
           exit 1
         fi
 
-      displayName: 'Validate repository sync'
+      displayName: 'Validate Repository Sync'
+
+
+# =========================================================
+# STAGE 4 - TRIGGER RENDER DEPLOY
+# =========================================================
+- stage: DeployRender
+  displayName: 'Deploy to Render'
+
+  dependsOn: ValidateMirror
+
+  jobs:
+  - job: TriggerDeploy
+    displayName: 'Trigger Render Deployment'
+
+    steps:
+
+    - script: |
+        echo "======================================="
+        echo "INICIANDO DEPLOY EN RENDER"
+        echo "======================================="
+
+        curl -X POST https://api.render.com/v1/services/$(RENDER_SERVICE_ID)/deploys \
+          -H "Authorization: Bearer $(RENDER_API_KEY)" \
+          -H "Content-Type: application/json"
+
+        echo ""
+        echo "Deploy enviado correctamente ✅"
+
+      displayName: 'Trigger Render Deploy'
+
+
+# =========================================================
+# STAGE 5 - HEALTH CHECK
+# =========================================================
+- stage: HealthCheck
+  displayName: 'Validate Render Deployment'
+
+  dependsOn: DeployRender
+
+  jobs:
+  - job: ValidateRender
+    displayName: 'Health Check'
+
+    steps:
+
+    - script: |
+        echo "======================================="
+        echo "ESPERANDO DESPLIEGUE RENDER"
+        echo "======================================="
+
+        sleep 60
+
+        echo "======================================="
+        echo "VALIDANDO HEALTHCHECK"
+        echo "======================================="
+
+        curl -f https://work-simulator-t9x7.onrender.com/health
+
+        echo ""
+        echo "Aplicación desplegada correctamente ✅"
+
+      displayName: 'Validate Deployment'

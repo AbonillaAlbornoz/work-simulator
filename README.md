@@ -215,3 +215,6 @@ El sistema evalúa respuestas en dos modos:
 Con el servidor corriendo, accede a:
 - **Swagger UI:** http://localhost:8000/docs
 - **ReDoc:** http://localhost:8000/redoc
+
+
+prueba de ejecucion de pipeline 1

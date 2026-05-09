@@ -5,11 +5,6 @@ trigger:
       - pruebas
       - main
 
-pr:
-  branches:
-    include:
-      - pruebas
-
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -19,14 +14,14 @@ variables:
 stages:
 
 # =========================================================
-# STAGE 1 - BUILD Y VALIDACION
+# STAGE 1 - VALIDACION
 # =========================================================
 - stage: Build
-  displayName: 'Build Application'
+  displayName: 'Validate Application'
 
   jobs:
-  - job: BuildApp
-    displayName: 'Install and Validate'
+  - job: Validate
+    displayName: 'Validate Python App'
 
     steps:
     - checkout: self
@@ -52,19 +47,21 @@ stages:
 
 
 # =========================================================
-# STAGE 2 - MIRROR AZURE DEVOPS → GITHUB
+# STAGE 2 - MIRROR A GITHUB
 # =========================================================
 - stage: SyncToGitHub
   displayName: 'Sync Azure DevOps → GitHub'
+
   dependsOn: Build
 
   jobs:
   - job: PushMirror
-    displayName: 'Push repository to GitHub'
+    displayName: 'Push Repository Mirror'
 
     steps:
     - checkout: self
       persistCredentials: true
+      fetchDepth: 0
 
     - script: |
         echo "Configurando Git..."
@@ -72,7 +69,7 @@ stages:
         git config --global user.email "pipeline@devops.com"
         git config --global user.name "Azure DevOps Pipeline"
 
-        echo "Mostrando remotos actuales..."
+        echo "Mostrando remotos..."
         git remote -v
 
         echo "Eliminando remoto github si existe..."
@@ -86,64 +83,64 @@ stages:
 
         git push github HEAD:main --force
 
-        echo "Mirror completado ✅"
-      displayName: 'Push mirror to GitHub'
+        echo "Mirror completado correctamente ✅"
+
+      displayName: 'Push to GitHub'
 
 
 # =========================================================
-# STAGE 3 - TRIGGER RENDER DEPLOY
+# STAGE 3 - VALIDAR SINCRONIZACION
 # =========================================================
-- stage: DeployRender
-  displayName: 'Deploy to Render'
+- stage: ValidateMirror
+  displayName: 'Validate GitHub Mirror'
+
   dependsOn: SyncToGitHub
 
   jobs:
-  - job: TriggerDeploy
-    displayName: 'Trigger Render Deployment'
+  - job: CompareRepos
+    displayName: 'Compare Azure DevOps vs GitHub'
 
     steps:
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 0
+
     - script: |
-        echo "Disparando deploy en Render..."
+        echo "Configurando Git..."
 
-        curl -X POST https://api.render.com/v1/services/$(RENDER_SERVICE_ID)/deploys \
-          -H "Authorization: Bearer $(RENDER_API_KEY)" \
-          -H "Content-Type: application/json"
+        git config --global user.email "pipeline@devops.com"
+        git config --global user.name "Azure DevOps Pipeline"
 
-        echo ""
-        echo "Deploy enviado correctamente ✅"
+        echo "Agregando remoto GitHub..."
 
-      displayName: 'Trigger Render Deploy'
+        git remote remove github || true
 
+        git remote add github https://$(GITHUB_USER):$(GITHUB_TOKEN)@github.com/$(GITHUB_USER)/$(GITHUB_REPO).git
 
-# =========================================================
-# STAGE 4 - HEALTH CHECK
-# =========================================================
-- stage: HealthCheck
-  displayName: 'Validate Deployment'
-  dependsOn: DeployRender
+        echo "Obteniendo último commit de Azure DevOps..."
 
-  jobs:
-  - job: CheckService
-    displayName: 'Health Check'
+        AZURE_COMMIT=$(git rev-parse HEAD)
 
-    steps:
-    - script: |
-        echo "Esperando despliegue de Render..."
+        echo "Commit Azure:"
+        echo $AZURE_COMMIT
 
-        for i in {1..18}
-        do
-          echo "Intento $i..."
+        echo "Consultando commit de GitHub..."
 
-          if curl -s -f https://work-simulator-t9x7.onrender.com > /dev/null; then
-            echo "Aplicación disponible ✅"
-            exit 0
-          fi
+        git fetch github main
 
-          echo "Aplicación aún no disponible..."
-          sleep 10
-        done
+        GITHUB_COMMIT=$(git rev-parse github/main)
 
-        echo "La aplicación no respondió a tiempo ❌"
-        exit 1
+        echo "Commit GitHub:"
+        echo $GITHUB_COMMIT
 
-      displayName: 'Health Check with Retry'
+        echo "Comparando commits..."
+
+        if [ "$AZURE_COMMIT" = "$GITHUB_COMMIT" ]; then
+          echo "Repositorios sincronizados correctamente ✅"
+          exit 0
+        else
+          echo "ERROR: Los repositorios NO están sincronizados ❌"
+          exit 1
+        fi
+
+      displayName: 'Validate repository sync'

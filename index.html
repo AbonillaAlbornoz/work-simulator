@@ -397,6 +397,8 @@ footer{border-top:1px solid var(--border);padding:28px 0;text-align:center;font-
 .empty-state{text-align:center;padding:56px 20px;color:var(--muted)}
 .empty-state .icon{font-size:38px;margin-bottom:10px}
 </style>
+<meta name="google-signin-client_id" content="">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -409,15 +411,27 @@ footer{border-top:1px solid var(--border);padding:28px 0;text-align:center;font-
     <button class="nav-btn" onclick="goHome()">Inicio</button>
     <button class="nav-btn" onclick="showFieldPicker()">Campos</button>
     <button class="nav-btn" id="navDash" onclick="showDashboard()" style="display:none">Dashboard</button>
+    <button class="nav-btn" id="navCerts" onclick="showCertificates()" style="display:none">Certificados</button>
     <button class="nav-btn" onclick="showHistory()">Historial</button>
   </nav>
   <div class="header-right">
     <div class="field-chip" id="fieldChip" style="display:none" onclick="showFieldPicker()">
       <span id="chipIcon">🏦</span><span id="chipLabel">Banca</span>
     </div>
-    <div class="user-pill">
-      <div class="user-av" id="userAv">A</div>
-      <span id="userName">Demo</span>
+    <div id="userMenuWrap" style="position:relative">
+      <div class="user-pill" onclick="toggleUserMenu()" style="cursor:pointer">
+        <div class="user-av" id="userAv">A</div>
+        <span id="userName">Demo</span>
+        <span style="font-size:10px;color:#8880a6">▾</span>
+      </div>
+      <div id="userMenu" style="display:none;position:absolute;right:0;top:44px;background:#fff;border:1px solid #e5e2f0;border-radius:12px;box-shadow:0 8px 32px rgba(22,20,31,.12);min-width:180px;z-index:500;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid #e5e2f0">
+          <div style="font-size:13px;font-weight:700;color:#16141f" id="menuUserName">Usuario</div>
+          <div style="font-size:12px;color:#8880a6" id="menuUserEmail">email</div>
+        </div>
+        <button onclick="showCertificates();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;border:none;background:none;font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;color:#3c3950;cursor:pointer;display:flex;align-items:center;gap:8px">🏆 Mis certificaciones</button>
+        <button onclick="logout();toggleUserMenu()" style="width:100%;text-align:left;padding:11px 16px;border:none;background:none;font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;display:flex;align-items:center;gap:8px;border-top:1px solid #e5e2f0">← Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </header>
@@ -840,13 +854,33 @@ let obStep = 0;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  await Promise.all([loadMissions(), loadProgress()]);
-  updateUser();
-  if (!currentField) { showScreen('landing'); return; }
-  updateChip();
-  document.getElementById('navDash').style.display = '';
-  renderDash();
-  showScreen('dashboard');
+  // Check existing session
+  const token = getToken();
+  if (token) {
+    const me = await apiGetMe();
+    if (me) {
+      currentUser = me;
+      USER_ID_DYNAMIC = me.id;
+      updateHeaderUser(me);
+      // update menu
+      const mn = document.getElementById('menuUserName');
+      const me2 = document.getElementById('menuUserEmail');
+      if (mn) mn.textContent = me.name;
+      if (me2) me2.textContent = me.email||'';
+      document.getElementById('navDash').style.display = '';
+      document.getElementById('navCerts').style.display = '';
+      if (!currentField) currentField = localStorage.getItem('worksim_field') || me.profession || 'banking';
+      updateChip();
+      await Promise.all([loadMissions(), loadProgress()]);
+      updateUser();
+      if (!currentField) { showScreen('landing'); return; }
+      renderDash();
+      showScreen('dashboard');
+      return;
+    }
+  }
+  // No valid session → show login
+  showScreen('login');
 }
 
 async function loadMissions() {
@@ -1189,6 +1223,350 @@ async function showDashboard() { await Promise.all([loadMissions(),loadProgress(
 function showToast(msg,dur=3800) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
 
 init();
+
+// ══════════════════════════════════════════════════════════
+// AUTH SYSTEM
+// ══════════════════════════════════════════════════════════
+
+const FIELD_LABELS_AUTH = {
+  banking:'Banca y Finanzas', legal:'Legal y Derecho',
+  social_security:'Seguridad Social', payroll:'Nómina y Compensación'
+};
+
+// Token management
+function getToken(){ return localStorage.getItem('worksim_token'); }
+function setToken(t){ localStorage.setItem('worksim_token', t); }
+function clearToken(){ localStorage.removeItem('worksim_token'); localStorage.removeItem('worksim_user'); }
+function getStoredUser(){ try{ return JSON.parse(localStorage.getItem('worksim_user')||'null'); }catch{return null;} }
+function setStoredUser(u){ localStorage.setItem('worksim_user', JSON.stringify(u)); }
+
+let currentUser = null;
+
+// Inject auth header into all API calls
+const _origFetch = window.fetch.bind(window);
+window.fetch = function(url, opts={}) {
+  const token = getToken();
+  if (token && typeof url === 'string' && url.includes('/api/')) {
+    opts.headers = { ...(opts.headers||{}), 'Authorization': `Bearer ${token}` };
+  }
+  return _origFetch(url, opts);
+};
+
+// ── Auth API calls ─────────────────────────────────────────
+async function apiLogin(email, password){
+  const r = await _origFetch(`${API}/auth/login`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email, password})
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.detail || 'Error al ingresar');
+  return d;
+}
+
+async function apiRegister(name, email, password){
+  const r = await _origFetch(`${API}/auth/register`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name, email, password, profession: currentField||'banking'})
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.detail || 'Error al registrar');
+  return d;
+}
+
+async function apiGoogleLogin(id_token){
+  const r = await _origFetch(`${API}/auth/google`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({id_token, profession: currentField||'banking'})
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.detail || 'Error con Google login');
+  return d;
+}
+
+async function apiGetMe(){
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const r = await _origFetch(`${API}/auth/me`, { headers:{'Authorization':`Bearer ${token}`} });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+// ── Auth handlers ──────────────────────────────────────────
+function afterAuth(data){
+  setToken(data.access_token);
+  const user = data.user;
+  setStoredUser(user);
+  currentUser = user;
+  USER_ID_DYNAMIC = user.id;
+  updateHeaderUser(user);
+  const field = localStorage.getItem('worksim_field') || user.profession || 'banking';
+  currentField = field;
+  updateChip();
+  document.getElementById('navDash').style.display='';
+  document.getElementById('navCerts').style.display='';
+  showToast(`👋 Bienvenido, ${user.name.split(' ')[0]}!`);
+  if (!localStorage.getItem(OB_KEY + currentField)) {
+    setupOb(currentField); showScreen('onboarding');
+  } else {
+    Promise.all([loadMissions(), loadProgress()]).then(() => { renderDash(); showScreen('dashboard'); });
+  }
+}
+
+function updateHeaderUser(user){
+  document.getElementById('userName').textContent = user.name.split(' ')[0];
+  document.getElementById('userAv').textContent = user.name[0].toUpperCase();
+}
+
+async function submitLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display='none';
+  if (!email||!pw){ errEl.textContent='Completa todos los campos'; errEl.style.display='block'; return; }
+  try {
+    const data = await apiLogin(email, pw);
+    afterAuth(data);
+  } catch(e){ errEl.textContent=e.message; errEl.style.display='block'; }
+}
+
+async function submitRegister(){
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pw = document.getElementById('regPassword').value;
+  const errEl = document.getElementById('regError');
+  errEl.style.display='none';
+  if (!name||!email||!pw){ errEl.textContent='Completa todos los campos'; errEl.style.display='block'; return; }
+  try {
+    const data = await apiRegister(name, email, pw);
+    afterAuth(data);
+  } catch(e){ errEl.textContent=e.message; errEl.style.display='block'; }
+}
+
+// Google One Tap / GSI callback
+async function handleGoogleCredential(response){
+  try {
+    const data = await apiGoogleLogin(response.credential);
+    afterAuth(data);
+  } catch(e){ showToast('❌ Error con Google: ' + e.message); }
+}
+
+function triggerGoogleLogin(){
+  // Try native GSI popup if available
+  if (window.google?.accounts?.id) {
+    google.accounts.id.prompt();
+    return;
+  }
+  // Fallback: show info
+  showToast('⚙️ Configura GOOGLE_CLIENT_ID en .env para habilitar Google login');
+}
+
+function showRegister(){ showScreen('register'); }
+
+function logout(){
+  clearToken(); currentUser=null; USER_ID_DYNAMIC=null;
+  document.getElementById('navDash').style.display='none';
+  document.getElementById('navCerts').style.display='none';
+  document.getElementById('fieldChip').style.display='none';
+  showScreen('login');
+  showToast('Sesión cerrada');
+}
+
+// ── Dynamic USER_ID ────────────────────────────────────────
+let USER_ID_DYNAMIC = null;
+// Override USER_ID usage everywhere — patch the const
+Object.defineProperty(window, 'USER_ID', { get(){ return USER_ID_DYNAMIC || 1; } });
+
+// ── Certificates screen ────────────────────────────────────
+async function showCertificates(){
+  showScreen('certificates');
+  const uid = USER_ID_DYNAMIC || 1;
+  const container = document.getElementById('certCards');
+  container.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Cargando…</p></div>';
+
+  const fields = ['banking','legal','social_security','payroll'];
+  const icons = {banking:'🏦',legal:'⚖️',social_security:'🛡️',payroll:'💰'};
+  const results = await Promise.all(fields.map(f =>
+    fetch(`${API}/certificate/${uid}?profession=${f}`).then(r=>r.json()).catch(()=>null)
+  ));
+
+  container.innerHTML = results.map((data, i) => {
+    const f = fields[i];
+    if (!data) return '';
+    const pct = Math.round((data.completed_missions / data.required_missions) * 100);
+    const certified = data.is_certified;
+    return `
+    <div style="background:#fff;border-radius:16px;padding:24px;border:1.5px solid ${certified?'#a7f3d0':'#e5e2f0'};box-shadow:0 2px 12px rgba(22,20,31,.06);position:relative;overflow:hidden">
+      ${certified ? '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#34d399)"></div>' : ''}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:28px">${icons[f]}</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#16141f">${FIELD_LABELS_AUTH[f]}</div>
+          ${certified ? '<span style="background:#d1fae5;color:#059669;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700">✓ Certificado</span>' : '<span style="background:#f1f0f8;color:#8880a6;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700">En progreso</span>'}
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#8880a6;margin-bottom:5px">
+          <span>Misiones completadas</span><span style="font-weight:700;color:#16141f">${data.completed_missions} / ${data.required_missions}</span>
+        </div>
+        <div style="height:8px;background:#f1f0f8;border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${certified?'linear-gradient(90deg,#059669,#34d399)':'linear-gradient(90deg,#5b4cff,#a78bfa)'};border-radius:4px;transition:width .6s"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#8880a6;margin-bottom:14px">
+        <span>Score promedio</span>
+        <span style="font-weight:700;color:${data.average_score>=70?'#059669':'#8880a6'}">${data.average_score > 0 ? data.average_score+'/100' : '—'}</span>
+      </div>
+      ${certified ? `
+        <button onclick="downloadCert(${uid},'${f}')" style="width:100%;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+          🏆 Ver &amp; Descargar Certificado
+        </button>` : `
+        <button onclick="switchField('${f}');showDashboard()" style="width:100%;background:#f1f0f8;color:#3c3950;border:1.5px solid #e5e2f0;padding:11px;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+          ${data.completed_missions > 0 ? 'Continuar entrenamiento' : 'Comenzar este campo'}
+        </button>`}
+    </div>`;
+  }).join('');
+}
+
+function downloadCert(userId, profession){
+  const url = `${API}/certificate/${userId}/html?profession=${profession}`;
+  window.open(url, '_blank');
+}
+
+// ── User menu ──────────────────────────────────────────────
+function toggleUserMenu(){
+  const m = document.getElementById('userMenu');
+  m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userMenu');
+  if (menu && !e.target.closest('#userMenuWrap')) menu.style.display='none';
+});
+
 </script>
+
+<!-- ══════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════ -->
+<div id="screen-login" class="screen">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(91,76,255,.12),transparent)">
+    <div style="width:100%;max-width:420px">
+      <!-- Logo -->
+      <div style="text-align:center;margin-bottom:36px">
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:16px">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,#5b4cff,#3d2fd6);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(91,76,255,.3)">🧠</div>
+          <span style="font-size:24px;font-weight:800;letter-spacing:-.02em">Work<span style="color:#5b4cff">Sim</span> AI</span>
+        </div>
+        <h1 style="font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;margin-bottom:8px">Bienvenido de vuelta</h1>
+        <p style="font-size:14px;color:#8880a6">Accede a tu entrenamiento profesional con IA</p>
+      </div>
+
+      <!-- Card -->
+      <div style="background:#fff;border-radius:20px;padding:32px;box-shadow:0 8px 40px rgba(22,20,31,.1);border:1px solid #e5e2f0">
+
+        <!-- Google button -->
+        <button id="googleSignInBtn" onclick="triggerGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:13px 20px;border:1.5px solid #e5e2f0;border-radius:12px;background:#fff;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:#16141f;cursor:pointer;transition:all .2s;margin-bottom:20px">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continuar con Google
+        </button>
+
+        <!-- Hidden Google One Tap -->
+        <div id="g_id_onload" data-client_id="" data-callback="handleGoogleCredential" data-auto_prompt="false" style="display:none"></div>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div style="flex:1;height:1px;background:#e5e2f0"></div>
+          <span style="font-size:12px;color:#8880a6;font-weight:600">o ingresa con email</span>
+          <div style="flex:1;height:1px;background:#e5e2f0"></div>
+        </div>
+
+        <!-- Email/password form -->
+        <div id="loginForm">
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#3c3950">Email</label>
+            <input id="loginEmail" type="email" placeholder="tu@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e5e2f0;border-radius:10px;font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='#5b4cff'" onblur="this.style.borderColor='#e5e2f0'"/>
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#3c3950">Contraseña</label>
+            <input id="loginPassword" type="password" placeholder="••••••••" style="width:100%;padding:11px 14px;border:1.5px solid #e5e2f0;border-radius:10px;font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='#5b4cff'" onblur="this.style.borderColor='#e5e2f0'" onkeydown="if(event.key==='Enter')submitLogin()"/>
+          </div>
+          <div id="loginError" style="display:none;background:#fee2e2;color:#dc2626;border-radius:8px;padding:10px 13px;font-size:13px;margin-bottom:14px"></div>
+          <button onclick="submitLogin()" style="width:100%;background:linear-gradient(135deg,#5b4cff,#3d2fd6);color:#fff;border:none;padding:13px;border-radius:12px;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(91,76,255,.3)">
+            Ingresar →
+          </button>
+        </div>
+
+        <p style="text-align:center;font-size:13px;color:#8880a6;margin-top:20px">
+          ¿No tienes cuenta? <button onclick="showRegister()" style="background:none;border:none;color:#5b4cff;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:13px">Crear cuenta</button>
+        </p>
+      </div>
+
+      <p style="text-align:center;font-size:12px;color:#8880a6;margin-top:20px">
+        Al ingresar aceptas los términos de uso de WorkSim AI
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     REGISTER SCREEN
+══════════════════════════════════════════ -->
+<div id="screen-register" class="screen">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(91,76,255,.12),transparent)">
+    <div style="width:100%;max-width:420px">
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:40px;height:40px;background:linear-gradient(135deg,#5b4cff,#3d2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px">🧠</div>
+          <span style="font-size:22px;font-weight:800;letter-spacing:-.02em">Work<span style="color:#5b4cff">Sim</span> AI</span>
+        </div>
+        <h1 style="font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;margin-bottom:6px">Crear tu cuenta</h1>
+        <p style="font-size:14px;color:#8880a6">Empieza a entrenar habilidades con IA</p>
+      </div>
+
+      <div style="background:#fff;border-radius:20px;padding:32px;box-shadow:0 8px 40px rgba(22,20,31,.1);border:1px solid #e5e2f0">
+        <button onclick="triggerGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:13px 20px;border:1.5px solid #e5e2f0;border-radius:12px;background:#fff;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:#16141f;cursor:pointer;margin-bottom:20px">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Registrarse con Google
+        </button>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px"><div style="flex:1;height:1px;background:#e5e2f0"></div><span style="font-size:12px;color:#8880a6;font-weight:600">o con email</span><div style="flex:1;height:1px;background:#e5e2f0"></div></div>
+
+        <div style="margin-bottom:12px">
+          <label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#3c3950">Nombre completo</label>
+          <input id="regName" type="text" placeholder="Ana García" style="width:100%;padding:11px 14px;border:1.5px solid #e5e2f0;border-radius:10px;font-family:'Manrope',sans-serif;font-size:14px;outline:none" onfocus="this.style.borderColor='#5b4cff'" onblur="this.style.borderColor='#e5e2f0'"/>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#3c3950">Email</label>
+          <input id="regEmail" type="email" placeholder="tu@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e5e2f0;border-radius:10px;font-family:'Manrope',sans-serif;font-size:14px;outline:none" onfocus="this.style.borderColor='#5b4cff'" onblur="this.style.borderColor='#e5e2f0'"/>
+        </div>
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#3c3950">Contraseña</label>
+          <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:11px 14px;border:1.5px solid #e5e2f0;border-radius:10px;font-family:'Manrope',sans-serif;font-size:14px;outline:none" onfocus="this.style.borderColor='#5b4cff'" onblur="this.style.borderColor='#e5e2f0'" onkeydown="if(event.key==='Enter')submitRegister()"/>
+        </div>
+        <div id="regError" style="display:none;background:#fee2e2;color:#dc2626;border-radius:8px;padding:10px 13px;font-size:13px;margin-bottom:14px"></div>
+        <button onclick="submitRegister()" style="width:100%;background:linear-gradient(135deg,#5b4cff,#3d2fd6);color:#fff;border:none;padding:13px;border-radius:12px;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(91,76,255,.3)">
+          Crear cuenta →
+        </button>
+        <p style="text-align:center;font-size:13px;color:#8880a6;margin-top:16px">
+          ¿Ya tienes cuenta? <button onclick="showScreen('login')" style="background:none;border:none;color:#5b4cff;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:13px">Ingresar</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CERTIFICATES SCREEN
+══════════════════════════════════════════ -->
+<div id="screen-certificates" class="screen">
+  <div style="max-width:820px;margin:0 auto;padding:36px 24px">
+    <button class="back-btn" onclick="showDashboard()">← Volver al dashboard</button>
+    <span class="eyebrow">Mis logros</span>
+    <h1 class="h1" style="margin-bottom:8px">Mis Certificaciones</h1>
+    <p class="muted" style="margin-bottom:32px">Completa las 20 misiones de un campo con promedio ≥ 70 para obtener tu certificado.</p>
+    <div id="certCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px"></div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -691,14 +691,21 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             name TEXT NOT NULL,
             email TEXT,
+            password_hash TEXT,
+            google_id TEXT,
             profession TEXT NOT NULL DEFAULT 'banking',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN profession TEXT NOT NULL DEFAULT 'banking'")
-    except Exception:
-        pass
+    for col, default in [
+        ("profession", "'banking'"),
+        ("password_hash", "NULL"),
+        ("google_id", "NULL"),
+    ]:
+        try:
+            cursor.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT DEFAULT {default}")
+        except Exception:
+            pass
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS missions (

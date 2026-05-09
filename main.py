@@ -1,32 +1,25 @@
-import os
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from database import init_db
 from routers import missions, submissions, users, certification
+from routers.auth_router import router as auth_router
+from routers.certificate_router import router as certificate_router
 
 
-# Lifespan para inicializar la DB
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Inicializando base de datos...")
     init_db()
-    print("Base de datos lista")
     yield
-    print("Apagando aplicación...")
 
 
-# Crear app
 app = FastAPI(
-    title="Banking Simulator API",
-    description="Simulador Profesional con IA para el sector bancario",
-    version="1.0.0",
-    lifespan=lifespan
+    title="WorkSim AI API",
+    description="Plataforma de entrenamiento profesional con IA",
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
-
-# CORS (para frontend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,24 +28,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Routers
-app.include_router(missions.router, prefix="/api/missions", tags=["Missions"])
+app.include_router(auth_router,        prefix="/api/auth",        tags=["Auth"])
+app.include_router(certificate_router, prefix="/api/certificate",  tags=["Certificate"])
+app.include_router(missions.router,    prefix="/api/missions",    tags=["Missions"])
 app.include_router(submissions.router, prefix="/api/submissions", tags=["Submissions"])
-app.include_router(users.router, prefix="/api/users", tags=["Users"])
-app.include_router(certification.router, prefix="/api/certification", tags=["Certification"])
+app.include_router(users.router,       prefix="/api/users",       tags=["Users"])
+app.include_router(certification.router, prefix="/api/certification", tags=["Certification-legacy"])
 
 
-# Health check (clave para Render)
 @app.get("/")
 def root():
-    return {
-        "message": "Banking Simulator API v1.0",
-        "status": "running"
-    }
-
-
-# 🚀 Entry point (CLAVE para cloud)
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Render usa PORT
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    return {"message": "WorkSim AI API v2.0", "status": "running"}
